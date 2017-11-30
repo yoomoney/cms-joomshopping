@@ -127,7 +127,7 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
 </div>
 
 <div class="row">
-    <div class="span11 offset1">
+    <div class="span11 offset1" style="padding-top: 10px;">
         <div class="form-group">
             <div class="span2"><label class="">Адрес для уведомлений</label></div>
             <div class="span8">
