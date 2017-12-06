@@ -56,6 +56,7 @@ function escapeValue($value)
     $sslUrlHost = 'https://'.$uri->toString(array('host', 'port'));
 
     $notify_url = $sslUrlHost.SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=notify&js_paymentclass=pm_yandex_money&no_lang=1");
+    $notify_url = htmlspecialchars_decode($notify_url);
 ?>
 <tr class="individ">
     <td style="width:250px;" class="key">

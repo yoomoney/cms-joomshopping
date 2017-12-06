@@ -216,23 +216,27 @@ class pm_yandex_money extends PaymentRoot
         } elseif ($this->mode === self::MODE_KASSA) {
 
             if ($act === 'notify') {
-
+                $this->log('debug', 'Notification callback called');
                 $source = file_get_contents('php://input');
                 if (empty($source)) {
+                    $this->log('debug', 'Notification error: body is empty!');
                     header('HTTP/1.1 400 Body is empty');
                     die();
                 }
                 $json = json_decode($source, true);
                 if (empty($json)) {
+                    $this->log('debug', 'Notification error: invalid body!');
                     header('HTTP/1.1 400 Invalid body');
                     die();
                 }
                 $notification = new \YaMoney\Model\Notification\NotificationWaitingForCapture($json);
                 $payment = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($notification->getObject());
                 if ($payment === null) {
+                    $this->log('debug', 'Notification error: payment not exist');
                     header('HTTP/1.1 404 Payment not exists');
                     die();
                 } elseif ($payment->getStatus() !== \YaMoney\Model\PaymentStatus::SUCCEEDED) {
+                    $this->log('debug', 'Notification error: payment not exist 401');
                     header('HTTP/1.1 401 Payment not exists');
                     die();
                 }
@@ -345,52 +349,52 @@ class pm_yandex_money extends PaymentRoot
             $app = JFactory::getApplication();
             $app->redirect(JRoute::_(JURI::root().'index.php?option=com_content&view=article&id='.$pmConfigs['page_mpos']));
         }
-?>
+        ?>
         <html>
         <head>
             <meta http-equiv="content-type" content="text/html; charset=utf-8" />
             <script src="/media/jui/js/jquery.min.js"></script>
         </head>
         <body>
-    <?php if ($this->mode == self::MODE_MONEY) { ?>
-        <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name = "paymentform">
-            <input type="hidden" name="receiver" value="<?php echo $pmConfigs['account']; ?>">
-            <input type="hidden" name="formcomment" value="<?php echo $item_name;?>">
-            <input type="hidden" name="short-dest" value="<?php echo $item_name;?>">
-            <input type="hidden" name="writable-targets" value="false">
-            <input type="hidden" name="comment-needed" value="true">
-            <input type="hidden" name="label" value="<?php echo $order->order_id;?>">
-            <input type="hidden" name="quickpay-form" value="shop">
-            <input type="hidden" name="paymentType" value="<?php echo $ym_params['ym-payment-type']?>" />
-            <input type="hidden" name="targets" value="<?php echo $item_name;?>">
-            <input type="hidden" name="sum" value="<?php echo $order->order_total;?>" data-type="number" >
-            <input type="hidden" name="comment" value="<?php echo $order->order_add_info; ?>" >
-            <input type="hidden" name="need-fio" value="true">
-            <input type="hidden" name="need-email" value="true" >
-            <input type="hidden" name="need-phone" value="false">
-            <input type="hidden" name="need-address" value="false">
-            <input type="hidden" name="successURL" value="<?php echo $return; ?>" >
-            <?php echo _JSHOP_REDIRECT_TO_PAYMENT_PAGE; ?>
-        </form>
-    <?php } elseif ($this->mode == self::MODE_PAYMENTS) {
-        $this->finishOrder($order, $pmConfigs['ym_pay_status']);
-        $narrative = $this->parseTemplate($pmConfigs['ym_pay_desc'], $order);
-        ?>
-        <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name="paymentform">
-            <input type="hidden" name="formId" value="<?php echo htmlspecialchars($pmConfigs['ym_pay_id']); ?>" />
-            <input type="hidden" name="narrative" value="<?php echo htmlspecialchars($narrative); ?>" />
-            <input type="hidden" name="fio" value="<?php echo htmlspecialchars($ym_params['ya_payments_fio']); ?>" />
-            <input type="hidden" name="sum" value="<?php echo $order->order_total; ?>" />
-            <input type="hidden" name="quickPayVersion" value="2" />
-            <input type="hidden" name="cms_name" value="joomla" />
-            <?php echo _JSHOP_REDIRECT_TO_PAYMENT_PAGE; ?>
-        </form>
-    <?php } ?>
+        <?php if ($this->mode == self::MODE_MONEY) { ?>
+            <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name = "paymentform">
+                <input type="hidden" name="receiver" value="<?php echo $pmConfigs['account']; ?>">
+                <input type="hidden" name="formcomment" value="<?php echo $item_name;?>">
+                <input type="hidden" name="short-dest" value="<?php echo $item_name;?>">
+                <input type="hidden" name="writable-targets" value="false">
+                <input type="hidden" name="comment-needed" value="true">
+                <input type="hidden" name="label" value="<?php echo $order->order_id;?>">
+                <input type="hidden" name="quickpay-form" value="shop">
+                <input type="hidden" name="paymentType" value="<?php echo $ym_params['ym-payment-type']?>" />
+                <input type="hidden" name="targets" value="<?php echo $item_name;?>">
+                <input type="hidden" name="sum" value="<?php echo $order->order_total;?>" data-type="number" >
+                <input type="hidden" name="comment" value="<?php echo $order->order_add_info; ?>" >
+                <input type="hidden" name="need-fio" value="true">
+                <input type="hidden" name="need-email" value="true" >
+                <input type="hidden" name="need-phone" value="false">
+                <input type="hidden" name="need-address" value="false">
+                <input type="hidden" name="successURL" value="<?php echo $return; ?>" >
+                <?php echo _JSHOP_REDIRECT_TO_PAYMENT_PAGE; ?>
+            </form>
+        <?php } elseif ($this->mode == self::MODE_PAYMENTS) {
+            $this->finishOrder($order, $pmConfigs['ym_pay_status']);
+            $narrative = $this->parseTemplate($pmConfigs['ym_pay_desc'], $order);
+            ?>
+            <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name="paymentform">
+                <input type="hidden" name="formId" value="<?php echo htmlspecialchars($pmConfigs['ym_pay_id']); ?>" />
+                <input type="hidden" name="narrative" value="<?php echo htmlspecialchars($narrative); ?>" />
+                <input type="hidden" name="fio" value="<?php echo htmlspecialchars($ym_params['ya_payments_fio']); ?>" />
+                <input type="hidden" name="sum" value="<?php echo $order->order_total; ?>" />
+                <input type="hidden" name="quickPayVersion" value="2" />
+                <input type="hidden" name="cms_name" value="joomla" />
+                <?php echo _JSHOP_REDIRECT_TO_PAYMENT_PAGE; ?>
+            </form>
+        <?php } ?>
 
-    </body>
-    <script type="text/javascript">document.getElementById('paymentform').submit();</script>
-</html>
-<?php
+        </body>
+        <script type="text/javascript">document.getElementById('paymentform').submit();</script>
+        </html>
+        <?php
         die();
     }
 
@@ -444,20 +448,20 @@ class pm_yandex_money extends PaymentRoot
                 $paymentId = $this->getOrderModel()->getPaymentIdByOrderId($params['order_id']);
                 if (empty($paymentId)) {
                     $this->log('debug', 'Redirect user to payment method page: payment id not exists');
-                    $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+                    $redirectUrl = JRoute::_(JURI::root() . 'index.php?option=com_jshopping&controller=checkout&task=step3');
                     $app = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
                 $payment = $this->getKassaPaymentMethod($pmConfigs)->fetchPayment($paymentId);
                 if ($payment === null) {
                     $this->log('debug', 'Redirect user to payment method page: payment not exists');
-                    $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+                    $redirectUrl = JRoute::_(JURI::root() . 'index.php?option=com_jshopping&controller=checkout&task=step3');
                     $app = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
                 if (!$payment->getPaid()) {
                     $this->log('debug', 'Redirect user to payment method page: payment not paid');
-                    $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+                    $redirectUrl = JRoute::_(JURI::root() . 'index.php?option=com_jshopping&controller=checkout&task=step3');
                     $app = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
@@ -465,6 +469,38 @@ class pm_yandex_money extends PaymentRoot
                 $params['checkHash'] = 0;
                 $params['checkReturnParams'] = 1;
                 $this->log('debug', 'Return url params is: ' . json_encode($params));
+            } elseif (isset($_GET['act']) && $_GET['act'] === 'notify') {
+                $this->log('debug', 'Notification callback check URL parameters');
+                $source = file_get_contents('php://input');
+                if (empty($source)) {
+                    $this->log('debug', 'Notification error: body is empty');
+                    header('HTTP/1.1 400 Body is empty');
+                    die();
+                }
+                $json = json_decode($source, true);
+                if (empty($json)) {
+                    $this->log('debug', 'Notification error: invalid body');
+                    header('HTTP/1.1 400 Invalid body');
+                    die();
+                }
+                try {
+                    $notification = new \YaMoney\Model\Notification\NotificationWaitingForCapture($json);
+                    $meta = $notification->getObject()->getMetadata();
+                    if (empty($meta['order_id'])) {
+                        $this->log('debug', 'Notification error: metadata order_id not exists');
+                        header('HTTP/1.1 400 Invalid body');
+                        die();
+                    }
+                } catch (Exception $e) {
+                    $this->log('debug', 'Notification error: ' . $e->getMessage());
+                    header('HTTP/1.1 400 Invalid body');
+                    die();
+                }
+                $params['order_id'] = $meta['order_id'];
+                $params['hash'] = "";
+                $params['checkHash'] = 0;
+                $params['checkReturnParams'] = 1;
+                $this->log('debug', 'Notify url params is: ' . json_encode($params));
             } else {
                 $this->log('debug', 'Order id not exists in return url: ' . json_encode($_GET));
             }

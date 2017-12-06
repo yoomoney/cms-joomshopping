@@ -10,7 +10,7 @@
 defined('_JEXEC') or die();
 
 //определяем константы для русского языка
-define('_JSHOP_YM_VERSION','1.0.2');
+define('_JSHOP_YM_VERSION','1.0.3');
 define('_JSHOP_YM_LICENSE_TEXT',"Для работы с модулем нужно подключить магазин к <a target=\"_blank\" href=\"https://kassa.yandex.ru/\">Яндекс.Кассе</a>.");
 define('_JSHOP_YM_VERSION_DESCRIPTION','Версия модуля ');
 
