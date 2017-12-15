@@ -11,6 +11,8 @@ defined('_JEXEC') or die('Restricted access');
 
 include dirname(__FILE__) . '/lib/autoload.php';
 
+define('_JSHOP_YM_VERSION','1.0.4');
+
 class pm_yandex_money extends PaymentRoot
 {
     const MODE_OFF = 0;
@@ -20,7 +22,7 @@ class pm_yandex_money extends PaymentRoot
 
     private $mode = -1;
     private $joomlaVersion;
-    private $lastError;
+    private $debugLog = true;
 
     public $existentcheckform = true;
     public $ym_pay_mode, $ym_test_mode, $ym_password, $ym_shopid, $ym_scid;
@@ -122,22 +124,33 @@ class pm_yandex_money extends PaymentRoot
 
     /**
      * function call in admin
+     * @param string|array $params
      */
     public function showAdminFormParams($params)
     {
+        if (isset($_GET['subaction'])) {
+            if ($_GET['subaction'] === 'get_log_messages') {
+                $this->viewModuleLogs();
+            } elseif ($_GET['subaction'] === 'clear_log_messages') {
+                $this->clearModuleLogs();
+            }
+        }
         $array_params = array(
             'kassa_send_check', 'testmode', 'paymode', 'moneymode', 'kassamode', 'paymentsmode', 'method_ym',
             'method_cards', 'method_ym2', 'method_cards2', 'method_cash', 'method_phone', 'method_wm',
             'method_ab', 'method_sb', 'method_ma', 'method_pb', 'method_qw', 'method_qp', 'password',
             'shoppassword', 'shopid', 'scid', 'account', 'transaction_end_status', 'ym_pay_id', 'ym_pay_desc',
-            'ya_payments_fio', 'page_mpos', 'ya_kassa_send_check', 'method_mp',
+            'ya_payments_fio', 'page_mpos', 'ya_kassa_send_check', 'method_mp', 'debug_log',
         );
-        $taxes = $taxes = JSFactory::getAllTaxes();
+        $taxes = JSFactory::getAllTaxes();
 
         foreach ($taxes as $k => $tax) {
             $array_params[] = 'ya_kassa_tax_' . $k;
         }
 
+        if (!is_array($params)) {
+            $params = array();
+        }
         foreach ($array_params as $key) {
             if (!isset($params[$key])) {
                 $params[$key] = '';
@@ -158,12 +171,55 @@ class pm_yandex_money extends PaymentRoot
         include(dirname(__FILE__)."/adminparamsform".$filename.".php");
     }
 
+    /**
+     *
+     */
+    public function viewModuleLogs()
+    {
+        $fileName = $this->getLogFileName();
+        $fd = @fopen($fileName, 'r');
+        $logs = array();
+        if ($fd) {
+            flock($fd, LOCK_SH);
+            $size = filesize($fileName);
+            if ($size > 0) {
+                $logs = array_map('trim', explode("\n", fread($fd, $size)));
+            }
+            flock($fd, LOCK_UN);
+            fclose($fd);
+            $logs = array_reverse($logs);
+        }
+        echo json_encode(array_slice($logs, 0, 100));
+        exit();
+    }
+
+    /**
+     *
+     */
+    public function clearModuleLogs()
+    {
+        $fileName = $this->getLogFileName();
+        $fd = @fopen($fileName, 'w');
+        $success = false;
+        if ($fd) {
+            flock($fd, LOCK_SH);
+            flock($fd, LOCK_UN);
+            fclose($fd);
+            $success = true;
+        }
+        echo json_encode(array('success' => $success));
+        exit();
+    }
+
     public function onBeforeEditPayments($view)
     {
         $view->tmp_html_start = '';
         $view->tmp_html_end = '';
     }
 
+    /**
+     *
+     */
     private function loadLanguageFile()
     {
         $lang = JFactory::getLanguage();
@@ -175,6 +231,10 @@ class pm_yandex_money extends PaymentRoot
         }
     }
 
+    /**
+     * @param array $callbackParams
+     * @return bool
+     */
     public function checkSign($callbackParams)
     {
         if ($this->mode == self::MODE_MONEY) {
@@ -536,6 +596,7 @@ class pm_yandex_money extends PaymentRoot
             } elseif ($paymentConfig['paymentsmode'] == '1') {
                 $this->mode = self::MODE_PAYMENTS;
             }
+            $this->debugLog = $paymentConfig['debug_log'] == '1';
         }
         return $this->mode;
     }
@@ -622,8 +683,8 @@ class pm_yandex_money extends PaymentRoot
 
     public function log($level, $message, $context = array())
     {
-        if (!defined('DS')) {
-            define('DS', DIRECTORY_SEPARATOR);
+        if (!$this->debugLog) {
+            return;
         }
         $replace = array();
         foreach ($context as $key => $value) {
@@ -636,7 +697,7 @@ class pm_yandex_money extends PaymentRoot
         if (!empty($replace)) {
             $message = strtr($message, $replace);
         }
-        $fileName = realpath(dirname(__FILE__) . DS . '..' . DS . '..') . DS . 'log' . DS . 'pm_yandex_money.log';
+        $fileName = $this->getLogFileName();
         $fd = @fopen($fileName, 'a');
         if ($fd) {
             flock($fd, LOCK_EX);
@@ -663,5 +724,13 @@ class pm_yandex_money extends PaymentRoot
             $this->kassa = new \YandexMoney\Model\KassaPaymentMethod($this, $pmConfigs);
         }
         return $this->kassa;
+    }
+
+    private function getLogFileName()
+    {
+        if (!defined('DS')) {
+            define('DS', DIRECTORY_SEPARATOR);
+        }
+        return realpath(dirname(__FILE__) . DS . '..' . DS . '..') . DS . 'log' . DS . 'pm_yandex_money.log';
     }
 }

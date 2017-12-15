@@ -18,6 +18,7 @@ class KassaPaymentMethod
     private $password;
     private $defaultTaxRateId;
     private $taxRates;
+    private $sendReceipt;
 
     /**
      * KassaPaymentMethod constructor.
@@ -44,6 +45,8 @@ class KassaPaymentMethod
                 $this->taxRates[$taxRateId] = $value;
             }
         }
+
+        $this->sendReceipt = isset($pmConfig['ya_kassa_send_check']) && $pmConfig['ya_kassa_send_check'] == '1';
     }
 
     public function getShopId()
@@ -93,7 +96,7 @@ class KassaPaymentMethod
             $builder->setConfirmation($confirmation);
 
             $receipt = null;
-            if (count($cart->products) && isset($pmConfigs['ya_kassa_send_check']) && $pmConfigs['ya_kassa_send_check']) {
+            if (count($cart->products) && $this->sendReceipt) {
                 $this->factoryReceipt($builder, $cart, $order);
             }
 

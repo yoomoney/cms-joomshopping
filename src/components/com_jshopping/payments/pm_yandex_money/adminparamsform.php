@@ -104,5 +104,61 @@ function escapeValue($value)
                 document.getElementById('transaction-end-status').value = document.getElementById(id).value;
             }
         }
+        jQuery('#show_module_log').click(showLogsHandler);
+        jQuery('#clear-logs').click(clearLogsHandler);
     });
+
+    function showLogsHandler() {
+        var form = document.getElementById('adminForm');
+        var paymentId = form.payment_id.value;
+        jQuery.ajax({
+            method: 'GET',
+            url: 'index.php',
+            data: {
+                option: 'com_jshopping',
+                controller: 'payments',
+                task: 'edit',
+                payment_id: paymentId,
+                subaction: 'get_log_messages'
+            },
+            dataType: 'json',
+            success: function (logs) {
+                if (logs.length > 0) {
+                    jQuery('#logs-list').html(logs.join("\n"));
+                    jQuery('#clear-logs').css('display', 'block');
+                } else {
+                    jQuery('#logs-list').html('Сообщений нет');
+                    jQuery('#clear-logs').css('display', 'none');
+                }
+                jQuery('#log-modal-window').modal({
+                    show: true
+                });
+            }
+        });
+    }
+
+    function clearLogsHandler() {
+        var form = document.getElementById('adminForm');
+        var paymentId = form.payment_id.value;
+
+        if (window.confirm('Вы действительно хотите очистить журнал сообщений?')) {
+            jQuery.ajax({
+                method: 'GET',
+                url: 'index.php',
+                data: {
+                    option: 'com_jshopping',
+                    controller: 'payments',
+                    task: 'edit',
+                    payment_id: paymentId,
+                    subaction: 'clear_log_messages'
+                },
+                dataType: 'json',
+                success: function (logs) {
+                    jQuery('#log-modal-window').modal({
+                        show: false
+                    });
+                }
+            });
+        }
+    }
 </script>
