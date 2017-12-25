@@ -48,6 +48,11 @@ function escapeValue($value)
         <?php include(dirname(__FILE__).'/3x/yandex_kassa.php'); ?>
         <?php include(dirname(__FILE__).'/3x/yandex_money.php'); ?>
         <?php include(dirname(__FILE__).'/3x/yandex_payments.php'); ?>
+        <?php if (isset($newVersionInfo)) : ?>
+            <?php include(dirname(__FILE__).'/3x/yandex_update.php'); ?>
+        <?php else: ?>
+            <?php include(dirname(__FILE__).'/3x/yandex_update_disable.php'); ?>
+        <?php endif; ?>
 
         <input type="hidden" name="pm_params[transaction_end_status]" id="transaction-end-status" />
 
@@ -106,6 +111,8 @@ function escapeValue($value)
         }
         jQuery('#show_module_log').click(showLogsHandler);
         jQuery('#clear-logs').click(clearLogsHandler);
+
+        jQuery('#adminForm > ul.nav-tabs a:last').tab('show');
     });
 
     function showLogsHandler() {

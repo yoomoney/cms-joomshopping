@@ -38,6 +38,8 @@ define('_JSHOP_YM_KASSA_PAYMODE_KASSA', 'На стороне Кассы');
 define('_JSHOP_YM_KASSA_PAYMODE_SHOP', 'На стороне магазина');
 define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/doc/payment-solution/payment-form/payment-form-docpage/\' target=\'_blank\'>Подробнее о сценариях оплаты</a>');
 define('_JSHOP_YM_KASSA_SELECT_TEXT', 'Отметьте способы оплаты, которые указаны в вашем договоре с Яндекс.Деньгами');
+define('_JSHOP_YM_KASSA_CREDENTIALS_ERROR', 'Проверьте shopId и Секретный ключ — где-то есть ошибка. А лучше скопируйте их прямо из <a href="https://kassa.yandex.ru/my" target="_blank">личного кабинета Яндекс.Кассы</a>');
+define('_JSHOP_YM_KASSA_TEST_WARNING', 'Вы включили тестовый режим приема платежей. Проверьте, как проходит оплата, и напишите менеджеру Кассы. Он выдаст рабочие shopId и Секретный ключ. <a href="https://yandex.ru/support/checkout/payments/api.html#api__04" target="_blank">Инструкция</a>');
 define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION', 'Яндекс.Деньги');
 define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION', 'Банковские карты');
 define('_JSHOP_YM_METHOD_BANK_CARD_DESCRIPTION', 'Банковские карты');

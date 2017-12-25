@@ -3,6 +3,7 @@
 namespace YandexMoney\Model;
 
 use YaMoney\Client\YandexMoneyApi;
+use YaMoney\Common\Exceptions\NotFoundException;
 use YaMoney\Model\ConfirmationType;
 use YaMoney\Model\PaymentInterface;
 use YaMoney\Model\PaymentMethodType;
@@ -240,5 +241,20 @@ class KassaPaymentMethod
             $this->client->setLogger($this->module);
         }
         return $this->client;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkConnection()
+    {
+        try {
+            $payment = $this->getClient()->getPaymentInfo('00000000-0000-0000-0000-000000000001');
+        } catch (NotFoundException $e) {
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
     }
 }
