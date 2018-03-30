@@ -200,8 +200,7 @@ class KassaPaymentMethod
     {
         $shippingModel = \JSFactory::getTable('shippingMethod', 'jshop');
         $shippingMethods = $shippingModel->getAllShippingMethodsCountry($order->d_country, $order->payment_method_id);
-
-        $builder->setTaxSystemCode($this->defaultTaxRateId);
+        $defaultTaxRate = $this->defaultTaxRateId;
         $builder->setReceiptEmail($order->email);
 
         $shipping = false;
@@ -216,7 +215,7 @@ class KassaPaymentMethod
                 $taxId = $this->taxRates[$product['tax_id']];
                 $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $taxId);
             } else {
-                $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity']);
+                $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $defaultTaxRate);
             }
         }
 
@@ -225,7 +224,7 @@ class KassaPaymentMethod
                 $taxId = $this->taxRates[$shipping->shipping_tax_id];
                 $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $taxId);
             } else {
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price);
+                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $defaultTaxRate);
             }
         }
     }

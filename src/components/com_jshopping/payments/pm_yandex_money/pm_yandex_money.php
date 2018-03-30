@@ -9,12 +9,12 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-define('JSH_DIR', realpath(dirname(__FILE__) . '/../..'));
-define('DIR_DOWNLOAD', JSH_DIR . '/log');
+define('JSH_DIR', realpath(dirname(__FILE__).'/../..'));
+define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
-include dirname(__FILE__) . '/lib/autoload.php';
+include dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION','1.0.5');
+define('_JSHOP_YM_VERSION', '1.0.6');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -55,28 +55,31 @@ class pm_yandex_money extends PaymentRoot
         $this->loadLanguageFile();
         $this->mode = $this->getMode($pmConfigs);
         if ($this->mode === self::MODE_KASSA) {
-            include(dirname(__FILE__) . "/payment_form_kassa.php");
+            include(dirname(__FILE__)."/payment_form_kassa.php");
         } else {
-            include(dirname(__FILE__) . "/paymentform.php");
+            include(dirname(__FILE__)."/paymentform.php");
         }
     }
 
     public function getDisplayNameParams()
     {
-        $names = array();
+        $names      = array();
         $this->mode = $this->getMode($this->getParams());
         if ($this->mode == self::MODE_PAYMENTS) {
             $names = array(
                 'ya_payments_fio' => _JSHOP_YM_PAYMENTS_FIO_LABEL,
             );
         }
+
         return $names;
     }
 
     /**
      * Проверяет параметры указанные пользователем на странице выбора способа оплаты
+     *
      * @param array $params Массив параметров, указанных в params[pm_yandex_money] на странице выбора способа оплаты
      * @param array $pmConfigs Настройки модуля оплаты
+     *
      * @return bool True если все параметры вылидны, false если нет
      */
     public function checkPaymentInfo($params, $pmConfigs)
@@ -108,12 +111,14 @@ class pm_yandex_money extends PaymentRoot
                             $phone = preg_replace('/[^\d]+/', '', $params['qiwiPhone']);
                             if (empty($phone) || strlen($phone) < 4 || strlen($phone) > 16) {
                                 $this->setErrorMessage('Указанное значение не является телефонным номером');
+
                                 return false;
                             }
                             $params['qiwiPhone'] = $phone;
                         } elseif ($paymentType === \YaMoney\Model\PaymentMethodType::ALFABANK) {
                             if (empty($params['alfaLogin'])) {
                                 $this->setErrorMessage('Укажите логин в Альфа-клике');
+
                                 return false;
                             }
                             $login = trim($params['alfaLogin']);
@@ -121,17 +126,21 @@ class pm_yandex_money extends PaymentRoot
                                 return false;
                             }
                         }
+
                         return true;
                     }
+
                     return false;
                 }
             }
         }
+
         return true;
     }
 
     /**
      * function call in admin
+     *
      * @param string|array $params
      */
     public function showAdminFormParams($params)
@@ -147,7 +156,7 @@ class pm_yandex_money extends PaymentRoot
             } elseif ($_GET['subaction'] === 'restore_backup') {
                 ob_start();
                 $result = $this->restoreBackup();
-                $data = ob_get_clean();
+                $data   = ob_get_clean();
                 if (!empty($data)) {
                     $result['output'] = $data;
                 }
@@ -156,7 +165,7 @@ class pm_yandex_money extends PaymentRoot
             } elseif ($_GET['subaction'] === 'remove_backup') {
                 ob_start();
                 $result = $this->removeBackup();
-                $data = ob_get_clean();
+                $data   = ob_get_clean();
                 if (!empty($data)) {
                     $result['output'] = $data;
                 }
@@ -165,7 +174,7 @@ class pm_yandex_money extends PaymentRoot
             } elseif ($_GET['subaction'] === 'update') {
                 ob_start();
                 $result = $this->updateVersion();
-                $data = ob_get_clean();
+                $data   = ob_get_clean();
                 if (!empty($data)) {
                     $result['output'] = $data;
                 }
@@ -174,16 +183,43 @@ class pm_yandex_money extends PaymentRoot
             }
         }
         $array_params = array(
-            'kassa_send_check', 'testmode', 'paymode', 'moneymode', 'kassamode', 'paymentsmode', 'method_ym',
-            'method_cards', 'method_ym2', 'method_cards2', 'method_cash', 'method_phone', 'method_wm',
-            'method_ab', 'method_sb', 'method_ma', 'method_pb', 'method_qw', 'method_qp', 'password',
-            'shoppassword', 'shopid', 'scid', 'account', 'transaction_end_status', 'ym_pay_id', 'ym_pay_desc',
-            'ya_payments_fio', 'page_mpos', 'ya_kassa_send_check', 'method_mp', 'debug_log',
+            'kassa_send_check',
+            'testmode',
+            'paymode',
+            'moneymode',
+            'kassamode',
+            'paymentsmode',
+            'method_ym',
+            'method_cards',
+            'method_ym2',
+            'method_cards2',
+            'method_cash',
+            'method_phone',
+            'method_wm',
+            'method_ab',
+            'method_sb',
+            'method_ma',
+            'method_pb',
+            'method_qw',
+            'method_qp',
+            'password',
+            'shoppassword',
+            'shopid',
+            'scid',
+            'account',
+            'transaction_end_status',
+            'ym_pay_id',
+            'ym_pay_desc',
+            'ya_payments_fio',
+            'page_mpos',
+            'ya_kassa_send_check',
+            'method_mp',
+            'debug_log',
         );
-        $taxes = JSFactory::getAllTaxes();
+        $taxes        = JSFactory::getAllTaxes();
 
         foreach ($taxes as $k => $tax) {
-            $array_params[] = 'ya_kassa_tax_' . $k;
+            $array_params[] = 'ya_kassa_tax_'.$k;
         }
 
         if (!is_array($params)) {
@@ -202,24 +238,24 @@ class pm_yandex_money extends PaymentRoot
         if ($this->joomlaVersion === 2) {
             $filename = '2x';
         } else {
-            $filename = '';
+            $filename   = '';
             $dispatcher = JDispatcher::getInstance();
             $dispatcher->register('onBeforeEditPayments', array($this, 'onBeforeEditPayments'));
         }
 
-        $zip_enabled = function_exists('zip_open');
+        $zip_enabled  = function_exists('zip_open');
         $curl_enabled = function_exists('curl_init');
         if ($zip_enabled && $curl_enabled) {
-            $force = false;
+            $force       = false;
             $versionInfo = $this->checkModuleVersion($force);
             if (version_compare($versionInfo['version'], _JSHOP_YM_VERSION) > 0) {
                 $new_version_available = true;
-                $changelog = $this->getChangeLog(_JSHOP_YM_VERSION, $versionInfo['version']);
-                $newVersion = $versionInfo['version'];
+                $changelog             = $this->getChangeLog(_JSHOP_YM_VERSION, $versionInfo['version']);
+                $newVersion            = $versionInfo['version'];
             } else {
                 $new_version_available = false;
-                $changelog = '';
-                $newVersion = _JSHOP_YM_VERSION;
+                $changelog             = '';
+                $newVersion            = _JSHOP_YM_VERSION;
             }
             $newVersionInfo = $versionInfo;
 
@@ -247,8 +283,8 @@ class pm_yandex_money extends PaymentRoot
     public function viewModuleLogs()
     {
         $fileName = $this->getLogFileName();
-        $fd = @fopen($fileName, 'r');
-        $logs = array();
+        $fd       = @fopen($fileName, 'r');
+        $logs     = array();
         if ($fd) {
             flock($fd, LOCK_SH);
             $size = filesize($fileName);
@@ -269,8 +305,8 @@ class pm_yandex_money extends PaymentRoot
     public function clearModuleLogs()
     {
         $fileName = $this->getLogFileName();
-        $fd = @fopen($fileName, 'w');
-        $success = false;
+        $fd       = @fopen($fileName, 'w');
+        $success  = false;
         if ($fd) {
             flock($fd, LOCK_SH);
             flock($fd, LOCK_UN);
@@ -284,33 +320,37 @@ class pm_yandex_money extends PaymentRoot
     private function restoreBackup()
     {
         if (!empty($_POST['file_name'])) {
-            $fileName = DIR_DOWNLOAD . '/' . $this->backupDirectory . '/' . $_POST['file_name'];
+            $fileName = DIR_DOWNLOAD.'/'.$this->backupDirectory.'/'.$_POST['file_name'];
             if (!file_exists($fileName)) {
-                $this->log('error', 'File "' . $fileName . '" not exists');
+                $this->log('error', 'File "'.$fileName.'" not exists');
+
                 return array(
-                    'message' => 'Файл резервной копии ' . $fileName . ' не найден',
+                    'message' => 'Файл резервной копии '.$fileName.' не найден',
                     'success' => false,
                 );
             }
             try {
                 $sourceDirectory = dirname(dirname(realpath(JSH_DIR)));
-                $archive = new \YandexMoney\Updater\Archive\RestoreZip($fileName);
+                $archive         = new \YandexMoney\Updater\Archive\RestoreZip($fileName);
                 $archive->restore('file_map.map', $sourceDirectory);
             } catch (Exception $e) {
                 $this->log('error', $e->getMessage());
                 if ($e->getPrevious() !== null) {
                     $this->log('error', $e->getPrevious()->getMessage());
                 }
+
                 return array(
-                    'message' => 'Не удалось восстановить модуль из резервной копии: ' . $e->getMessage(),
+                    'message' => 'Не удалось восстановить модуль из резервной копии: '.$e->getMessage(),
                     'success' => false,
                 );
             }
+
             return array(
-                'message' => 'Модуль был успешно восстановлен из резервной копии: ' . $_POST['file_name'],
+                'message' => 'Модуль был успешно восстановлен из резервной копии: '.$_POST['file_name'],
                 'success' => true,
             );
         }
+
         return array(
             'message' => 'Не был передан удаляемый файл резервной копии',
             'success' => false,
@@ -320,27 +360,32 @@ class pm_yandex_money extends PaymentRoot
     public function removeBackup()
     {
         if (!empty($_POST['file_name'])) {
-            $fileName = DIR_DOWNLOAD . '/' . $this->backupDirectory . '/' . str_replace(array('/', '\\'), array('', ''), $_POST['file_name']);
+            $fileName = DIR_DOWNLOAD.'/'.$this->backupDirectory.'/'.str_replace(array('/', '\\'), array('', ''),
+                    $_POST['file_name']);
             if (!file_exists($fileName)) {
-                $this->log('error', 'File "' . $fileName . '" not exists');
+                $this->log('error', 'File "'.$fileName.'" not exists');
+
                 return array(
-                    'message' => 'Файл резервной копии ' . $fileName . ' не найден',
+                    'message' => 'Файл резервной копии '.$fileName.' не найден',
                     'success' => false,
                 );
             }
 
             if (!unlink($fileName) || file_exists($fileName)) {
-                $this->log('error', 'Failed to unlink file "' . $fileName . '"');
+                $this->log('error', 'Failed to unlink file "'.$fileName.'"');
+
                 return array(
-                    'message' => 'Не удалось удалить файл резервной копии ' . $fileName,
+                    'message' => 'Не удалось удалить файл резервной копии '.$fileName,
                     'success' => false,
                 );
             }
+
             return array(
-                'message' => 'Файл резервной копии ' . $fileName . ' был успешно удалён',
+                'message' => 'Файл резервной копии '.$fileName.' был успешно удалён',
                 'success' => true,
             );
         }
+
         return array(
             'message' => 'Не был передан удаляемый файл резервной копии',
             'success' => false,
@@ -350,39 +395,40 @@ class pm_yandex_money extends PaymentRoot
     public function updateVersion()
     {
         $versionInfo = $this->checkModuleVersion(false);
-        $fileName = $this->downloadLastVersion($versionInfo['tag']);
+        $fileName    = $this->downloadLastVersion($versionInfo['tag']);
         if (!empty($fileName)) {
             if ($this->createBackup(_JSHOP_YM_VERSION)) {
                 if ($this->unpackLastVersion($fileName)) {
                     $result = array(
-                        'message' => 'Версия модуля ' . $_POST['version'] . ' (' . $fileName . ') была успешно загружена и установлена',
+                        'message' => 'Версия модуля '.$_POST['version'].' ('.$fileName.') была успешно загружена и установлена',
                         'success' => true,
                     );
                 } else {
                     $result = array(
-                        'message' => 'Не удалось распаковать загруженный архив ' . $fileName . ', подробную информацию о произошедшей ошибке можно найти в <a href="">логах модуля</a>',
+                        'message' => 'Не удалось распаковать загруженный архив '.$fileName.', подробную информацию о произошедшей ошибке можно найти в <a href="">логах модуля</a>',
                         'success' => false,
                     );
                 }
             } else {
                 $result = array(
-                    'message' => 'Не удалось создать резервную копию установленной версии модуля, подробную информацию о произошедшей ошибке можно найти в <a href="' . $logs . '">логах модуля</a>',
+                    'message' => 'Не удалось создать резервную копию установленной версии модуля, подробную информацию о произошедшей ошибке можно найти в <a href="'.$logs.'">логах модуля</a>',
                     'success' => false,
                 );
             }
         } else {
             $result = array(
-                'message' => 'Не удалось загрузить архив с новой версией, подробную информацию о произошедшей ошибке можно найти в <a href="' . $logs . '">логах модуля</a>',
+                'message' => 'Не удалось загрузить архив с новой версией, подробную информацию о произошедшей ошибке можно найти в <a href="'.$logs.'">логах модуля</a>',
                 'success' => false,
             );
         }
+
         return $result;
     }
 
     public function onBeforeEditPayments($view)
     {
         $view->tmp_html_start = '';
-        $view->tmp_html_end = '';
+        $view->tmp_html_end   = '';
     }
 
     /**
@@ -390,7 +436,7 @@ class pm_yandex_money extends PaymentRoot
      */
     private function loadLanguageFile()
     {
-        $lang = JFactory::getLanguage();
+        $lang    = JFactory::getLanguage();
         $langTag = $lang->getTag();
         if (file_exists(JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money/lang/'.$langTag.'.php')) {
             require_once(JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money/lang/'.$langTag.'.php');
@@ -401,30 +447,35 @@ class pm_yandex_money extends PaymentRoot
 
     /**
      * @param array $callbackParams
+     *
      * @return bool
      */
     public function checkSign($callbackParams)
     {
         if ($this->mode == self::MODE_MONEY) {
             $string = $callbackParams['notification_type'].'&'.$callbackParams['operation_id'].'&'
-                .$callbackParams['amount'].'&'.$callbackParams['currency'].'&'.$callbackParams['datetime'].'&'
-                .$callbackParams['sender'].'&'.$callbackParams['codepro'].'&'.$this->ym_password.'&'
-                .$callbackParams['label'];
-            $check = (sha1($string) == $callbackParams['sha1_hash']);
+                      .$callbackParams['amount'].'&'.$callbackParams['currency'].'&'.$callbackParams['datetime'].'&'
+                      .$callbackParams['sender'].'&'.$callbackParams['codepro'].'&'.$this->ym_password.'&'
+                      .$callbackParams['label'];
+            $check  = (sha1($string) == $callbackParams['sha1_hash']);
             if (!$check) {
                 header('HTTP/1.0 401 Unauthorized');
+
                 return false;
             }
         }
+
         return true;
     }
 
     /**
      * Метод проверки валидности платежа, вызывается при создании платежа после возврата пользователя на страницу
      * подтверждения заказа, так же вызывается при приходе нотификации от платёжной системы
+     *
      * @param array $pmConfigs Массив настроек платёжной системы
      * @param object $order Инстанс заказа
      * @param string $act Значение параметра "act" в ссылке
+     *
      * @return array Массив с информацией о транзакции
      */
     function checkTransaction($pmConfigs, $order, $act)
@@ -433,8 +484,8 @@ class pm_yandex_money extends PaymentRoot
 
         if ($this->mode === self::MODE_MONEY) {
             $this->ym_pay_mode = ($pmConfigs['paymode'] == '1');
-            $this->ym_shopid = $pmConfigs['shopid'];
-            $this->ym_scid = $pmConfigs['scid'];
+            $this->ym_shopid   = $pmConfigs['shopid'];
+            $this->ym_scid     = $pmConfigs['scid'];
 
             $order->order_total = floatval($order->order_total);
 
@@ -446,6 +497,7 @@ class pm_yandex_money extends PaymentRoot
             if ($act === 'notify') {
                 $this->log('debug', 'Notification callback called');
                 $source = file_get_contents('php://input');
+                $this->log('debug', 'Notification body: '.$source);
                 if (empty($source)) {
                     $this->log('debug', 'Notification error: body is empty!');
                     header('HTTP/1.1 400 Body is empty');
@@ -458,7 +510,7 @@ class pm_yandex_money extends PaymentRoot
                     die();
                 }
                 $notification = new \YaMoney\Model\Notification\NotificationWaitingForCapture($json);
-                $payment = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($notification->getObject());
+                $payment      = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($notification->getObject());
                 if ($payment === null) {
                     $this->log('debug', 'Notification error: payment not exist');
                     header('HTTP/1.1 404 Payment not exists');
@@ -468,48 +520,81 @@ class pm_yandex_money extends PaymentRoot
                     header('HTTP/1.1 401 Payment not exists');
                     die();
                 }
-                $this->getOrderModel()->savePayment($order->order_id, $payment);
+                try {
+                    $jshopConfig = JSFactory::getConfig();
+
+                    /** @var jshopCheckout $checkout */
+                    $checkout             = JSFactory::getModel('checkout', 'jshop');
+                    $endStatus            = $pmConfigs['transaction_end_status'];
+                    $order->order_created = 1;
+                    $order->order_status  = $endStatus;
+                    $order->store();
+                    if ($jshopConfig->send_order_email) {
+                        $checkout->sendOrderEmail($order->order_id);
+                    }
+                    if ($jshopConfig->order_stock_removed_only_paid_status) {
+                        $product_stock_removed = in_array($endStatus,
+                            $jshopConfig->payment_status_enable_download_sale_file);
+                    } else {
+                        $product_stock_removed = 1;
+                    }
+                    if ($product_stock_removed) {
+                        $order->changeProductQTYinStock("-");
+                    }
+                    $checkout->changeStatusOrder($order->order_id, $endStatus, 0);
+                } catch (Exception $e) {
+                    $this->log('debug', $e->getMessage());
+                    header('HTTP/1.1 500 Internal Server Error');
+                    die();
+                }
+
                 echo '{"success":true,"payment_status":"'.$payment->getStatus().'"}';
                 die();
 
             } else {
-                $this->log('debug', 'Check transaction for order#' . $order->order_id);
+                $this->log('debug', 'Check transaction for order#'.$order->order_id);
                 $transactionId = $this->getOrderModel()->getPaymentIdByOrderId($order->order_id);
                 if (empty($transactionId)) {
-                    $this->log('debug', 'Payment id for order#' . $order->order_id . ' not exists');
+                    $this->log('debug', 'Payment id for order#'.$order->order_id.' not exists');
+
                     return array(3, 'Transaction not exists', '', 'Transaction not exists');
                 }
                 $payment = $this->getKassaPaymentMethod($pmConfigs)->fetchPayment($transactionId);
                 if ($payment === null) {
-                    $this->log('debug', 'Payment for order#' . $order->order_id . ' not exists');
+                    $this->log('debug', 'Payment for order#'.$order->order_id.' not exists');
+
                     return array(3, 'Transaction not exists', '', 'Transaction not exists');
                 }
                 if (!$payment->getPaid()) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' not paid');
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' not paid');
                     $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
-                    $app = JFactory::getApplication();
+                    $app         = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
                 if ($payment->getStatus() === \YaMoney\Model\PaymentStatus::CANCELED) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' is canceled');
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is canceled');
+
                     return array(4, 'Transaction is cancelled', $transactionId, 'Платёж не был проведён');
                 } elseif ($payment->getStatus() === \YaMoney\Model\PaymentStatus::PENDING) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' is pended');
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is pended');
+
                     return array(2, 'Ожидается проведение оплаты', $transactionId, 'Ожидается проведение оплаты');
                 } elseif ($payment->getStatus() === \YaMoney\Model\PaymentStatus::WAITING_FOR_CAPTURE) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' wfc');
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' wfc');
                     $result = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($payment);
                     if ($result !== null) {
                         $this->getOrderModel()->savePayment($order->order_id, $payment);
-                        $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' captured');
+                        $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' captured');
                         $payment = $result;
                     }
                 }
                 if ($payment->getStatus() === \YaMoney\Model\PaymentStatus::SUCCEEDED) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' succeeded');
-                    return array(1, 'Платёж ' . $transactionId . ' проведён', $transactionId, 'Оплата была проведена');
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' succeeded');
+
+                    return array(1, 'Платёж '.$transactionId.' проведён', $transactionId, 'Оплата была проведена');
                 } else {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#' . $order->order_id . ' pended');
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' pended');
+
                     return array(2, 'Ожидается проведение оплаты', $transactionId, 'Ожидается проведение оплаты');
                 }
             }
@@ -524,7 +609,7 @@ class pm_yandex_money extends PaymentRoot
             } else {
                 return array(1, '');
             }
-        } elseif($this->mode == self::MODE_KASSA) {
+        } elseif ($this->mode == self::MODE_KASSA) {
             return array(1, '');
         } else {
             return array(0, 'hash error');
@@ -549,59 +634,63 @@ class pm_yandex_money extends PaymentRoot
         }
     }
 
+    /**
+     * @param $pmConfigs
+     * @param jshopOrder $order
+     */
     function showEndForm($pmConfigs, $order)
     {
         $this->ym_test_mode = isset($pmConfigs['testmode']) ? $pmConfigs['testmode'] : false;
-        $this->mode = $this->getMode($pmConfigs);
+        $this->mode         = $this->getMode($pmConfigs);
         if ($this->mode === self::MODE_KASSA) {
             $this->processKassaPayment($pmConfigs, $order);
             // если произошла ошибка, редиректим на шаг выбора метода оплаты
             $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step5');
-            $app = JFactory::getApplication();
+            $app         = JFactory::getApplication();
             $app->redirect($redirectUrl);
         }
         $this->ym_pay_mode = ($pmConfigs['paymode'] == '1');
 
-        $uri = JURI::getInstance();
-        $liveUrlHost = $uri->toString(array("scheme",'host', 'port'));
+        $uri         = JURI::getInstance();
+        $liveUrlHost = $uri->toString(array("scheme", 'host', 'port'));
 
         $ym_params = unserialize($order->payment_params_data);
 
         $item_name = $liveUrlHost." ".sprintf(_JSHOP_PAYMENT_NUMBER, $order->order_number);
         $this->loadLanguageFile();
 
-        $return = $liveUrlHost.SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&order_id=" . $order['id']);
+        $return = $liveUrlHost.SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&order_id=".$order->id);
 
         $order->order_total = $this->fixOrderTotal($order);
-        if ($ym_params['ym-payment-type'] == 'MP'){
+        if ($ym_params['ym-payment-type'] == 'MP') {
             $app = JFactory::getApplication();
             $app->redirect(JRoute::_(JURI::root().'index.php?option=com_content&view=article&id='.$pmConfigs['page_mpos']));
         }
         ?>
         <html>
         <head>
-            <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+            <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
             <script src="/media/jui/js/jquery.min.js"></script>
         </head>
         <body>
         <?php if ($this->mode == self::MODE_MONEY) { ?>
-            <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name = "paymentform">
+            <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name="paymentform">
                 <input type="hidden" name="receiver" value="<?php echo $pmConfigs['account']; ?>">
-                <input type="hidden" name="formcomment" value="<?php echo $item_name;?>">
-                <input type="hidden" name="short-dest" value="<?php echo $item_name;?>">
+                <input type="hidden" name="formcomment" value="<?php echo $item_name; ?>">
+                <input type="hidden" name="short-dest" value="<?php echo $item_name; ?>">
                 <input type="hidden" name="writable-targets" value="false">
                 <input type="hidden" name="comment-needed" value="true">
-                <input type="hidden" name="label" value="<?php echo $order->order_id;?>">
+                <input type="hidden" name="label" value="<?php echo $order->order_id; ?>">
                 <input type="hidden" name="quickpay-form" value="shop">
-                <input type="hidden" name="paymentType" value="<?php echo $ym_params['ym-payment-type']?>" />
-                <input type="hidden" name="targets" value="<?php echo $item_name;?>">
-                <input type="hidden" name="sum" value="<?php echo $order->order_total;?>" data-type="number" >
-                <input type="hidden" name="comment" value="<?php echo $order->order_add_info; ?>" >
+                <input type="hidden" name="paymentType" value="<?php echo $ym_params['ym-payment-type'] ?>"/>
+                <input type="hidden" name="targets" value="<?php echo $item_name; ?>">
+                <input type="hidden" name="sum" value="<?php echo $order->order_total; ?>" data-type="number">
+                <input type="hidden" name="comment" value="<?php echo $order->order_add_info; ?>">
                 <input type="hidden" name="need-fio" value="true">
-                <input type="hidden" name="need-email" value="true" >
+                <input type="hidden" name="need-email" value="true">
                 <input type="hidden" name="need-phone" value="false">
                 <input type="hidden" name="need-address" value="false">
-                <input type="hidden" name="successURL" value="<?php echo $return; ?>" >
+                <input type="hidden" name="successURL" value="<?php echo $return; ?>">
                 <?php echo _JSHOP_REDIRECT_TO_PAYMENT_PAGE; ?>
             </form>
         <?php } elseif ($this->mode == self::MODE_PAYMENTS) {
@@ -609,12 +698,12 @@ class pm_yandex_money extends PaymentRoot
             $narrative = $this->parseTemplate($pmConfigs['ym_pay_desc'], $order);
             ?>
             <form method="POST" action="<?php echo $this->getFormUrl(); ?>" id="paymentform" name="paymentform">
-                <input type="hidden" name="formId" value="<?php echo htmlspecialchars($pmConfigs['ym_pay_id']); ?>" />
-                <input type="hidden" name="narrative" value="<?php echo htmlspecialchars($narrative); ?>" />
-                <input type="hidden" name="fio" value="<?php echo htmlspecialchars($ym_params['ya_payments_fio']); ?>" />
-                <input type="hidden" name="sum" value="<?php echo $order->order_total; ?>" />
-                <input type="hidden" name="quickPayVersion" value="2" />
-                <input type="hidden" name="cms_name" value="joomla" />
+                <input type="hidden" name="formId" value="<?php echo htmlspecialchars($pmConfigs['ym_pay_id']); ?>"/>
+                <input type="hidden" name="narrative" value="<?php echo htmlspecialchars($narrative); ?>"/>
+                <input type="hidden" name="fio" value="<?php echo htmlspecialchars($ym_params['ya_payments_fio']); ?>"/>
+                <input type="hidden" name="sum" value="<?php echo $order->order_total; ?>"/>
+                <input type="hidden" name="quickPayVersion" value="2"/>
+                <input type="hidden" name="cms_name" value="joomla"/>
                 <?php echo _JSHOP_REDIRECT_TO_PAYMENT_PAGE; ?>
             </form>
         <?php } ?>
@@ -628,9 +717,9 @@ class pm_yandex_money extends PaymentRoot
 
     public function processKassaPayment($pmConfigs, $order)
     {
-        $uri = JURI::getInstance();
+        $uri         = JURI::getInstance();
         $redirectUrl = $uri->toString(array('scheme', 'host', 'port'))
-            . SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&no_lang=1&order_id=" . $order->order_id);
+                       .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&no_lang=1&order_id=".$order->order_id);
         $redirectUrl = htmlspecialchars_decode($redirectUrl);
 
         /** @var jshopCart $cart */
@@ -661,42 +750,44 @@ class pm_yandex_money extends PaymentRoot
 
     /**
      * Инициализирует параметры для обработки процессором заказа из URL запроса при возврате на сайт
+     *
      * @param array $pmConfigs Настройки модуля оплаты
+     *
      * @return array Массив параметров, который будет использоваться в процессоре заказа
      */
     public function getUrlParams($pmConfigs)
     {
         $this->mode = $this->getMode($pmConfigs);
-        $params = array();
+        $params     = array();
         if ($this->mode == self::MODE_KASSA) {
             $this->log('debug', 'Get URL parameters for payment');
             if (isset($_GET['order_id'])) {
-                $this->log('debug', 'Order id exists in return url: ' . $_GET['order_id']);
+                $this->log('debug', 'Order id exists in return url: '.$_GET['order_id']);
                 $params['order_id'] = (int)$_GET['order_id'];
-                $paymentId = $this->getOrderModel()->getPaymentIdByOrderId($params['order_id']);
+                $paymentId          = $this->getOrderModel()->getPaymentIdByOrderId($params['order_id']);
                 if (empty($paymentId)) {
                     $this->log('debug', 'Redirect user to payment method page: payment id not exists');
-                    $redirectUrl = JRoute::_(JURI::root() . 'index.php?option=com_jshopping&controller=checkout&task=step3');
-                    $app = JFactory::getApplication();
+                    $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+                    $app         = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
                 $payment = $this->getKassaPaymentMethod($pmConfigs)->fetchPayment($paymentId);
                 if ($payment === null) {
                     $this->log('debug', 'Redirect user to payment method page: payment not exists');
-                    $redirectUrl = JRoute::_(JURI::root() . 'index.php?option=com_jshopping&controller=checkout&task=step3');
-                    $app = JFactory::getApplication();
+                    $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+                    $app         = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
                 if (!$payment->getPaid()) {
                     $this->log('debug', 'Redirect user to payment method page: payment not paid');
-                    $redirectUrl = JRoute::_(JURI::root() . 'index.php?option=com_jshopping&controller=checkout&task=step3');
-                    $app = JFactory::getApplication();
+                    $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+                    $app         = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
-                $params['hash'] = "";
-                $params['checkHash'] = 0;
+                $params['hash']              = "";
+                $params['checkHash']         = 0;
                 $params['checkReturnParams'] = 1;
-                $this->log('debug', 'Return url params is: ' . json_encode($params));
+                $this->log('debug', 'Return url params is: '.json_encode($params));
             } elseif (isset($_GET['act']) && $_GET['act'] === 'notify') {
                 $this->log('debug', 'Notification callback check URL parameters');
                 $source = file_get_contents('php://input');
@@ -713,30 +804,31 @@ class pm_yandex_money extends PaymentRoot
                 }
                 try {
                     $notification = new \YaMoney\Model\Notification\NotificationWaitingForCapture($json);
-                    $meta = $notification->getObject()->getMetadata();
+                    $meta         = $notification->getObject()->getMetadata();
                     if (empty($meta['order_id'])) {
                         $this->log('debug', 'Notification error: metadata order_id not exists');
                         header('HTTP/1.1 400 Invalid body');
                         die();
                     }
                 } catch (Exception $e) {
-                    $this->log('debug', 'Notification error: ' . $e->getMessage());
+                    $this->log('debug', 'Notification error: '.$e->getMessage());
                     header('HTTP/1.1 400 Invalid body');
                     die();
                 }
-                $params['order_id'] = $meta['order_id'];
-                $params['hash'] = "";
-                $params['checkHash'] = 0;
+                $params['order_id']          = $meta['order_id'];
+                $params['hash']              = "";
+                $params['checkHash']         = 0;
                 $params['checkReturnParams'] = 1;
-                $this->log('debug', 'Notify url params is: ' . json_encode($params));
+                $this->log('debug', 'Notify url params is: '.json_encode($params));
             } else {
-                $this->log('debug', 'Order id not exists in return url: ' . json_encode($_GET));
+                $this->log('debug', 'Order id not exists in return url: '.json_encode($_GET));
             }
         } else {
-            $params['order_id'] = (int)$_POST['label'];
-            $params['hash'] = "";
+            $params['order_id']  = (int)$_POST['label'];
+            $params['hash']      = "";
             $params['checkHash'] = 0;
         }
+
         return $params;
     }
 
@@ -748,6 +840,7 @@ class pm_yandex_money extends PaymentRoot
         } else {
             $total = number_format($total, 2, '.', '');
         }
+
         return $total;
     }
 
@@ -756,43 +849,47 @@ class pm_yandex_money extends PaymentRoot
         if ($this->mode == -1) {
             $this->mode = self::MODE_OFF;
             if ($paymentConfig['kassamode'] == '1') {
-                $this->mode = self::MODE_KASSA;
+                $this->mode        = self::MODE_KASSA;
                 $this->ym_password = $paymentConfig['shoppassword'];
             } elseif ($paymentConfig['moneymode'] == '1') {
-                $this->mode = self::MODE_MONEY;
+                $this->mode        = self::MODE_MONEY;
                 $this->ym_password = $paymentConfig['password'];
             } elseif ($paymentConfig['paymentsmode'] == '1') {
                 $this->mode = self::MODE_PAYMENTS;
             }
             $this->debugLog = $paymentConfig['debug_log'] == '1';
         }
+
         return $this->mode;
     }
 
     /**
      * @param string $tpl
      * @param jshopOrder $order
+     *
      * @return string
      */
     private function parseTemplate($tpl, $order)
     {
         $replace = array();
         foreach ($order as $property => $value) {
-            $replace['%' . $property . '%'] = $value;
+            $replace['%'.$property.'%'] = $value;
         }
+
         return strtr($tpl, $replace);
     }
 
     /**
      * @param jshopOrder $order
      * @param int $endStatus
+     *
      * @return int
      */
     private function finishOrder($order, $endStatus)
     {
-        $act = 'finish';
+        $act            = 'finish';
         $payment_method = 'pm_yandex_money';
-        $no_lang = '1';
+        $no_lang        = '1';
 
         if ($this->joomlaVersion === 2) {
             // joomla 2.x order finish
@@ -802,7 +899,7 @@ class pm_yandex_money extends PaymentRoot
             $checkout = JSFactory::getModel('checkout', 'jshop');
 
             $order->order_created = 1;
-            $order->order_status = $endStatus;
+            $order->order_status  = $endStatus;
             $order->store();
             if ($jshopConfig->send_order_email) {
                 $checkout->sendOrderEmail($order->order_id);
@@ -822,7 +919,6 @@ class pm_yandex_money extends PaymentRoot
             // joomla 3.x order finish
             /** @var jshopCheckoutBuy $checkout */
             $checkout = JSFactory::getModel('checkoutBuy', 'jshop');
-
             $checkout->saveToLogPaymentData();
             $checkout->setSendEndForm(0);
 
@@ -835,13 +931,14 @@ class pm_yandex_money extends PaymentRoot
             $codebuy = $checkout->buy();
             if ($codebuy == 0) {
                 JError::raiseWarning('', $checkout->getError());
+
                 return 0;
             }
 
             /** @var jshopCheckoutFinish $checkout */
             $checkout = JSFactory::getModel('checkoutFinish', 'jshop');
             $order_id = $checkout->getEndOrderId();
-            $text = $checkout->getFinishStaticText();
+            $text     = $checkout->getFinishStaticText();
             if ($order_id) {
                 $checkout->paymentComplete($order_id, $text);
             }
@@ -857,19 +954,19 @@ class pm_yandex_money extends PaymentRoot
         $replace = array();
         foreach ($context as $key => $value) {
             if (is_scalar($value)) {
-                $replace['{' . $key . '}'] = $value;
+                $replace['{'.$key.'}'] = $value;
             } else {
-                $replace['{' . $key . '}'] = json_encode($value);
+                $replace['{'.$key.'}'] = json_encode($value);
             }
         }
         if (!empty($replace)) {
             $message = strtr($message, $replace);
         }
         $fileName = $this->getLogFileName();
-        $fd = @fopen($fileName, 'a');
+        $fd       = @fopen($fileName, 'a');
         if ($fd) {
             flock($fd, LOCK_EX);
-            fwrite($fd, date(DATE_ATOM) . ' [' . $level . '] ' . $message . "\r\n");
+            fwrite($fd, date(DATE_ATOM).' ['.$level.'] '.$message."\r\n");
             flock($fd, LOCK_UN);
             fclose($fd);
         }
@@ -883,6 +980,7 @@ class pm_yandex_money extends PaymentRoot
         if ($this->orderModel === null) {
             $this->orderModel = new \YandexMoney\Model\OrderModel();
         }
+
         return $this->orderModel;
     }
 
@@ -891,19 +989,20 @@ class pm_yandex_money extends PaymentRoot
         if ($this->kassa === null) {
             $this->kassa = new \YandexMoney\Model\KassaPaymentMethod($this, $pmConfigs);
         }
+
         return $this->kassa;
     }
 
     private function getLogFileName()
     {
-        return realpath(JSH_DIR . '/log/pm_yandex_money.log');
+        return realpath(JSH_DIR.'/log/pm_yandex_money.log');
     }
 
     public function checkModuleVersion($useCache = true)
     {
         $this->preventDirectoryCreation();
 
-        $file = DIR_DOWNLOAD . '/' . $this->downloadDirectory . '/version_log.txt';
+        $file = DIR_DOWNLOAD.'/'.$this->downloadDirectory.'/version_log.txt';
 
         if ($useCache) {
             if (file_exists($file)) {
@@ -925,12 +1024,12 @@ class pm_yandex_money extends PaymentRoot
         }
 
         $connector = new \YandexMoney\Updater\GitHubConnector();
-        $version = $connector->getLatestRelease($this->repository);
+        $version   = $connector->getLatestRelease($this->repository);
         if (empty($version)) {
             return array();
         }
 
-        $cache = $version . ':' . time();
+        $cache = $version.':'.time();
         file_put_contents($file, $cache);
 
         return array(
@@ -947,20 +1046,20 @@ class pm_yandex_money extends PaymentRoot
 
         $connector = new \YandexMoney\Updater\GitHubConnector();
 
-        $dir = DIR_DOWNLOAD . '/' . $this->downloadDirectory;
-        $newChangeLog = $dir . '/CHANGELOG-' . $newVersion . '.md';
+        $dir          = DIR_DOWNLOAD.'/'.$this->downloadDirectory;
+        $newChangeLog = $dir.'/CHANGELOG-'.$newVersion.'.md';
         if (!file_exists($newChangeLog)) {
             $fileName = $connector->downloadLatestChangeLog($this->repository, $dir);
             if (!empty($fileName)) {
-                rename($dir . '/' . $fileName, $newChangeLog);
+                rename($dir.'/'.$fileName, $newChangeLog);
             }
         }
 
-        $oldChangeLog = $dir . '/CHANGELOG-' . $currentVersion . '.md';
+        $oldChangeLog = $dir.'/CHANGELOG-'.$currentVersion.'.md';
         if (!file_exists($oldChangeLog)) {
             $fileName = $connector->downloadLatestChangeLog($this->repository, $dir);
             if (!empty($fileName)) {
-                rename($dir . '/' . $fileName, $oldChangeLog);
+                rename($dir.'/'.$fileName, $oldChangeLog);
             }
         }
 
@@ -968,23 +1067,12 @@ class pm_yandex_money extends PaymentRoot
         if (file_exists($newChangeLog)) {
             $result = $connector->diffChangeLog($oldChangeLog, $newChangeLog);
         }
+
         return $result;
     }
 
     private function dateDiffToString($timestamp)
     {
-        /*
-        $diff = time() - $timestamp;
-        if ($diff < 60) {
-            return 'только что';
-        } elseif ($diff < 120) {
-            return 'минуту назад';
-        } elseif ($diff < 180) {
-            return 'две минуты назад';
-        } elseif ($diff < 300) {
-            return 'пару минут назад';
-        }
-        */
         return date('d.m.Y H:i', $timestamp);
     }
 
@@ -993,7 +1081,7 @@ class pm_yandex_money extends PaymentRoot
         $result = array();
 
         $this->preventDirectoryCreation();
-        $dir = DIR_DOWNLOAD . '/' . $this->backupDirectory;
+        $dir = DIR_DOWNLOAD.'/'.$this->backupDirectory;
 
         $handle = opendir($dir);
         while (($entry = readdir($handle)) !== false) {
@@ -1002,18 +1090,19 @@ class pm_yandex_money extends PaymentRoot
             }
             $ext = pathinfo($entry, PATHINFO_EXTENSION);
             if ($ext === 'zip') {
-                $backup = array(
-                    'name'    => pathinfo($entry, PATHINFO_FILENAME) . '.zip',
-                    'size'    => $this->formatSize(filesize($dir . '/' . $entry)),
+                $backup            = array(
+                    'name' => pathinfo($entry, PATHINFO_FILENAME).'.zip',
+                    'size' => $this->formatSize(filesize($dir.'/'.$entry)),
                 );
-                $parts = explode('-', $backup['name'], 3);
+                $parts             = explode('-', $backup['name'], 3);
                 $backup['version'] = $parts[0];
-                $backup['time'] = $parts[1];
-                $backup['date'] = date('d.m.Y H:i:s', $parts[1]);
-                $backup['hash'] = $parts[2];
-                $result[] = $backup;
+                $backup['time']    = $parts[1];
+                $backup['date']    = date('d.m.Y H:i:s', $parts[1]);
+                $backup['hash']    = $parts[2];
+                $result[]          = $backup;
             }
         }
+
         return $result;
     }
 
@@ -1022,15 +1111,15 @@ class pm_yandex_money extends PaymentRoot
         if (!file_exists(DIR_DOWNLOAD)) {
             mkdir(DIR_DOWNLOAD);
         }
-        $dir = DIR_DOWNLOAD . '/' . $this->downloadDirectory;
+        $dir = DIR_DOWNLOAD.'/'.$this->downloadDirectory;
         if (!file_exists($dir)) {
             mkdir($dir);
         }
-        $dir = DIR_DOWNLOAD . '/' . $this->backupDirectory;
+        $dir = DIR_DOWNLOAD.'/'.$this->backupDirectory;
         if (!file_exists($dir)) {
             mkdir($dir);
         }
-        $dir = DIR_DOWNLOAD . '/' . $this->versionDirectory;
+        $dir = DIR_DOWNLOAD.'/'.$this->versionDirectory;
         if (!file_exists($dir)) {
             mkdir($dir);
         }
@@ -1039,7 +1128,11 @@ class pm_yandex_money extends PaymentRoot
     private function formatSize($size)
     {
         static $sizes = array(
-            'B', 'kB', 'MB', 'GB', 'TB',
+            'B',
+            'kB',
+            'MB',
+            'GB',
+            'TB',
         );
 
         $i = 0;
@@ -1047,30 +1140,33 @@ class pm_yandex_money extends PaymentRoot
             $size /= 1024.0;
             $i++;
         }
-        return number_format($size, 2, '.', ',') . '&nbsp;' . $sizes[$i];
+
+        return number_format($size, 2, '.', ',').'&nbsp;'.$sizes[$i];
     }
 
     private function downloadLastVersion($tag, $useCache = true)
     {
         $this->preventDirectoryCreation();
 
-        $dir = DIR_DOWNLOAD . '/' . $this->versionDirectory;
+        $dir = DIR_DOWNLOAD.'/'.$this->versionDirectory;
         if (!file_exists($dir)) {
             if (!mkdir($dir)) {
-                $this->log('error', 'Не удалось создать директорию ' . $dir);
+                $this->log('error', 'Не удалось создать директорию '.$dir);
+
                 return false;
             }
         } elseif ($useCache) {
-            $fileName = $dir . '/' . $tag . '.zip';
+            $fileName = $dir.'/'.$tag.'.zip';
             if (file_exists($fileName)) {
                 return $fileName;
             }
         }
 
         $connector = new \YandexMoney\Updater\GitHubConnector();
-        $fileName = $connector->downloadRelease($this->repository, $tag, $dir);
+        $fileName  = $connector->downloadRelease($this->repository, $tag, $dir);
         if (empty($fileName)) {
             $this->log('error', 'Не удалось загрузить архив с обновлением');
+
             return false;
         }
 
@@ -1082,41 +1178,47 @@ class pm_yandex_money extends PaymentRoot
         $this->preventDirectoryCreation();
 
         $sourceDirectory = dirname(dirname(JSH_DIR));
-        $reader = new \YandexMoney\Updater\ProjectStructure\ProjectStructureReader();
-        $root = $reader->readFile(JSH_DIR . '/payments/pm_yandex_money/lib/joomshopping.map', $sourceDirectory);
+        $reader          = new \YandexMoney\Updater\ProjectStructure\ProjectStructureReader();
+        $root            = $reader->readFile(JSH_DIR.'/payments/pm_yandex_money/lib/joomshopping.map',
+            $sourceDirectory);
 
-        $rootDir = $version . '-' . time();
-        $fileName = $rootDir . '-' . uniqid('', true) . '.zip';
-        $dir = DIR_DOWNLOAD . '/' . $this->backupDirectory;
+        $rootDir  = $version.'-'.time();
+        $fileName = $rootDir.'-'.uniqid('', true).'.zip';
+        $dir      = DIR_DOWNLOAD.'/'.$this->backupDirectory;
         try {
-            $fileName = $dir . '/' . $fileName;
-            $archive = new \YandexMoney\Updater\Archive\BackupZip($fileName, $rootDir);
+            $fileName = $dir.'/'.$fileName;
+            $archive  = new \YandexMoney\Updater\Archive\BackupZip($fileName, $rootDir);
             $archive->backup($root);
         } catch (Exception $e) {
-            $this->log('error', 'Failed to create backup: ' . $e->getMessage());
+            $this->log('error', 'Failed to create backup: '.$e->getMessage());
+
             return false;
         }
+
         return true;
     }
 
     public function unpackLastVersion($fileName)
     {
         if (!file_exists($fileName)) {
-            $this->log('error', 'File "' . $fileName . '" not exists');
+            $this->log('error', 'File "'.$fileName.'" not exists');
+
             return false;
         }
 
         try {
             $sourceDirectory = dirname(dirname(JSH_DIR));
-            $archive = new \YandexMoney\Updater\Archive\RestoreZip($fileName, $this);
+            $archive         = new \YandexMoney\Updater\Archive\RestoreZip($fileName, $this);
             $archive->restore('joomshopping.map', $sourceDirectory);
         } catch (Exception $e) {
             $this->log('error', $e->getMessage());
             if ($e->getPrevious() !== null) {
                 $this->log('error', $e->getPrevious()->getMessage());
             }
+
             return false;
         }
+
         return true;
     }
 }
