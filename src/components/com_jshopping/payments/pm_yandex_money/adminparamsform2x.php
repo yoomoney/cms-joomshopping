@@ -122,7 +122,7 @@ foreach ($list_methods as $m_long => $m_short) : ?>
         <td><?php print JHTML::_('select.booleanlist', 'pm_params[method_'.$m_long.']', 'class = "inputbox"', $params['method_'.$m_long]); ?></td>
     </tr>
 <?php endforeach; ?>
-<?php foreach (\YaMoney\Model\PaymentMethodType::getEnabledValues() as $value) : ?>
+<?php foreach (\YandexCheckout\Model\PaymentMethodType::getEnabledValues() as $value) : ?>
     <tr class="with-select org">
         <td><?php echo constant('_JSHOP_YM_METHOD_'.strtoupper($value).'_DESCRIPTION');?></td>
         <td><?php print JHTML::_('select.booleanlist', 'pm_params[method_'.$value.']', 'class = "inputbox"', $params['method_'.$value]); ?></td>

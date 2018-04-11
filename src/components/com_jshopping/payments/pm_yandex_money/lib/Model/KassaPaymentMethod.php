@@ -2,14 +2,14 @@
 
 namespace YandexMoney\Model;
 
-use YaMoney\Client\YandexMoneyApi;
-use YaMoney\Common\Exceptions\NotFoundException;
-use YaMoney\Model\ConfirmationType;
-use YaMoney\Model\PaymentInterface;
-use YaMoney\Model\PaymentMethodType;
-use YaMoney\Model\PaymentStatus;
-use YaMoney\Request\Payments\CreatePaymentRequest;
-use YaMoney\Request\Payments\Payment\CreateCaptureRequest;
+use YandexCheckout\Client;
+use YandexCheckout\Common\Exceptions\NotFoundException;
+use YandexCheckout\Model\ConfirmationType;
+use YandexCheckout\Model\PaymentInterface;
+use YandexCheckout\Model\PaymentMethodType;
+use YandexCheckout\Model\PaymentStatus;
+use YandexCheckout\Request\Payments\CreatePaymentRequest;
+use YandexCheckout\Request\Payments\Payment\CreateCaptureRequest;
 
 class KassaPaymentMethod
 {
@@ -65,7 +65,7 @@ class KassaPaymentMethod
         try {
             $builder = CreatePaymentRequest::builder();
             $builder->setAmount($order->order_total)
-                ->setCapture(false)
+                ->setCapture(true)
                 ->setClientIp($_SERVER['REMOTE_ADDR'])
                 ->setMetadata(array(
                     'order_id'       => $order->order_id,
@@ -192,7 +192,7 @@ class KassaPaymentMethod
     }
 
     /**
-     * @param \YaMoney\Request\Payments\CreatePaymentRequestBuilder $builder
+     * @param \YandexCheckout\Request\Payments\CreatePaymentRequestBuilder $builder
      * @param $cart
      * @param $order
      */
@@ -230,12 +230,12 @@ class KassaPaymentMethod
     }
 
     /**
-     * @return YandexMoneyApi
+     * @return Client
      */
     private function getClient()
     {
         if ($this->client === null) {
-            $this->client = new YandexMoneyApi();
+            $this->client = new Client();
             $this->client->setAuth($this->shopId, $this->password);
             $this->client->setLogger($this->module);
         }

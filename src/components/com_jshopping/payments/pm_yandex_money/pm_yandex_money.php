@@ -7,6 +7,9 @@
  * @copyright Copyright (C) 2012-2017 YandexMoney. All rights reserved.
  */
 
+use YandexCheckout\Model\Notification\NotificationSucceeded;
+use YandexCheckout\Model\Notification\NotificationWaitingForCapture;
+
 defined('_JEXEC') or die('Restricted access');
 
 define('JSH_DIR', realpath(dirname(__FILE__).'/../..'));
@@ -14,7 +17,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 include dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.0.6');
+define('_JSHOP_YM_VERSION', '1.0.7');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -103,8 +106,8 @@ class pm_yandex_money extends PaymentRoot
                 if (empty($paymentType) && $pmConfigs['paymode'] == '1') {
                     return true;
                 } else {
-                    if (\YaMoney\Model\PaymentMethodType::valueExists($paymentType)) {
-                        if ($paymentType === \YaMoney\Model\PaymentMethodType::QIWI) {
+                    if (\YandexCheckout\Model\PaymentMethodType::valueExists($paymentType)) {
+                        if ($paymentType === \YandexCheckout\Model\PaymentMethodType::QIWI) {
                             if (empty($params['qiwiPhone'])) {
                                 return false;
                             }
@@ -115,7 +118,7 @@ class pm_yandex_money extends PaymentRoot
                                 return false;
                             }
                             $params['qiwiPhone'] = $phone;
-                        } elseif ($paymentType === \YaMoney\Model\PaymentMethodType::ALFABANK) {
+                        } elseif ($paymentType === \YandexCheckout\Model\PaymentMethodType::ALFABANK) {
                             if (empty($params['alfaLogin'])) {
                                 $this->setErrorMessage('Укажите логин в Альфа-клике');
 
@@ -405,19 +408,19 @@ class pm_yandex_money extends PaymentRoot
                     );
                 } else {
                     $result = array(
-                        'message' => 'Не удалось распаковать загруженный архив '.$fileName.', подробную информацию о произошедшей ошибке можно найти в <a href="">логах модуля</a>',
+                        'message' => 'Не удалось распаковать загруженный архив '.$fileName.', подробную информацию о произошедшей ошибке можно найти в логах модуля',
                         'success' => false,
                     );
                 }
             } else {
                 $result = array(
-                    'message' => 'Не удалось создать резервную копию установленной версии модуля, подробную информацию о произошедшей ошибке можно найти в <a href="'.$logs.'">логах модуля</a>',
+                    'message' => 'Не удалось создать резервную копию установленной версии модуля, подробную информацию о произошедшей ошибке можно найти в логах модуля',
                     'success' => false,
                 );
             }
         } else {
             $result = array(
-                'message' => 'Не удалось загрузить архив с новой версией, подробную информацию о произошедшей ошибке можно найти в <a href="'.$logs.'">логах модуля</a>',
+                'message' => 'Не удалось загрузить архив с новой версией, подробную информацию о произошедшей ошибке можно найти в логах модуля',
                 'success' => false,
             );
         }
@@ -509,13 +512,15 @@ class pm_yandex_money extends PaymentRoot
                     header('HTTP/1.1 400 Invalid body');
                     die();
                 }
-                $notification = new \YaMoney\Model\Notification\NotificationWaitingForCapture($json);
-                $payment      = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($notification->getObject());
+                $notification = ($json['event'] === YandexCheckout\Model\NotificationEventType::PAYMENT_SUCCEEDED)
+                    ? new NotificationSucceeded($json)
+                    : new NotificationWaitingForCapture($json);
+                $payment = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($notification->getObject());
                 if ($payment === null) {
                     $this->log('debug', 'Notification error: payment not exist');
                     header('HTTP/1.1 404 Payment not exists');
                     die();
-                } elseif ($payment->getStatus() !== \YaMoney\Model\PaymentStatus::SUCCEEDED) {
+                } elseif ($payment->getStatus() !== \YandexCheckout\Model\PaymentStatus::SUCCEEDED) {
                     $this->log('debug', 'Notification error: payment not exist 401');
                     header('HTTP/1.1 401 Payment not exists');
                     die();
@@ -571,15 +576,15 @@ class pm_yandex_money extends PaymentRoot
                     $app         = JFactory::getApplication();
                     $app->redirect($redirectUrl);
                 }
-                if ($payment->getStatus() === \YaMoney\Model\PaymentStatus::CANCELED) {
+                if ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::CANCELED) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is canceled');
 
                     return array(4, 'Transaction is cancelled', $transactionId, 'Платёж не был проведён');
-                } elseif ($payment->getStatus() === \YaMoney\Model\PaymentStatus::PENDING) {
+                } elseif ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::PENDING) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is pended');
 
                     return array(2, 'Ожидается проведение оплаты', $transactionId, 'Ожидается проведение оплаты');
-                } elseif ($payment->getStatus() === \YaMoney\Model\PaymentStatus::WAITING_FOR_CAPTURE) {
+                } elseif ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::WAITING_FOR_CAPTURE) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' wfc');
                     $result = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($payment);
                     if ($result !== null) {
@@ -588,7 +593,7 @@ class pm_yandex_money extends PaymentRoot
                         $payment = $result;
                     }
                 }
-                if ($payment->getStatus() === \YaMoney\Model\PaymentStatus::SUCCEEDED) {
+                if ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::SUCCEEDED) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' succeeded');
 
                     return array(1, 'Платёж '.$transactionId.' проведён', $transactionId, 'Оплата была проведена');
@@ -735,7 +740,7 @@ class pm_yandex_money extends PaymentRoot
         $redirect = $redirectUrl;
         if ($payment !== null) {
             $confirmation = $payment->getConfirmation();
-            if ($confirmation instanceof \YaMoney\Model\Confirmation\ConfirmationRedirect) {
+            if ($confirmation instanceof \YandexCheckout\Model\Confirmation\ConfirmationRedirect) {
                 $redirect = $confirmation->getConfirmationUrl();
             }
             $this->getOrderModel()->savePayment($order->order_id, $payment);
@@ -791,6 +796,7 @@ class pm_yandex_money extends PaymentRoot
             } elseif (isset($_GET['act']) && $_GET['act'] === 'notify') {
                 $this->log('debug', 'Notification callback check URL parameters');
                 $source = file_get_contents('php://input');
+                $this->log('debug', 'Notification body source: '.$source);
                 if (empty($source)) {
                     $this->log('debug', 'Notification error: body is empty');
                     header('HTTP/1.1 400 Body is empty');
@@ -803,7 +809,9 @@ class pm_yandex_money extends PaymentRoot
                     die();
                 }
                 try {
-                    $notification = new \YaMoney\Model\Notification\NotificationWaitingForCapture($json);
+                    $notification = ($json['event'] === YandexCheckout\Model\NotificationEventType::PAYMENT_SUCCEEDED)
+                        ? new NotificationSucceeded($json)
+                        : new NotificationWaitingForCapture($json);
                     $meta         = $notification->getObject()->getMetadata();
                     if (empty($meta['order_id'])) {
                         $this->log('debug', 'Notification error: metadata order_id not exists');
