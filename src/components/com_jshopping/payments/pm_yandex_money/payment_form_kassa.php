@@ -14,14 +14,14 @@ if ($pmConfigs['paymode'] != '1') : ?>
     <tbody>
     <?php
         $listMethods = array(
-            \YaMoney\Model\PaymentMethodType::YANDEX_MONEY   => 'PC',
-            \YaMoney\Model\PaymentMethodType::BANK_CARD      => 'AC',
-            \YaMoney\Model\PaymentMethodType::CASH           => 'GP',
-            \YaMoney\Model\PaymentMethodType::MOBILE_BALANCE => 'MC',
-            \YaMoney\Model\PaymentMethodType::WEBMONEY       => 'WM',
-            \YaMoney\Model\PaymentMethodType::SBERBANK       => 'SB',
-            \YaMoney\Model\PaymentMethodType::ALFABANK       => 'AB',
-            \YaMoney\Model\PaymentMethodType::QIWI           => 'QW',
+            \YandexCheckout\Model\PaymentMethodType::YANDEX_MONEY   => 'PC',
+            \YandexCheckout\Model\PaymentMethodType::BANK_CARD      => 'AC',
+            \YandexCheckout\Model\PaymentMethodType::CASH           => 'GP',
+            \YandexCheckout\Model\PaymentMethodType::MOBILE_BALANCE => 'MC',
+            \YandexCheckout\Model\PaymentMethodType::WEBMONEY       => 'WM',
+            \YandexCheckout\Model\PaymentMethodType::SBERBANK       => 'SB',
+            \YandexCheckout\Model\PaymentMethodType::ALFABANK       => 'AB',
+            \YandexCheckout\Model\PaymentMethodType::QIWI           => 'QW',
         );
         $num += 0;
         foreach ($listMethods as $long => $short) :
@@ -38,7 +38,7 @@ if ($pmConfigs['paymode'] != '1') : ?>
                         <label for="yandex_money_<?php echo $long; ?>"><?php echo constant('_JSHOP_YM_METHOD_' . strtoupper($long) . '_DESCRIPTION'); ?></label>
                     </td>
                 </tr>
-                <?php if ($long === \YaMoney\Model\PaymentMethodType::ALFABANK) : ?>
+                <?php if ($long === \YandexCheckout\Model\PaymentMethodType::ALFABANK) : ?>
                 <tr class="highlight additional-field" id="ym-alfa-login-block" style="display:none;">
                     <td colspan="3">
                         <label for="ym-alfa-login">Укажите логин, и мы выставим счет в Альфа-Клике. После этого останется подтвердить платеж на сайте интернет-банка.</label><br />
@@ -47,7 +47,7 @@ if ($pmConfigs['paymode'] != '1') : ?>
                     </td>
                 </tr>
                 <?php endif; ?>
-                <?php if ($long === \YaMoney\Model\PaymentMethodType::QIWI) : ?>
+                <?php if ($long === \YandexCheckout\Model\PaymentMethodType::QIWI) : ?>
                 <tr class="highlight additional-field" id="ym-qiwi-phone-block" style="display:none;">
                     <td colspan="3">
                         <label for="ym-qiwi-phone">Телефон, который привязан к Qiwi Wallet</label><br />

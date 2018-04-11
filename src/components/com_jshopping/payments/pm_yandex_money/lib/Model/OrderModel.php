@@ -2,7 +2,7 @@
 
 namespace YandexMoney\Model;
 
-use YaMoney\Model\PaymentInterface;
+use YandexCheckout\Model\PaymentInterface;
 
 class OrderModel
 {
