@@ -9,6 +9,11 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+const INSTALLMENTS_MIN_AMOUNT = 3000;
+
+$cart_data = JSFactory::getModel('cart', 'jshop');
+$cart_data->load();
+
 if ($pmConfigs['paymode'] != '1') : ?>
 <table class="radio" style="margin-left: 50px;">
     <tbody>
@@ -22,10 +27,17 @@ if ($pmConfigs['paymode'] != '1') : ?>
             \YandexCheckout\Model\PaymentMethodType::SBERBANK       => 'SB',
             \YandexCheckout\Model\PaymentMethodType::ALFABANK       => 'AB',
             \YandexCheckout\Model\PaymentMethodType::QIWI           => 'QW',
+            \YandexCheckout\Model\PaymentMethodType::INSTALLMENTS   => 'installments',
         );
         $num += 0;
         foreach ($listMethods as $long => $short) :
             if (isset($pmConfigs['method_' . $long]) && $pmConfigs['method_' . $long] == '1') :
+                if ($long === \YandexCheckout\Model\PaymentMethodType::INSTALLMENTS) {
+                    if (isset($cart_data->price_product)
+                        && ($cart_data->price_product < INSTALLMENTS_MIN_AMOUNT)) {
+                        continue;
+                    }
+                }
                 $num += 1; ?>
                 <tr class="highlight">
                     <td>
@@ -62,7 +74,10 @@ if ($pmConfigs['paymode'] != '1') : ?>
     </tbody>
 </table>
 <?php else : ?>
-    <input type="hidden" name="params[pm_yandex_money][payment_type]" value="" />
+    <input type="hidden" name="params[pm_yandex_money][payment_type]" value="" id="pm_yandex_money_payment_type"/>
+    <?php if (isset($pmConfigs['ya_kassa_add_installments_button']) && $pmConfigs['ya_kassa_add_installments_button'] == '1') : ?>
+        <div class="ya_kassa_installments_button_container"></div>
+    <?php endif; ?>
 <?php endif; ?>
 <script type="text/javascript">
 function check_pm_yandex_money() {
@@ -103,4 +118,28 @@ jQuery(document).ready(function () {
         }
     });
 });
+</script>
+<script src="https://static.yandex.net/kassa/pay-in-parts/ui/v1/"></script>
+<script type="text/javascript">
+    const ym_installments_shop_id = <?= $pmConfigs['shop_id'] ?>;
+    const ym_installments_total_amount = <?= $cart_data->price_product; ?>;
+    const ym_installments_language = "ru";
+
+    jQuery.get("https://money.yandex.ru/credit/order/ajax/credit-pre-schedule?shopId="
+        + ym_installments_shop_id + "&sum=" + ym_installments_total_amount, function (data) {
+        const ym_installments_amount_text = "<?= _JSHOP_YM_METHOD_INSTALLMENTS_AMOUNT; ?>";
+        if (ym_installments_amount_text && data && data.amount) {
+            jQuery('label[for=yandex_money_installments]').append(ym_installments_amount_text.replace('%s', data.amount));
+        }
+    });
+
+    const checkoutCreditUI = YandexCheckoutCreditUI({
+        shopId: ym_installments_shop_id,
+        sum: ym_installments_total_amount,
+        language: ym_installments_language
+    });
+    const checkoutCreditButton = checkoutCreditUI({type: 'button', domSelector: '.ya_kassa_installments_button_container'});
+    checkoutCreditButton.on('click', function () {
+        jQuery('#pm_yandex_money_payment_type').val('installments');
+    });
 </script>
