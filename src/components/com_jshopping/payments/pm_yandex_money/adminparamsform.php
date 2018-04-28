@@ -64,9 +64,11 @@ function escapeValue($value)
     function yandex_validate_mode(paymode) {
         jQuery(function($) {
             if (paymode == 1) {
-                $(".with-select").hide();
+                $(".with-kassa").slideDown();
+                $(".with-select").slideUp();
             } else {
-                $(".with-select").show();
+                $(".with-kassa").slideUp();
+                $(".with-select").slideDown();
             }
         });
     }

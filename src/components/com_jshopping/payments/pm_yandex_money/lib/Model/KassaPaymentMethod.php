@@ -201,8 +201,11 @@ class KassaPaymentMethod
         $shippingModel = \JSFactory::getTable('shippingMethod', 'jshop');
         $shippingMethods = $shippingModel->getAllShippingMethodsCountry($order->d_country, $order->payment_method_id);
         $defaultTaxRate = $this->defaultTaxRateId;
-        $builder->setReceiptEmail($order->email);
-
+        if (!empty($order->email)) {
+            $builder->setReceiptEmail($order->email);
+        } else {
+            $builder->setReceiptPhone($order->phone);
+        }
         $shipping = false;
         foreach ($shippingMethods as $tmp) {
             if ($tmp->shipping_id == $order->shipping_method_id) {

@@ -35,6 +35,7 @@ define('_JSHOP_YM_KASSA_PAYMODE_HEAD', 'Настройка сценария оп
 define('_JSHOP_YM_KASSA_PAYMODE_LABEL', 'Выбор способа оплаты');
 define('_JSHOP_YM_KASSA_SEND_RECEIPT_LABEL', 'Отправлять в Яндекс.Кассу данные для чеков (54-ФЗ)');
 define('_JSHOP_YM_KASSA_PAYMODE_KASSA', 'На стороне Кассы');
+define('_JSHOP_YM_KASSA_ADD_INSTALLMENTS_BUTTON', 'Добавить кнопку «Заплатить по частям» на страницу оформления заказа');
 define('_JSHOP_YM_KASSA_PAYMODE_SHOP', 'На стороне магазина');
 define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/doc/payment-solution/payment-form/payment-form-docpage/\' target=\'_blank\'>Подробнее о сценариях оплаты</a>');
 define('_JSHOP_YM_KASSA_SELECT_TEXT', 'Отметьте способы оплаты, которые указаны в вашем договоре с Яндекс.Деньгами');
@@ -53,6 +54,8 @@ define('_JSHOP_YM_METHOD_PB_DESCRIPTION', 'Интернет-банк Промс�
 define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');
 define('_JSHOP_YM_METHOD_QP_DESCRIPTION', 'Доверительный платеж (Куппи.ру)');
 define('_JSHOP_YM_METHOD_MP_DESCRIPTION', 'Мобильный терминал');
+define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION', 'Заплатить по частям');
+define('_JSHOP_YM_METHOD_INSTALLMENTS_AMOUNT', ' (%s ₽ в месяц)');
 define('_JSHOP_YM_KASSA_MPOS_LABEL', 'Страница успеха для способа «Оплата картой при доставке»');
 define('_JSHOP_YM_KASSA_MPOS_HELP', 'Это страница с информацией о доставке. Укажите на ней, когда привезут товар и как его можно будет оплатить');
 
