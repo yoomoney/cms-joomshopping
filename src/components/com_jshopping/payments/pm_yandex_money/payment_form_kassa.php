@@ -75,9 +75,6 @@ if ($pmConfigs['paymode'] != '1') : ?>
 </table>
 <?php else : ?>
     <input type="hidden" name="params[pm_yandex_money][payment_type]" value="" id="pm_yandex_money_payment_type"/>
-    <?php if (isset($pmConfigs['ya_kassa_add_installments_button']) && $pmConfigs['ya_kassa_add_installments_button'] == '1') : ?>
-        <div class="ya_kassa_installments_button_container"></div>
-    <?php endif; ?>
 <?php endif; ?>
 <script type="text/javascript">
 function check_pm_yandex_money() {
@@ -119,7 +116,6 @@ jQuery(document).ready(function () {
     });
 });
 </script>
-<script src="https://static.yandex.net/kassa/pay-in-parts/ui/v1/"></script>
 <script type="text/javascript">
     const ym_installments_shop_id = <?= $pmConfigs['shop_id'] ?>;
     const ym_installments_total_amount = <?= $cart_data->price_product; ?>;
@@ -131,15 +127,5 @@ jQuery(document).ready(function () {
         if (ym_installments_amount_text && data && data.amount) {
             jQuery('label[for=yandex_money_installments]').append(ym_installments_amount_text.replace('%s', data.amount));
         }
-    });
-
-    const checkoutCreditUI = YandexCheckoutCreditUI({
-        shopId: ym_installments_shop_id,
-        sum: ym_installments_total_amount,
-        language: ym_installments_language
-    });
-    const checkoutCreditButton = checkoutCreditUI({type: 'button', domSelector: '.ya_kassa_installments_button_container'});
-    checkoutCreditButton.on('click', function () {
-        jQuery('#pm_yandex_money_payment_type').val('installments');
     });
 </script>
