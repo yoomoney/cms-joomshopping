@@ -86,10 +86,6 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
             <input type = "radio" class = "paymode" name = "pm_params[paymode]" value = "1" onclick="yandex_validate_mode(1);"
                 <?php if($params['paymode']=='1') echo "checked"; ?> /> <?php echo _JSHOP_YM_KASSA_PAYMODE_KASSA; ?><br>
             <div class="with-kassa">
-                <input type="checkbox" class="ya_kassa_add_installments_button"
-                       name="pm_params[ya_kassa_add_installments_button]" value="1"
-                    <?= ($params['ya_kassa_add_installments_button'] == '1') ? 'checked' : ''; ?> />
-                <?= _JSHOP_YM_KASSA_ADD_INSTALLMENTS_BUTTON; ?>
             </div>
             <input type = "radio" class = "paymode" name = "pm_params[paymode]" value = "0" onclick="yandex_validate_mode(0);"
                 <?php if($params['paymode']=='0') echo "checked"; ?> /> <?php echo _JSHOP_YM_KASSA_PAYMODE_SHOP; ?>

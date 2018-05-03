@@ -35,7 +35,6 @@ define('_JSHOP_YM_KASSA_PAYMODE_HEAD', 'Настройка сценария оп
 define('_JSHOP_YM_KASSA_PAYMODE_LABEL', 'Выбор способа оплаты');
 define('_JSHOP_YM_KASSA_SEND_RECEIPT_LABEL', 'Отправлять в Яндекс.Кассу данные для чеков (54-ФЗ)');
 define('_JSHOP_YM_KASSA_PAYMODE_KASSA', 'На стороне Кассы');
-define('_JSHOP_YM_KASSA_ADD_INSTALLMENTS_BUTTON', 'Добавить кнопку «Заплатить по частям» на страницу оформления заказа');
 define('_JSHOP_YM_KASSA_PAYMODE_SHOP', 'На стороне магазина');
 define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/doc/payment-solution/payment-form/payment-form-docpage/\' target=\'_blank\'>Подробнее о сценариях оплаты</a>');
 define('_JSHOP_YM_KASSA_SELECT_TEXT', 'Отметьте способы оплаты, которые указаны в вашем договоре с Яндекс.Деньгами');
