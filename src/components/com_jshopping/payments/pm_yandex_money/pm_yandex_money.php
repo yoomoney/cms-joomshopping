@@ -17,7 +17,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 include dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.0.9');
+define('_JSHOP_YM_VERSION', '1.0.10');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -99,42 +99,38 @@ class pm_yandex_money extends PaymentRoot
             }
         } elseif ($this->mode === self::MODE_KASSA) {
             // если оплата через кассу, то должен быть указан способ оплаты
-            if (!isset($params['payment_type'])) {
-                return false;
+            $paymentType = isset($params['payment_type']) ? $params['payment_type'] : '';
+            if (empty($paymentType) && $pmConfigs['paymode'] == '1') {
+                return true;
             } else {
-                $paymentType = $params['payment_type'];
-                if (empty($paymentType) && $pmConfigs['paymode'] == '1') {
-                    return true;
-                } else {
-                    if (\YandexCheckout\Model\PaymentMethodType::valueExists($paymentType)) {
-                        if ($paymentType === \YandexCheckout\Model\PaymentMethodType::QIWI) {
-                            if (empty($params['qiwiPhone'])) {
-                                return false;
-                            }
-                            $phone = preg_replace('/[^\d]+/', '', $params['qiwiPhone']);
-                            if (empty($phone) || strlen($phone) < 4 || strlen($phone) > 16) {
-                                $this->setErrorMessage('Указанное значение не является телефонным номером');
-
-                                return false;
-                            }
-                            $params['qiwiPhone'] = $phone;
-                        } elseif ($paymentType === \YandexCheckout\Model\PaymentMethodType::ALFABANK) {
-                            if (empty($params['alfaLogin'])) {
-                                $this->setErrorMessage('Укажите логин в Альфа-клике');
-
-                                return false;
-                            }
-                            $login = trim($params['alfaLogin']);
-                            if (empty($login)) {
-                                return false;
-                            }
+                if (\YandexCheckout\Model\PaymentMethodType::valueExists($paymentType)) {
+                    if ($paymentType === \YandexCheckout\Model\PaymentMethodType::QIWI) {
+                        if (empty($params['qiwiPhone'])) {
+                            return false;
                         }
+                        $phone = preg_replace('/[^\d]+/', '', $params['qiwiPhone']);
+                        if (empty($phone) || strlen($phone) < 4 || strlen($phone) > 16) {
+                            $this->setErrorMessage('Указанное значение не является телефонным номером');
 
-                        return true;
+                            return false;
+                        }
+                        $params['qiwiPhone'] = $phone;
+                    } elseif ($paymentType === \YandexCheckout\Model\PaymentMethodType::ALFABANK) {
+                        if (empty($params['alfaLogin'])) {
+                            $this->setErrorMessage('Укажите логин в Альфа-клике');
+
+                            return false;
+                        }
+                        $login = trim($params['alfaLogin']);
+                        if (empty($login)) {
+                            return false;
+                        }
                     }
 
-                    return false;
+                    return true;
                 }
+
+                return false;
             }
         }
 
