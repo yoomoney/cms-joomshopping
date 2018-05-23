@@ -17,7 +17,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 include dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.0.10');
+define('_JSHOP_YM_VERSION', '1.0.11');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -339,19 +339,19 @@ class pm_yandex_money extends PaymentRoot
                 }
 
                 return array(
-                    'message' => 'Не удалось восстановить модуль из резервной копии: '.$e->getMessage(),
+                    'message' => _JSHOP_YM_UPDATER_ERROR_RESTORE.$e->getMessage(),
                     'success' => false,
                 );
             }
 
             return array(
-                'message' => 'Модуль был успешно восстановлен из резервной копии: '.$_POST['file_name'],
+                'message' => _JSHOP_YM_UPDATER_SUCCESS_MESSAGE.$_POST['file_name'],
                 'success' => true,
             );
         }
 
         return array(
-            'message' => 'Не был передан удаляемый файл резервной копии',
+            'message' => _JSHOP_YM_UPDATER_ERROR_REMOVE,
             'success' => false,
         );
     }
@@ -365,7 +365,7 @@ class pm_yandex_money extends PaymentRoot
                 $this->log('error', 'File "'.$fileName.'" not exists');
 
                 return array(
-                    'message' => 'Файл резервной копии '.$fileName.' не найден',
+                    'message' => sprintf(_JSHOP_YM_ERROR_BACKUP_NOT_FOUND, $fileName),
                     'success' => false,
                 );
             }
@@ -374,19 +374,19 @@ class pm_yandex_money extends PaymentRoot
                 $this->log('error', 'Failed to unlink file "'.$fileName.'"');
 
                 return array(
-                    'message' => 'Не удалось удалить файл резервной копии '.$fileName,
+                    'message' => _JSHOP_YM_ERROR_REMOVE_BACKUP.$fileName,
                     'success' => false,
                 );
             }
 
             return array(
-                'message' => 'Файл резервной копии '.$fileName.' был успешно удалён',
+                'message' => sprintf(_JSHOP_YM_SUCCESS_REMOVE_BECKUP, $fileName),
                 'success' => true,
             );
         }
 
         return array(
-            'message' => 'Не был передан удаляемый файл резервной копии',
+            'message' => _JSHOP_YM_UPDATER_ERROR_REMOVE,
             'success' => false,
         );
     }
@@ -399,24 +399,24 @@ class pm_yandex_money extends PaymentRoot
             if ($this->createBackup(_JSHOP_YM_VERSION)) {
                 if ($this->unpackLastVersion($fileName)) {
                     $result = array(
-                        'message' => 'Версия модуля '.$_POST['version'].' ('.$fileName.') была успешно загружена и установлена',
+                        'message' => sprintf(_JSHOP_YM_SUCCESS_UPDATE_VERSION, $_POST['version'], $fileName),
                         'success' => true,
                     );
                 } else {
                     $result = array(
-                        'message' => 'Не удалось распаковать загруженный архив '.$fileName.', подробную информацию о произошедшей ошибке можно найти в логах модуля',
+                        'message' => sprintf(_JSHOP_YM_ERROR_UNPACK_NEW_VERSION, $fileName),
                         'success' => false,
                     );
                 }
             } else {
                 $result = array(
-                    'message' => 'Не удалось создать резервную копию установленной версии модуля, подробную информацию о произошедшей ошибке можно найти в логах модуля',
+                    'message' => _JSHOP_YM_ERROR_CREATE_BACKUP,
                     'success' => false,
                 );
             }
         } else {
             $result = array(
-                'message' => 'Не удалось загрузить архив с новой версией, подробную информацию о произошедшей ошибке можно найти в логах модуля',
+                'message' => _JSHOP_YM_ERROR_DOWNLOAD_NEW_VERSION,
                 'success' => false,
             );
         }
@@ -549,6 +549,7 @@ class pm_yandex_money extends PaymentRoot
                     die();
                 }
 
+
                 echo '{"success":true,"payment_status":"'.$payment->getStatus().'"}';
                 die();
 
@@ -574,13 +575,12 @@ class pm_yandex_money extends PaymentRoot
                 }
                 if ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::CANCELED) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is canceled');
-
-                    return array(4, 'Transaction is cancelled', $transactionId, 'Платёж не был проведён');
+                    return array(4, 'Transaction is cancelled', $transactionId, _JSHOP_YM_CAPTURE_FAILED);
                 } elseif ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::PENDING) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is pended');
-
-                    return array(2, 'Ожидается проведение оплаты', $transactionId, 'Ожидается проведение оплаты');
+                    return array(2, _JSHOP_YM_WAITING_FOR_CAPTURE, $transactionId, _JSHOP_YM_WAITING_FOR_CAPTURE);
                 } elseif ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::WAITING_FOR_CAPTURE) {
+
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' wfc');
                     $result = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($payment);
                     if ($result !== null) {
@@ -589,14 +589,20 @@ class pm_yandex_money extends PaymentRoot
                         $payment = $result;
                     }
                 }
+
                 if ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::SUCCEEDED) {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' succeeded');
 
-                    return array(1, 'Платёж '.$transactionId.' проведён', $transactionId, 'Оплата была проведена');
+                    return array(
+                        1,
+                        sprintf(_JSHOP_YM_PAYMENT_CAPTURED_TEXT, $transactionId),
+                        $transactionId,
+                        _JSHOP_YM_PAYMENT_CAPTURED,
+                    );
                 } else {
                     $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' pended');
 
-                    return array(2, 'Ожидается проведение оплаты', $transactionId, 'Ожидается проведение оплаты');
+                    return array(2, _JSHOP_YM_WAITING_FOR_CAPTURE, $transactionId, _JSHOP_YM_WAITING_FOR_CAPTURE);
                 }
             }
 
@@ -742,7 +748,7 @@ class pm_yandex_money extends PaymentRoot
             $this->getOrderModel()->savePayment($order->order_id, $payment);
         } else {
             $redirect = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
-            $this->setErrorMessage('Не удалось создать платёж, попробуйте выбрать другой способ оплаты.');
+            $this->setErrorMessage(_JSHOP_YM_ERROR_MESSAGE_CREATE_PAYMENT);
         }
 
         $app = JFactory::getApplication();
@@ -858,10 +864,10 @@ class pm_yandex_money extends PaymentRoot
             } elseif ($paymentConfig['moneymode'] == '1') {
                 $this->mode        = self::MODE_MONEY;
                 $this->ym_password = $paymentConfig['password'];
-            } elseif ($paymentConfig['paymentsmode'] == '1') {
+            } elseif (isset($paymentConfig['paymentsmode']) && $paymentConfig['paymentsmode'] == '1') {
                 $this->mode = self::MODE_PAYMENTS;
             }
-            $this->debugLog = $paymentConfig['debug_log'] == '1';
+            $this->debugLog = isset($paymentConfig['debug_log']) && $paymentConfig['debug_log'] == '1';
         }
 
         return $this->mode;
@@ -1155,8 +1161,7 @@ class pm_yandex_money extends PaymentRoot
         $dir = DIR_DOWNLOAD.'/'.$this->versionDirectory;
         if (!file_exists($dir)) {
             if (!mkdir($dir)) {
-                $this->log('error', 'Не удалось создать директорию '.$dir);
-
+                $this->log('error', _JSHOP_YM_FAILED_CREATE_DIRECTORY .$dir);
                 return false;
             }
         } elseif ($useCache) {
@@ -1169,8 +1174,7 @@ class pm_yandex_money extends PaymentRoot
         $connector = new \YandexMoney\Updater\GitHubConnector();
         $fileName  = $connector->downloadRelease($this->repository, $tag, $dir);
         if (empty($fileName)) {
-            $this->log('error', 'Не удалось загрузить архив с обновлением');
-
+            $this->log('error', _JSHOP_YM_FAILED_DOWNLOAD_UPDATE);
             return false;
         }
 
