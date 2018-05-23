@@ -133,33 +133,33 @@ foreach ($list_methods as $m_long => $m_short) : ?>
     <td><b><?php echo _JSHOP_YM_KASSA_SEND_RECEIPT_LABEL; ?></b></td>
     <td>
         <input onclick="taxes_validate_mode(1)" type = "radio" class = "ya_kassa_send_check" name = "pm_params[ya_kassa_send_check]" value = "1"
-            <?php if($params['ya_kassa_send_check']=='1') echo "checked"; ?> /> Включить <br>
+            <?php if($params['ya_kassa_send_check']=='1') echo "checked"; ?> /> <?= _JSHOP_YM_ENABLE ?><br>
         <input onclick="taxes_validate_mode(0)" type = "radio" class = "ya_kassa_send_check" name = "pm_params[ya_kassa_send_check]" value = "0"
-            <?php if($params['ya_kassa_send_check']=='0') echo "checked"; ?> /> Выключить
+            <?php if($params['ya_kassa_send_check']=='0') echo "checked"; ?> /> <?= _JSHOP_YM_DISABLE?>
     </td>
 </tr>
 
 <tr class="org"<?php ($params['ya_kassa_send_check']=='1' ? ' style="display:none;"' : '') ?> id="select_send_check">
     <td>
-        <b>Сопоставьте ставки</b><br />
+        <b><?= _JSHOP_YM_TAX_RATES_LABEL?></b><br />
     </td>
     <td>
         <table>
             <tr>
-                <th>Ставка в вашем магазине</th>
-                <th>Ставка для чека в налоговую</th>
+                <th><?= _JSHOP_YM_TAX_IN_MODULE?></th>
+                <th><?= _JSHOP_YM_TAX_FOR_CHECKOUT?></th>
             </tr>
             <?php foreach ($taxes as $k => $tax) : ?>
                 <tr>
                     <td><?php echo $tax; ?></td>
                     <td>
                         <select name="pm_params[ya_kassa_tax_<?php echo $k; ?>]" class=" fixed-width-xl" id="pm_params[ya_kassa_tax_<?php echo $k; ?>]">
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 1) { ?> selected="selected" <?php } ?> value="1">Без НДС</option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 1) { ?> selected="selected" <?php } ?> value="1"><?= _JSHOP_YM_WITHOUT_VAT?></option>
                             <option <?php if ($params['ya_kassa_tax_'.$k] == 2) { ?> selected="selected" <?php } ?> value="2">0%</option>
                             <option <?php if ($params['ya_kassa_tax_'.$k] == 3) { ?> selected="selected" <?php } ?> value="3">10%</option>
                             <option <?php if ($params['ya_kassa_tax_'.$k] == 4) { ?> selected="selected" <?php } ?> value="4">18%</option>
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 5) { ?> selected="selected" <?php } ?> value="5">Расчётная ставка 10/110</option>
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?> value="6">Расчётная ставка 18/118</option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 5) { ?> selected="selected" <?php } ?> value="5"><?= _JSHOP_YM_VAT_10_100?></option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?> value="6"><?= _JSHOP_YM_VAT_18_118?></option>
                         </select>
                     </td>
                 </tr>
@@ -241,10 +241,10 @@ foreach ($list_methods as $m_long => $m_short) : ?>
                 <td style="border: 1px black solid; padding: 5px;"><?php echo _JSHOP_YM_VALUE?></td>
             </tr>
             <tr>
-                <td style="border: 1px black solid; padding: 5px;">Адрес для уведомлений</td>
+                <td style="border: 1px black solid; padding: 5px;"><?= _JSHOP_YM_NOTIFICATION_URL_LABEL?></td>
                 <td style="border: 1px black solid; padding: 5px;">
                     <?php echo $notify_url?><br />
-                    <p class="help-block">Этот адрес понадобится, только если его попросят специалисты Яндекс.Кассы</p>
+                    <p class="help-block"><?= _JSHOP_YM_NOTIFICATION_URL_HELP_TEXT?></p>
                 </td>
             </tr>
         </table>

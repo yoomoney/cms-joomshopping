@@ -115,31 +115,31 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
         <div class="span2"><label><?php echo _JSHOP_YM_KASSA_SEND_RECEIPT_LABEL; ?></label></div>
         <div class="span8">
             <input onclick="taxes_validate_mode(1)" type = "radio" class = "ya_kassa_send_check" name = "pm_params[ya_kassa_send_check]" value = "1"
-                <?php if($params['ya_kassa_send_check']=='1') echo "checked"; ?> /> Включить <br>
+                <?php if($params['ya_kassa_send_check']=='1') echo "checked"; ?> /> <?= _JSHOP_YM_ENABLE ?> <br>
             <input onclick="taxes_validate_mode(0)" type = "radio" class = "ya_kassa_send_check" name = "pm_params[ya_kassa_send_check]" value = "0"
-                <?php if($params['ya_kassa_send_check']=='0') echo "checked"; ?> /> Выключить
+                <?php if($params['ya_kassa_send_check']=='0') echo "checked"; ?> /> <?= _JSHOP_YM_DISABLE ?>
         </div>
     </div>
 </div>
 <div class="taxesArea row">
     <div class="span11 offset1">
-        <div class="span8 offset2"><label>Сопоставьте ставки</label></div>
+        <div class="span8 offset2"><label><?= _JSHOP_YM_TAX_RATES_LABEL?></label></div>
     </div>
     <div class="span11 offset1">
-        <div class="span2 offset2">Ставка в вашем магазине</div>
-        <div class="span6">Ставка для чека в налоговую</div>
+        <div class="span2 offset2"><?= _JSHOP_YM_TAX_IN_MODULE?></div>
+        <div class="span6"><?= _JSHOP_YM_TAX_FOR_CHECKOUT?></div>
     </div>
     <?php foreach ($taxes as $k => $tax) { ?>
         <div class="span11 offset1 form-group row">
             <div class="span2 offset2"><label for="pm_params[ya_kassa_tax_<?php echo $k; ?>]" class=""><?php echo $tax; ?>%</label></div>
             <div class="span6">
                 <select name="pm_params[ya_kassa_tax_<?php echo $k; ?>]" class=" fixed-width-xl" id="pm_params[ya_kassa_tax_<?php echo $k; ?>]">
-                    <option <?php if ($params['ya_kassa_tax_'.$k] == 1) { ?> selected="selected" <?php } ?> value="1">Без НДС</option>
+                    <option <?php if ($params['ya_kassa_tax_'.$k] == 1) { ?> selected="selected" <?php } ?> value="1"><?= _JSHOP_YM_WITHOUT_VAT?></option>
                     <option <?php if ($params['ya_kassa_tax_'.$k] == 2) { ?> selected="selected" <?php } ?> value="2">0%</option>
                     <option <?php if ($params['ya_kassa_tax_'.$k] == 3) { ?> selected="selected" <?php } ?> value="3">10%</option>
                     <option <?php if ($params['ya_kassa_tax_'.$k] == 4) { ?> selected="selected" <?php } ?> value="4">18%</option>
-                    <option <?php if ($params['ya_kassa_tax_'.$k] == 5) { ?> selected="selected" <?php } ?> value="5">Расчётная ставка 10/110</option>
-                    <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?> value="6">Расчётная ставка 18/118</option>
+                    <option <?php if ($params['ya_kassa_tax_'.$k] == 5) { ?> selected="selected" <?php } ?> value="5"><?= _JSHOP_YM_VAT_10_100?></option>
+                    <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?> value="6"><?= _JSHOP_YM_VAT_18_118?></option>
                 </select>
             </div>
         </div>
@@ -149,10 +149,10 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
 <div class="row">
     <div class="span11 offset1" style="padding-top: 10px;">
         <div class="form-group">
-            <div class="span2"><label class="">Адрес для уведомлений</label></div>
+            <div class="span2"><label class=""><?= _JSHOP_YM_NOTIFICATION_URL_LABEL?></label></div>
             <div class="span8">
                 <input class="form-control span8 disabled" value="<?php echo escapeValue($notify_url); ?>" disabled><br>
-                <p class="help-block"><?php echo _JSHOP_YM_KASSA_HELP_CHECKURL; ?></p>
+                <p class="help-block"><?php echo _JSHOP_YM_NOTIFICATION_URL_HELP_TEXT; ?></p>
             </div>
         </div>
     </div>
@@ -174,15 +174,17 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
             </div>
         </div>
     </div>
+</div>
+<div class="row">
     <div class="span11 offset1">
         <div class="form-group">
             <div class="span2"><label for="pm_params-debug_log">Debug log</label></div>
             <div class="span8">
                 <select name="pm_params[debug_log]" id="pm_params-debug_log">
-                    <option value="1"<?php $params['debug_log'] == '1' ? ' selected' : '' ?>>Включить</option>
-                    <option value="0"<?php $params['debug_log'] == '1' ? '' : ' selected' ?>>Выключить</option>
+                    <option value="1"<?php $params['debug_log'] == '1' ? ' selected' : '' ?>><?= _JSHOP_YM_ENABLE ?></option>
+                    <option value="0"<?php $params['debug_log'] == '1' ? '' : ' selected' ?>> <?= _JSHOP_YM_DISABLE ?></option>
                 </select><br />
-                <a href="javascript://" id="show_module_log">Просмотр логов модуля</a>
+                <a href="javascript://" id="show_module_log"><?= _JSHOP_YM_LOG_VIEW_LABEL?></a>
             </div>
         </div>
     </div>
@@ -192,7 +194,7 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Журнал сообщений модуля</h5>
+                <h5 class="modal-title"><?= _JSHOP_YM_LOGS_LABEL?></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -203,8 +205,8 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="clear-logs">Очистить журнал</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-danger" id="clear-logs"><?= _JSHOP_YM_CLEAR_LOGS?></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= _JSHOP_YM_CLOSE?></button>
             </div>
         </div>
     </div>
