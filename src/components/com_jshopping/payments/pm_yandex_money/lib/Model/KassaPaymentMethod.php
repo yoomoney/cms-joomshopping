@@ -5,6 +5,7 @@ namespace YandexMoney\Model;
 use YandexCheckout\Client;
 use YandexCheckout\Common\Exceptions\NotFoundException;
 use YandexCheckout\Model\ConfirmationType;
+use YandexCheckout\Model\Payment;
 use YandexCheckout\Model\PaymentInterface;
 use YandexCheckout\Model\PaymentMethodType;
 use YandexCheckout\Model\PaymentStatus;
@@ -20,6 +21,7 @@ class KassaPaymentMethod
     private $defaultTaxRateId;
     private $taxRates;
     private $sendReceipt;
+    private $descriptionTemplate;
 
     /**
      * KassaPaymentMethod constructor.
@@ -31,6 +33,9 @@ class KassaPaymentMethod
         $this->module = $module;
         $this->shopId = $pmConfig['shop_id'];
         $this->password = $pmConfig['shop_password'];
+        $this->descriptionTemplate = !empty($pmConfig['ya_kassa_description_template'])
+            ? $pmConfig['ya_kassa_description_template']
+            : _JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER;
 
         $this->defaultTaxRateId = 1;
         if (isset($pmConfig['tax_id'])) {
@@ -60,6 +65,15 @@ class KassaPaymentMethod
         return $this->password;
     }
 
+    /**
+     * @param \jshopOrder $order
+     * @param \jshopCart $cart
+     * @param $returnUrl
+     *
+     * @return null|\YandexCheckout\Request\Payments\CreatePaymentResponse
+     *
+     * @since version
+     */
     public function createPayment($order, $cart, $returnUrl)
     {
         try {
@@ -67,6 +81,7 @@ class KassaPaymentMethod
             $builder->setAmount($order->order_total)
                 ->setCapture(true)
                 ->setClientIp($_SERVER['REMOTE_ADDR'])
+                ->setDescription($this->createDescription($order))
                 ->setMetadata(array(
                     'order_id'       => $order->order_id,
                     'cms_name'       => 'ya_api_joomshopping',
@@ -258,5 +273,23 @@ class KassaPaymentMethod
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param \jshopOrder $order
+     * @return string
+     */
+    private function createDescription($order)
+    {
+        $descriptionTemplate = $this->descriptionTemplate;
+
+        $replace = array();
+        foreach ($order as $property => $value) {
+            $replace['%'.$property.'%'] = $value;
+        }
+
+        $description = strtr($descriptionTemplate, $replace);
+
+        return (string)mb_substr($description, 0, Payment::MAX_LENGTH_DESCRIPTION);
     }
 }

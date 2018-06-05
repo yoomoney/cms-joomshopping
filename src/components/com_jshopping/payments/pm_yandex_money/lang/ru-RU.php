@@ -34,6 +34,11 @@ define('_JSHOP_YM_KASSA_PARAMS', 'Shop ID, scid, ShopPassword можно пос�
 define('_JSHOP_YM_KASSA_PAYMODE_HEAD', 'Настройка сценария оплаты');
 define('_JSHOP_YM_KASSA_PAYMODE_LABEL', 'Выбор способа оплаты');
 define('_JSHOP_YM_KASSA_SEND_RECEIPT_LABEL', 'Отправлять в Яндекс.Кассу данные для чеков (54-ФЗ)');
+define('_JSHOP_YM_DESCRIPTION_TITLE', 'Описание платежа');
+define('_JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER', 'Оплата заказа №%order_id%');
+define('_JSHOP_YM_DESCRIPTION_HELP', 'Это описание транзакции, которое пользователь увидит при оплате, а вы — в личном кабинете Яндекс.Кассы. Например, «Оплата заказа №72».<br>
+Чтобы в описание подставлялся номер заказа (как в примере), поставьте на его месте %order_id% (Оплата заказа №%order_id%).<br>
+Ограничение для описания — 128 символов.');
 define('_JSHOP_YM_KASSA_PAYMODE_KASSA', 'На стороне Кассы');
 define('_JSHOP_YM_KASSA_PAYMODE_SHOP', 'На стороне магазина');
 define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/doc/payment-solution/payment-form/payment-form-docpage/\' target=\'_blank\'>Подробнее о сценариях оплаты</a>');
