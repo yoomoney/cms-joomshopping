@@ -109,6 +109,20 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
         </div>
     </div>
 <?php endforeach; ?>
+<div class="row">
+    <div class="span11 offset1">
+        <div class="form-group">
+            <div class="span2"><label for="ya_kassa_description_template" class=""><?= _JSHOP_YM_DESCRIPTION_TITLE; ?></label></div>
+            <div class="span8">
+                <input name="pm_params[ya_kassa_description_template]" type="text" class="form-control" id="ya_kassa_description_template"
+                       value="<?= !empty($params['ya_kassa_description_template'])
+                           ? $params['ya_kassa_description_template']
+                           : _JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER; ?>">
+                <p class="help-block"><?= _JSHOP_YM_DESCRIPTION_HELP; ?></p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="span11 offset1">

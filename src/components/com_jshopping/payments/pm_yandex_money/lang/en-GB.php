@@ -34,6 +34,9 @@ define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/d
 define('_JSHOP_YM_KASSA_SELECT_TEXT', 'Check payment methods from the contract');
 define('_JSHOP_YM_KASSA_CREDENTIALS_ERROR', 'Such secret key does not exist. If you are sure you copied the key correctly, this means it does not work for some reason. Issue and activate the key again <a href="https://kassa.yandex.ru/my" target="_blank">under your Merchant Profile</a>');
 define('_JSHOP_YM_KASSA_TEST_WARNING', 'You have enabled the test mode. Check the payment making process. <a href="https://yandex.ru/support/checkout/payments/api.html#api__04" target="_blank">Learn more</a>');
+define('_JSHOP_YM_DESCRIPTION_TITLE', 'Transaction data');
+define('_JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER', 'Payment for order No. %order_id%');
+define('_JSHOP_YM_DESCRIPTION_HELP', 'Full description of the transaction that the user will see during the checkout process. You can find it in your Yandex.Checkout Merchant Profile. For example, "Payment for order No. 72 by user@yandex.ru". Limitations: no more than 128 symbols.');
 define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION', 'Yandex.Money');
 define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION', 'Bank cards');
 define('_JSHOP_YM_METHOD_BANK_CARD_DESCRIPTION', 'Bank cards');
