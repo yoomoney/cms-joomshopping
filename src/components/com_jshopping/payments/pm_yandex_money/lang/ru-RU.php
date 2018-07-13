@@ -176,6 +176,8 @@ define('_JSHOP_YM_FILL_PHONE_MESSAGE', 'Укажите телефон');
 define('_JSHOP_YM_FILL_ALFA_CLICK_LOGIN', 'Укажите логин в Альфа-клике');
 define('_JSHOP_YM_ENABLE', 'Включить');
 define('_JSHOP_YM_DISABLE', 'Выключить');
+define('_JSHOP_YM_DEFAULT_TAX_LABEL', 'Ставка по умолчанию');
+define('_JSHOP_YM_DEFAULT_TAX_DESCRIPTION', 'Ставка по умолчанию будет в чеке, если в карточке товара не указана другая ставка.');
 define('_JSHOP_YM_TAX_RATES_LABEL', 'Сопоставьте ставки');
 define('_JSHOP_YM_TAX_IN_MODULE', 'Ставка в вашем магазине');
 define('_JSHOP_YM_TAX_FOR_CHECKOUT', 'Ставка для чека в налоговую');

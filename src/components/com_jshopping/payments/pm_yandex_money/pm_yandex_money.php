@@ -17,7 +17,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 include dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.0.12');
+define('_JSHOP_YM_VERSION', '1.0.13');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -213,6 +213,7 @@ class pm_yandex_money extends PaymentRoot
             'page_mpos',
             'ya_kassa_description_template',
             'ya_kassa_send_check',
+            'ya_kassa_default_tax',
             'method_mp',
             'debug_log',
         );
