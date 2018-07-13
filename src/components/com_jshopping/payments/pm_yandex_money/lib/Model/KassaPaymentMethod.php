@@ -38,10 +38,8 @@ class KassaPaymentMethod
             : _JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER;
 
         $this->defaultTaxRateId = 1;
-        if (isset($pmConfig['tax_id'])) {
-            if (isset($pmConfig['ya_kassa_tax_'.$pmConfig['tax_id']])) {
-                $this->defaultTaxRateId = $pmConfig['ya_kassa_tax_'.$pmConfig['tax_id']];
-            }
+        if (!empty($pmConfig['ya_kassa_default_tax'])) {
+            $this->defaultTaxRateId = $pmConfig['ya_kassa_default_tax'];
         }
 
         $this->taxRates = array();
@@ -229,7 +227,7 @@ class KassaPaymentMethod
         }
 
         foreach ($cart->products as $product) {
-            if (isset($product['tax_id']) && isset($this->taxRates[$product['tax_id']])) {
+            if (isset($product['tax_id']) && !empty($this->taxRates[$product['tax_id']])) {
                 $taxId = $this->taxRates[$product['tax_id']];
                 $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $taxId);
             } else {
@@ -238,7 +236,7 @@ class KassaPaymentMethod
         }
 
         if ($order->shipping_method_id && $shipping) {
-            if (isset($this->taxRates[$shipping->shipping_tax_id])) {
+            if (!empty($this->taxRates[$shipping->shipping_tax_id])) {
                 $taxId = $this->taxRates[$shipping->shipping_tax_id];
                 $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $taxId);
             } else {

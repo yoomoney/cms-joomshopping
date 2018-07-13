@@ -166,6 +166,8 @@ define('_JSHOP_YM_FILL_PHONE_MESSAGE', 'Specify phone number');
 define('_JSHOP_YM_FILL_ALFA_CLICK_LOGIN', 'Specify the login for Alfa-Click');
 define('_JSHOP_YM_ENABLE', 'Enable');
 define('_JSHOP_YM_DISABLE', 'Disable');
+define('_JSHOP_YM_DEFAULT_TAX_LABEL', 'Default rate');
+define('_JSHOP_YM_DEFAULT_TAX_DESCRIPTION', 'The default rate applies if another rate is not set on the product\'s page.');
 define('_JSHOP_YM_TAX_RATES_LABEL', 'Compare rates');
 define('_JSHOP_YM_TAX_IN_MODULE', 'Rate at your store');
 define('_JSHOP_YM_TAX_FOR_CHECKOUT', 'Rate for the receipt to the tax service');
