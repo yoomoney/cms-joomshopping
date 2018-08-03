@@ -123,6 +123,62 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="span11 offset1">
+        <div class="form-group">
+            <div class="span2"><label for="ya_kassa_enable_hold_mode"><?= _JSHOP_YM_ENABLE_HOLD_MODE; ?></label></div>
+            <div class="span8">
+                <label>
+                    <input type="checkbox" class="form-control input-kassa" name="pm_params[ya_kassa_enable_hold_mode]"
+                           value="1" id="ya_kassa_enable_hold_mode"
+                        <?= $params['ya_kassa_enable_hold_mode']=='1' ? "checked" :''; ?> />
+                    <span><?= _JSHOP_YM_ENABLE_HOLD_MODE_HELP; ?></span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="ya_kassa_enable_hold_mode_extended_settings">
+    <div class="row">
+        <div class="span11 offset1">
+            <div class="form-group">
+                <div class="span10  offset2">
+                    <p><?= _JSHOP_YM_HOLD_MODE_STATUSES; ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span11 offset1">
+            <div class="form-group">
+                <div class="span2  offset2">
+                    <label for="pm_params[ya_kassa_hold_mode_on_hold_status]"><?= _JSHOP_YM_HOLD_MODE_ON_HOLD_STATUS; ?></label>
+                </div>
+                <div class="span6">
+                    <?= JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
+                        'pm_params[ya_kassa_hold_mode_on_hold_status]',
+                        'class="inputbox" size="1" data-type="kassa"', 'status_id',
+                        'name', $params['ya_kassa_hold_mode_on_hold_status']); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span11 offset1">
+            <div class="form-group">
+                <div class="span2  offset2">
+                    <label for="pm_params[ya_kassa_hold_mode_cancel_status]"><?= _JSHOP_YM_HOLD_MODE_CANCEL_STATUS; ?></label>
+                </div>
+                <div class="span6">
+                    <?= JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
+                        'pm_params[ya_kassa_hold_mode_cancel_status]',
+                        'class="inputbox" size="1" data-type="kassa"', 'status_id',
+                        'name', $params['ya_kassa_hold_mode_cancel_status']); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div class="span11 offset1">
