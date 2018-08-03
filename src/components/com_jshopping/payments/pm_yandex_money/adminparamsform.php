@@ -82,7 +82,16 @@ function escapeValue($value)
         });
     }
 
+    function yaKassaEnableHoldModeChangeHandler() {
+        document.getElementById('ya_kassa_enable_hold_mode_extended_settings').style.display
+            = document.getElementById('ya_kassa_enable_hold_mode').checked
+            ? 'block'
+            : 'none';
+    }
+
     window.addEvent('domready', function() {
+        yaKassaEnableHoldModeChangeHandler();
+        document.getElementById('ya_kassa_enable_hold_mode').addEventListener("change", yaKassaEnableHoldModeChangeHandler);
         yandex_validate_mode(<?php if ($params['paymode']=='1') echo "1"; ?>);
         taxes_validate_mode(<?php if ($params['ya_kassa_send_check']=='1') echo "1"; ?>);
         jQuery('.pay-mode').change(function () {

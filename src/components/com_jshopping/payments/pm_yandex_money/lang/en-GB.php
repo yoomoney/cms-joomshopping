@@ -36,6 +36,18 @@ define('_JSHOP_YM_KASSA_CREDENTIALS_ERROR', 'Such secret key does not exist. If 
 define('_JSHOP_YM_KASSA_TEST_WARNING', 'You have enabled the test mode. Check the payment making process. <a href="https://yandex.ru/support/checkout/payments/api.html#api__04" target="_blank">Learn more</a>');
 define('_JSHOP_YM_DESCRIPTION_TITLE', 'Transaction data');
 define('_JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER', 'Payment for order No. %order_id%');
+define('_JSHOP_YM_ENABLE_HOLD_MODE', 'Enable payment holding');
+define('_JSHOP_YM_ENABLE_HOLD_MODE_HELP', 'If the option is enabled, payments are processed in two steps: first, the required amount is blocked on the customer’s card, and then you need to manually capture it via the administrator’s dashboard. <a href="https://kassa.yandex.ru/features-pre-authorisation.html" target="_blank">Learn more at.</a>');
+define('_JSHOP_YM_HOLD_MODE_STATUSES', 'What status should be assigned to an order if it is:');
+define('_JSHOP_YM_HOLD_MODE_ON_HOLD_STATUS', 'waiting for capture');
+define('_JSHOP_YM_HOLD_MODE_ON_HOLD_STATUS_HELP', 'the order status will be changed to this one after the funds are credited, until the store\'s operator either captures or cancels the payment');
+define('_JSHOP_YM_HOLD_MODE_CANCEL_STATUS', 'canceled');
+define('_JSHOP_YM_HOLD_MODE_CANCEL_STATUS_HELP', 'the order status will be changed to this one after the payment is canceled');
+define('_JSHOP_YM_HOLD_MODE_COMMENT_ON_HOLD', 'New payment received. Capture until %1$s, after that date it will be automatically canceled');
+define('_JSHOP_YM_HOLD_MODE_CAPTURE_PAYMENT_SUCCESS', 'You\'ve captured a payment in Yandex.Checkout. ');
+define('_JSHOP_YM_HOLD_MODE_CAPTURE_PAYMENT_FAIL', 'Payment wasn\'t captured. Please try again.');
+define('_JSHOP_YM_HOLD_MODE_CANCEL_PAYMENT_SUCCESS', 'You\'ve canceled a payment in Yandex.Checkout.  Money will be returned to the user.');
+define('_JSHOP_YM_HOLD_MODE_CANCEL_PAYMENT_FAIL', 'Payment wasn\'t canceled. Please try again.');
 define('_JSHOP_YM_DESCRIPTION_HELP', 'Full description of the transaction that the user will see during the checkout process. You can find it in your Yandex.Checkout Merchant Profile. For example, "Payment for order No. 72 by user@yandex.ru". Limitations: no more than 128 symbols.');
 define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION', 'Yandex.Money');
 define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION', 'Bank cards');

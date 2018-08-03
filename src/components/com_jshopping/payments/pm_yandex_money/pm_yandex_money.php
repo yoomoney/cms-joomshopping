@@ -9,6 +9,9 @@
 
 use YandexCheckout\Model\Notification\NotificationSucceeded;
 use YandexCheckout\Model\Notification\NotificationWaitingForCapture;
+use YandexCheckout\Model\NotificationEventType;
+use YandexCheckout\Model\PaymentMethodType;
+use YandexCheckout\Model\PaymentStatus;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -17,7 +20,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 include dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.0.13');
+define('_JSHOP_YM_VERSION', '1.0.14');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -30,6 +33,7 @@ class pm_yandex_money extends PaymentRoot
     private $joomlaVersion;
     private $debugLog = true;
 
+    private $element = 'pm_yandex_money';
     private $repository = 'yandex-money/yandex-money-cms-v2-joomshopping';
     private $downloadDirectory = 'pm_yandex_money';
     private $backupDirectory = 'pm_yandex_money/backups';
@@ -145,6 +149,7 @@ class pm_yandex_money extends PaymentRoot
     public function showAdminFormParams($params)
     {
         $this->loadLanguageFile();
+        $this->installExtension();
 
         if (isset($_GET['subaction'])) {
 
@@ -482,7 +487,6 @@ class pm_yandex_money extends PaymentRoot
     function checkTransaction($pmConfigs, $order, $act)
     {
         $this->mode = $this->getMode($pmConfigs);
-
         if ($this->mode === self::MODE_MONEY) {
             $this->ym_pay_mode = ($pmConfigs['paymode'] == '1');
             $this->ym_shopid   = $pmConfigs['shopid'];
@@ -510,51 +514,83 @@ class pm_yandex_money extends PaymentRoot
                     header('HTTP/1.1 400 Invalid body');
                     die();
                 }
-                $notification = ($json['event'] === YandexCheckout\Model\NotificationEventType::PAYMENT_SUCCEEDED)
+                $kassa = $this->getKassaPaymentMethod($pmConfigs);
+                $notification = ($json['event'] === NotificationEventType::PAYMENT_SUCCEEDED)
                     ? new NotificationSucceeded($json)
                     : new NotificationWaitingForCapture($json);
-                $payment = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($notification->getObject());
-                if ($payment === null) {
+                $payment = $kassa->fetchPayment($notification->getObject()->getId());
+                if (!$payment) {
                     $this->log('debug', 'Notification error: payment not exist');
                     header('HTTP/1.1 404 Payment not exists');
                     die();
-                } elseif ($payment->getStatus() !== \YandexCheckout\Model\PaymentStatus::SUCCEEDED) {
-                    $this->log('debug', 'Notification error: payment not exist 401');
-                    header('HTTP/1.1 401 Payment not exists');
-                    die();
                 }
-                try {
-                    $jshopConfig = JSFactory::getConfig();
 
-                    /** @var jshopCheckout $checkout */
-                    $checkout             = JSFactory::getModel('checkout', 'jshop');
-                    $endStatus            = $pmConfigs['transaction_end_status'];
-                    $order->order_created = 1;
-                    $order->order_status  = $endStatus;
-                    $order->store();
-                    if ($jshopConfig->send_order_email) {
-                        $checkout->sendOrderEmail($order->order_id);
-                    }
-                    if ($jshopConfig->order_stock_removed_only_paid_status) {
-                        $product_stock_removed = in_array($endStatus,
-                            $jshopConfig->payment_status_enable_download_sale_file);
+                if ($notification->getEvent() === NotificationEventType::PAYMENT_WAITING_FOR_CAPTURE
+                    && $payment->getStatus() === PaymentStatus::WAITING_FOR_CAPTURE
+                ) {
+                    if ($kassa->isEnableHoldMode()
+                        && $payment->getPaymentMethod()->getType() === PaymentMethodType::BANK_CARD
+                    ) {
+                        $this->log('info', 'Hold payment '.$payment->getId());
+                        try {
+                            /** @var jshopCheckout $checkout */
+                            $checkout             = JSFactory::getModel('checkout', 'jshop');
+                            $onHoldStatus         = $pmConfigs['ya_kassa_hold_mode_on_hold_status'];
+                            $order->order_created = 1;
+                            $order->order_status  = $onHoldStatus;
+                            $order->store();
+                            $checkout->changeStatusOrder($order->order_id, $onHoldStatus, 0);
+                            $this->saveOrderHistory($order, sprintf(_JSHOP_YM_HOLD_MODE_COMMENT_ON_HOLD,
+                                $payment->getExpiresAt()->format('d.m.Y H:i')));
+                        } catch (Exception $e) {
+                            $this->log('debug', $e->getMessage());
+                            header('HTTP/1.1 500 Internal Server Error');
+                        }
                     } else {
-                        $product_stock_removed = 1;
+                        $payment = $kassa->capturePayment($notification->getObject());
+                        if (!$payment || $payment->getStatus() !== PaymentStatus::SUCCEEDED) {
+                            $this->log('debug', 'Capture payment error');
+                            header('HTTP/1.1 400 Bad Request');
+                        }
                     }
-                    if ($product_stock_removed) {
-                        $order->changeProductQTYinStock("-");
-                    }
-                    $checkout->changeStatusOrder($order->order_id, $endStatus, 0);
-                } catch (Exception $e) {
-                    $this->log('debug', $e->getMessage());
-                    header('HTTP/1.1 500 Internal Server Error');
-                    die();
+                    exit();
                 }
 
+                if ($notification->getEvent() === NotificationEventType::PAYMENT_SUCCEEDED
+                    && $payment->getStatus() === PaymentStatus::SUCCEEDED
+                ) {
+                    try {
+                        $jshopConfig = JSFactory::getConfig();
 
-                echo '{"success":true,"payment_status":"'.$payment->getStatus().'"}';
-                die();
+                        /** @var jshopCheckout $checkout */
+                        $checkout             = JSFactory::getModel('checkout', 'jshop');
+                        $endStatus            = $pmConfigs['transaction_end_status'];
+                        $order->order_created = 1;
+                        $order->order_status  = $endStatus;
+                        $order->store();
+                        if ($jshopConfig->send_order_email) {
+                            $checkout->sendOrderEmail($order->order_id);
+                        }
+                        if ($jshopConfig->order_stock_removed_only_paid_status) {
+                            $product_stock_removed = in_array($endStatus,
+                                $jshopConfig->payment_status_enable_download_sale_file);
+                        } else {
+                            $product_stock_removed = 1;
+                        }
+                        if ($product_stock_removed) {
+                            $order->changeProductQTYinStock("-");
+                        }
+                        $checkout->changeStatusOrder($order->order_id, $endStatus, 0);
+                    } catch (Exception $e) {
+                        $this->log('debug', $e->getMessage());
+                        header('HTTP/1.1 500 Internal Server Error');
+                    }
+                    exit();
+                }
 
+                $this->log('debug', 'Notification error: wrong payment status');
+                header('HTTP/1.1 401 Payment not exists');
+                exit();
             } else {
                 $this->log('debug', 'Check transaction for order#'.$order->order_id);
                 $transactionId = $this->getOrderModel()->getPaymentIdByOrderId($order->order_id);
@@ -574,37 +610,15 @@ class pm_yandex_money extends PaymentRoot
                     $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
                     $app         = JFactory::getApplication();
                     $app->redirect($redirectUrl);
-                }
-                if ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::CANCELED) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is canceled');
-                    return array(4, 'Transaction is cancelled', $transactionId, _JSHOP_YM_CAPTURE_FAILED);
-                } elseif ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::PENDING) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' is pended');
-                    return array(2, _JSHOP_YM_WAITING_FOR_CAPTURE, $transactionId, _JSHOP_YM_WAITING_FOR_CAPTURE);
-                } elseif ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::WAITING_FOR_CAPTURE) {
-
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' wfc');
-                    $result = $this->getKassaPaymentMethod($pmConfigs)->capturePayment($payment);
-                    if ($result !== null) {
-                        $this->getOrderModel()->savePayment($order->order_id, $payment);
-                        $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' captured');
-                        $payment = $result;
-                    }
-                }
-
-                if ($payment->getStatus() === \YandexCheckout\Model\PaymentStatus::SUCCEEDED) {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' succeeded');
+                } else {
+                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' paid');
 
                     return array(
-                        1,
+                        -1,
                         sprintf(_JSHOP_YM_PAYMENT_CAPTURED_TEXT, $transactionId),
                         $transactionId,
                         _JSHOP_YM_PAYMENT_CAPTURED,
                     );
-                } else {
-                    $this->log('debug', 'Payment '.$payment->getId().' for order#'.$order->order_id.' pended');
-
-                    return array(2, _JSHOP_YM_WAITING_FOR_CAPTURE, $transactionId, _JSHOP_YM_WAITING_FOR_CAPTURE);
                 }
             }
 
@@ -987,7 +1001,7 @@ class pm_yandex_money extends PaymentRoot
     /**
      * @return \YandexMoney\Model\OrderModel
      */
-    private function getOrderModel()
+    public function getOrderModel()
     {
         if ($this->orderModel === null) {
             $this->orderModel = new \YandexMoney\Model\OrderModel();
@@ -996,7 +1010,7 @@ class pm_yandex_money extends PaymentRoot
         return $this->orderModel;
     }
 
-    private function getKassaPaymentMethod($pmConfigs)
+    public function getKassaPaymentMethod($pmConfigs)
     {
         $this->loadLanguageFile();
         if ($this->kassa === null) {
@@ -1008,7 +1022,7 @@ class pm_yandex_money extends PaymentRoot
 
     private function getLogFileName()
     {
-        return realpath(JSH_DIR.'/log/pm_yandex_money.log');
+        return realpath(JSH_DIR).'/log/pm_yandex_money.log';
     }
 
     public function checkModuleVersion($useCache = true)
@@ -1232,4 +1246,33 @@ class pm_yandex_money extends PaymentRoot
 
         return true;
     }
+
+    private function installExtension()
+    {
+        $addon = JTable::getInstance('addon', 'jshop');
+        $manifest = '{"creationDate":"20.07.2018","author":"YandexMoney","authorEmail":"cms@yamoney.ru","authorUrl":"https://kassa.yandex.ru","version":"'._JSHOP_YM_VERSION.'"}';
+        $addon->installJoomlaExtension(
+            array(
+                'name'           => 'YandexMoney',
+                'type'           => 'plugin',
+                'element'        => $this->element,
+                'folder'         => 'jshoppingadmin',
+                'client_id'      => 0,
+                'enabled'        => 1,
+                'access'         => 1,
+                'protected'      => 0,
+                'manifest_cache' => $manifest
+            ));
+    }
+
+    public function saveOrderHistory($order, $comments) {
+        $history = JSFactory::getTable('orderHistory', 'jshop');
+        $history->order_id = $order->order_id;
+        $history->order_status_id = $order->order_status;
+        $history->status_date_added = getJsDate();
+        $history->customer_notify = 0;
+        $history->comments = $comments;
+        return $history->store();
+    }
+
 }

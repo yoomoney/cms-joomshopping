@@ -8,9 +8,9 @@ use YandexCheckout\Model\ConfirmationType;
 use YandexCheckout\Model\Payment;
 use YandexCheckout\Model\PaymentInterface;
 use YandexCheckout\Model\PaymentMethodType;
-use YandexCheckout\Model\PaymentStatus;
 use YandexCheckout\Request\Payments\CreatePaymentRequest;
 use YandexCheckout\Request\Payments\Payment\CreateCaptureRequest;
+use YandexCheckout\Request\Payments\Payment\CreateCaptureRequestBuilder;
 
 class KassaPaymentMethod
 {
@@ -22,6 +22,7 @@ class KassaPaymentMethod
     private $taxRates;
     private $sendReceipt;
     private $descriptionTemplate;
+    private $isEnableHoldMode;
 
     /**
      * KassaPaymentMethod constructor.
@@ -51,6 +52,7 @@ class KassaPaymentMethod
         }
 
         $this->sendReceipt = isset($pmConfig['ya_kassa_send_check']) && $pmConfig['ya_kassa_send_check'] == '1';
+        $this->isEnableHoldMode = isset($pmConfig['ya_kassa_enable_hold_mode']) && $pmConfig['ya_kassa_enable_hold_mode'] == '1';
     }
 
     public function getShopId()
@@ -75,9 +77,10 @@ class KassaPaymentMethod
     public function createPayment($order, $cart, $returnUrl)
     {
         try {
+            $params  = unserialize($order->payment_params_data);
             $builder = CreatePaymentRequest::builder();
             $builder->setAmount($order->order_total)
-                ->setCapture(true)
+                ->setCapture($this->getCaptureValue($params['payment_type']))
                 ->setClientIp($_SERVER['REMOTE_ADDR'])
                 ->setDescription($this->createDescription($order))
                 ->setMetadata(array(
@@ -90,7 +93,6 @@ class KassaPaymentMethod
                 'type' => ConfirmationType::REDIRECT,
                 'returnUrl' => $returnUrl,
             );
-            $params = unserialize($order->payment_params_data);
             if (!empty($params['payment_type'])) {
                 $paymentType = $params['payment_type'];
                 if ($paymentType === PaymentMethodType::ALFABANK) {
@@ -111,7 +113,7 @@ class KassaPaymentMethod
 
             $receipt = null;
             if (count($cart->products) && $this->sendReceipt) {
-                $this->factoryReceipt($builder, $cart, $order);
+                $this->factoryReceipt($builder, $cart->products, $order);
             }
 
             $request = $builder->build();
@@ -124,18 +126,7 @@ class KassaPaymentMethod
         }
 
         try {
-            $tries = 0;
-            $key = uniqid('', true);
-            do {
-                $payment = $this->getClient()->createPayment($request, $key);
-                if ($payment === null) {
-                    $tries++;
-                    if ($tries > 3) {
-                        break;
-                    }
-                    sleep(2);
-                }
-            } while ($payment === null);
+            $payment = $this->getClient()->createPayment($request);
         } catch (\Exception $e) {
             $this->module->log('error', 'Failed to create payment: ' . $e->getMessage());
             return null;
@@ -144,45 +135,18 @@ class KassaPaymentMethod
     }
 
     /**
-     * @param PaymentInterface $notificationPayment
-     * @param bool $fetchPayment
+     * @param PaymentInterface $payment
      * @return PaymentInterface|null
      */
-    public function capturePayment($notificationPayment, $fetchPayment = true)
+    public function capturePayment($payment)
     {
-        if ($fetchPayment) {
-            $payment = $this->fetchPayment($notificationPayment->getId());
-        } else {
-            $payment = $notificationPayment;
-        }
-        if ($payment->getStatus() !== PaymentStatus::WAITING_FOR_CAPTURE) {
-            return $payment->getStatus() === PaymentStatus::SUCCEEDED ? $payment : null;
-        }
-
         try {
             $builder = CreateCaptureRequest::builder();
             $builder->setAmount($payment->getAmount());
             $request = $builder->build();
+            $response = $this->getClient()->capturePayment($request, $payment->getId());
         } catch (\Exception $e) {
             $this->module->log('error', 'Failed to create capture payment: ' . $e->getMessage());
-            return null;
-        }
-
-        try {
-            $tries = 0;
-            $key = uniqid('', true);
-            do {
-                $response = $this->getClient()->capturePayment($request, $payment->getId(), $key);
-                if ($response === null) {
-                    $tries++;
-                    if ($tries > 3) {
-                        break;
-                    }
-                    sleep(2);
-                }
-            } while ($response === null);
-        } catch (\Exception $e) {
-            $this->module->log('error', 'Failed to capture payment: ' . $e->getMessage());
             return null;
         }
 
@@ -205,11 +169,11 @@ class KassaPaymentMethod
     }
 
     /**
-     * @param \YandexCheckout\Request\Payments\CreatePaymentRequestBuilder $builder
-     * @param $cart
+     * @param \YandexCheckout\Request\Payments\CreatePaymentRequestBuilder|CreateCaptureRequestBuilder $builder
+     * @param array $products
      * @param $order
      */
-    private function factoryReceipt($builder, $cart, $order)
+    public function factoryReceipt($builder, $products, $order)
     {
         $shippingModel = \JSFactory::getTable('shippingMethod', 'jshop');
         $shippingMethods = $shippingModel->getAllShippingMethodsCountry($order->d_country, $order->payment_method_id);
@@ -223,15 +187,33 @@ class KassaPaymentMethod
         foreach ($shippingMethods as $tmp) {
             if ($tmp->shipping_id == $order->shipping_method_id) {
                 $shipping = $tmp;
+                break;
             }
         }
 
-        foreach ($cart->products as $product) {
-            if (isset($product['tax_id']) && !empty($this->taxRates[$product['tax_id']])) {
-                $taxId = $this->taxRates[$product['tax_id']];
+        $moduleTaxes = \JSFactory::getModel("taxes");
+        $allTaxes = $moduleTaxes ? $moduleTaxes->getAllTaxes() : array();
+        foreach ($products as $product) {
+            if (is_array($product)) {
+                if (isset($product['tax_id']) && !empty($this->taxRates[$product['tax_id']])) {
+                    $taxId = $this->taxRates[$product['tax_id']];
+                } else {
+                    $taxId = $defaultTaxRate;
+                }
                 $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $taxId);
-            } else {
-                $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $defaultTaxRate);
+            } elseif (is_object($product)) {
+                $taxId = $defaultTaxRate;
+                $suitableTaxes = array_filter($allTaxes, function($tax) use ($product) {
+                    return $product->product_tax == $tax->tax_value;
+                });
+                if (!empty($suitableTaxes)) {
+                    $suitableTax = reset($suitableTaxes);
+                    if (!empty($this->taxRates[$suitableTax->tax_id])) {
+                        $taxId = $this->taxRates[$suitableTax->tax_id];
+                    }
+                }
+                $builder->addReceiptItem($product->product_name, $product->product_item_price,
+                    $product->product_quantity, $taxId);
             }
         }
 
@@ -248,7 +230,7 @@ class KassaPaymentMethod
     /**
      * @return Client
      */
-    private function getClient()
+    public function getClient()
     {
         if ($this->client === null) {
             $this->client = new Client();
@@ -290,4 +272,34 @@ class KassaPaymentMethod
 
         return (string)mb_substr($description, 0, Payment::MAX_LENGTH_DESCRIPTION);
     }
+
+    /**
+     * @return bool
+     */
+    public function isEnableHoldMode()
+    {
+        return $this->isEnableHoldMode;
+    }
+
+    /**
+     * @param string $paymentMethod
+     * @return bool
+     */
+    private function getCaptureValue($paymentMethod)
+    {
+        if (!$this->isEnableHoldMode()) {
+            return true;
+        }
+
+        return !in_array($paymentMethod, array('', PaymentMethodType::BANK_CARD));
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSendReceipt()
+    {
+        return $this->sendReceipt;
+    }
+
 }
