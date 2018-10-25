@@ -218,11 +218,12 @@ class KassaPaymentMethod
         }
 
         if ($order->shipping_method_id && $shipping) {
+            $shipping_price = $order->order_shipping;
             if (!empty($this->taxRates[$shipping->shipping_tax_id])) {
                 $taxId = $this->taxRates[$shipping->shipping_tax_id];
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $taxId);
+                $builder->addReceiptShipping($shipping->name, $shipping_price, $taxId);
             } else {
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $defaultTaxRate);
+                $builder->addReceiptShipping($shipping->name, $shipping_price, $defaultTaxRate);
             }
         }
     }
