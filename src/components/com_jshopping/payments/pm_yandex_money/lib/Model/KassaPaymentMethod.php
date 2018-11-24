@@ -1,16 +1,28 @@
 <?php
 
+
 namespace YandexMoney\Model;
 
 use YandexCheckout\Client;
 use YandexCheckout\Common\Exceptions\NotFoundException;
 use YandexCheckout\Model\ConfirmationType;
+use YandexCheckout\Model\CurrencyCode;
 use YandexCheckout\Model\Payment;
+use YandexCheckout\Model\PaymentData\B2b\Sberbank\VatData;
+use YandexCheckout\Model\PaymentData\B2b\Sberbank\VatDataType;
+use YandexCheckout\Model\PaymentData\PaymentDataB2bSberbank;
 use YandexCheckout\Model\PaymentInterface;
 use YandexCheckout\Model\PaymentMethodType;
 use YandexCheckout\Request\Payments\CreatePaymentRequest;
 use YandexCheckout\Request\Payments\Payment\CreateCaptureRequest;
 use YandexCheckout\Request\Payments\Payment\CreateCaptureRequestBuilder;
+
+require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money_sbbol/SbbolException.php';
+
+if (!defined(_JSHOP_YM_VERSION)) {
+    define('_JSHOP_YM_VERSION', '1.1.0');
+}
+
 
 class KassaPaymentMethod
 {
@@ -23,17 +35,20 @@ class KassaPaymentMethod
     private $sendReceipt;
     private $descriptionTemplate;
     private $isEnableHoldMode;
+    private $pmconfigs;
 
     /**
      * KassaPaymentMethod constructor.
+     *
      * @param \pm_yandex_money $module
      * @param array $pmConfig
      */
     public function __construct($module, $pmConfig)
     {
-        $this->module = $module;
-        $this->shopId = $pmConfig['shop_id'];
-        $this->password = $pmConfig['shop_password'];
+        $this->pmconfigs           = $pmConfig;
+        $this->module              = $module;
+        $this->shopId              = $pmConfig['shop_id'];
+        $this->password            = $pmConfig['shop_password'];
         $this->descriptionTemplate = !empty($pmConfig['ya_kassa_description_template'])
             ? $pmConfig['ya_kassa_description_template']
             : _JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER;
@@ -46,12 +61,12 @@ class KassaPaymentMethod
         $this->taxRates = array();
         foreach ($pmConfig as $key => $value) {
             if (strncmp('ya_kassa_tax_', $key, 13) === 0) {
-                $taxRateId = substr($key, 13);
+                $taxRateId                  = substr($key, 13);
                 $this->taxRates[$taxRateId] = $value;
             }
         }
 
-        $this->sendReceipt = isset($pmConfig['ya_kassa_send_check']) && $pmConfig['ya_kassa_send_check'] == '1';
+        $this->sendReceipt      = isset($pmConfig['ya_kassa_send_check']) && $pmConfig['ya_kassa_send_check'] == '1';
         $this->isEnableHoldMode = isset($pmConfig['ya_kassa_enable_hold_mode']) && $pmConfig['ya_kassa_enable_hold_mode'] == '1';
     }
 
@@ -80,30 +95,30 @@ class KassaPaymentMethod
             $params  = unserialize($order->payment_params_data);
             $builder = CreatePaymentRequest::builder();
             $builder->setAmount($order->order_total)
-                ->setCapture($this->getCaptureValue($params['payment_type']))
-                ->setClientIp($_SERVER['REMOTE_ADDR'])
-                ->setDescription($this->createDescription($order))
-                ->setMetadata(array(
-                    'order_id'       => $order->order_id,
-                    'cms_name'       => 'ya_api_joomshopping',
-                    'module_version' => _JSHOP_YM_VERSION,
-                ));
+                    ->setCapture($this->getCaptureValue($params['payment_type']))
+                    ->setClientIp($_SERVER['REMOTE_ADDR'])
+                    ->setDescription($this->createDescription($order))
+                    ->setMetadata(array(
+                        'order_id'       => $order->order_id,
+                        'cms_name'       => 'ya_api_joomshopping',
+                        'module_version' => _JSHOP_YM_VERSION,
+                    ));
 
             $confirmation = array(
-                'type' => ConfirmationType::REDIRECT,
+                'type'      => ConfirmationType::REDIRECT,
                 'returnUrl' => $returnUrl,
             );
             if (!empty($params['payment_type'])) {
                 $paymentType = $params['payment_type'];
                 if ($paymentType === PaymentMethodType::ALFABANK) {
-                    $paymentType = array(
-                        'type' => $paymentType,
+                    $paymentType  = array(
+                        'type'  => $paymentType,
                         'login' => trim($params['alfaLogin']),
                     );
                     $confirmation = ConfirmationType::EXTERNAL;
                 } elseif ($paymentType === PaymentMethodType::QIWI) {
                     $paymentType = array(
-                        'type' => $paymentType,
+                        'type'  => $paymentType,
                         'phone' => preg_replace('/[^\d]+/', '', $params['qiwiPhone']),
                     );
                 }
@@ -121,21 +136,106 @@ class KassaPaymentMethod
                 $request->getReceipt()->normalize($request->getAmount());
             }
         } catch (\Exception $e) {
-            $this->module->log('error', 'Failed to build request: ' . $e->getMessage());
+            $this->module->log('error', 'Failed to build request: '.$e->getMessage());
+
             return null;
         }
 
         try {
             $payment = $this->getClient()->createPayment($request);
         } catch (\Exception $e) {
-            $this->module->log('error', 'Failed to create payment: ' . $e->getMessage());
+            $this->module->log('error', 'Failed to create payment: '.$e->getMessage());
+
             return null;
         }
+
+        return $payment;
+    }
+
+
+    public function createSbbolPayment($order, $cart, $returnUrl)
+    {
+        try {
+            $pmconfigs = $this->pmconfigs;
+            $builder   = CreatePaymentRequest::builder();
+            $builder->setAmount($order->order_total)
+                    ->setCapture(true)
+                    ->setClientIp($_SERVER['REMOTE_ADDR'])
+                    ->setMetadata(array(
+                        'order_id'       => $order->order_id,
+                        'cms_name'       => 'ya_api_joomshopping',
+                        'module_version' => _JSHOP_YM_VERSION,
+                    ));
+
+            $confirmation = array(
+                'type'      => ConfirmationType::REDIRECT,
+                'returnUrl' => $returnUrl,
+            );
+
+            $usedTaxes = array();
+            if (count($cart->products)) {
+                foreach ($cart->products as $product) {
+                    if (isset($pmconfigs['ya_sbbol_tax_'.$product['tax_id']])) {
+                        $usedTaxes[] = $pmconfigs['ya_sbbol_tax_'.$product['tax_id']];
+                    } else {
+                        $usedTaxes[] = $pmconfigs['ya_sbbol_default_tax'];
+                    }
+                }
+            } else {
+
+            }
+
+            $usedTaxes = array_unique($usedTaxes);
+            if (count($usedTaxes) !== 1) {
+                throw new \SbbolException();
+            }
+
+            $paymentMethodData = new PaymentDataB2bSberbank();
+            $vatData           = new VatData();
+            $vatType           = reset($usedTaxes);
+            if ($vatType !== VatDataType::UNTAXED) {
+                $vatData->setType(VatDataType::CALCULATED);
+                $vatData->setRate($vatType);
+                $vatSum = $order->order_total * $vatType / 100;
+                $vatData->setAmount(array('value' => $vatSum, 'currency' => CurrencyCode::RUB));
+            } else {
+                $vatData->setType(VatDataType::UNTAXED);
+            }
+            $orderData = json_decode(json_encode($order), true);
+            foreach ($orderData as $key => $value) {
+                $orderData["%{$key}%"] = $value;
+                unset($orderData[$key]);
+            }
+
+            $paymentPurpose = strtr($pmconfigs['sbbol_purpose'], $orderData);
+
+            $paymentMethodData->setVatData($vatData);
+            $paymentMethodData->setPaymentPurpose($paymentPurpose);
+            $builder->setConfirmation($confirmation);
+            $builder->setPaymentMethodData($paymentMethodData);
+            $request = $builder->build();
+        } catch (\SbbolException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            $this->module->log('error', 'Failed to build request: '.$e->getMessage());
+
+            return null;
+        }
+
+        try {
+            $payment = $this->getClient()->createPayment($request);
+        } catch (\Exception $e) {
+            $this->module->log('error', 'Failed to create payment: '.$e->getMessage());
+
+            return null;
+        }
+
         return $payment;
     }
 
     /**
      * @param PaymentInterface $payment
+     *
      * @return PaymentInterface|null
      */
     public function capturePayment($payment)
@@ -143,10 +243,11 @@ class KassaPaymentMethod
         try {
             $builder = CreateCaptureRequest::builder();
             $builder->setAmount($payment->getAmount());
-            $request = $builder->build();
+            $request  = $builder->build();
             $response = $this->getClient()->capturePayment($request, $payment->getId());
         } catch (\Exception $e) {
-            $this->module->log('error', 'Failed to create capture payment: ' . $e->getMessage());
+            $this->module->log('error', 'Failed to create capture payment: '.$e->getMessage());
+
             return null;
         }
 
@@ -155,6 +256,7 @@ class KassaPaymentMethod
 
     /**
      * @param string $paymentId
+     *
      * @return PaymentInterface|null
      */
     public function fetchPayment($paymentId)
@@ -163,8 +265,9 @@ class KassaPaymentMethod
         try {
             $payment = $this->getClient()->getPaymentInfo($paymentId);
         } catch (\Exception $e) {
-            $this->module->log('error', 'Failed to fetch payment information from API: ' . $e->getMessage());
+            $this->module->log('error', 'Failed to fetch payment information from API: '.$e->getMessage());
         }
+
         return $payment;
     }
 
@@ -175,9 +278,9 @@ class KassaPaymentMethod
      */
     public function factoryReceipt($builder, $products, $order)
     {
-        $shippingModel = \JSFactory::getTable('shippingMethod', 'jshop');
+        $shippingModel   = \JSFactory::getTable('shippingMethod', 'jshop');
         $shippingMethods = $shippingModel->getAllShippingMethodsCountry($order->d_country, $order->payment_method_id);
-        $defaultTaxRate = $this->defaultTaxRateId;
+        $defaultTaxRate  = $this->defaultTaxRateId;
         if (!empty($order->email)) {
             $builder->setReceiptEmail($order->email);
         } else {
@@ -192,7 +295,7 @@ class KassaPaymentMethod
         }
 
         $moduleTaxes = \JSFactory::getModel("taxes");
-        $allTaxes = $moduleTaxes ? $moduleTaxes->getAllTaxes() : array();
+        $allTaxes    = $moduleTaxes ? $moduleTaxes->getAllTaxes() : array();
         foreach ($products as $product) {
             if (is_array($product)) {
                 if (isset($product['tax_id']) && !empty($this->taxRates[$product['tax_id']])) {
@@ -202,8 +305,8 @@ class KassaPaymentMethod
                 }
                 $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $taxId);
             } elseif (is_object($product)) {
-                $taxId = $defaultTaxRate;
-                $suitableTaxes = array_filter($allTaxes, function($tax) use ($product) {
+                $taxId         = $defaultTaxRate;
+                $suitableTaxes = array_filter($allTaxes, function ($tax) use ($product) {
                     return $product->product_tax == $tax->tax_value;
                 });
                 if (!empty($suitableTaxes)) {
@@ -237,6 +340,7 @@ class KassaPaymentMethod
             $this->client->setAuth($this->shopId, $this->password);
             $this->client->setLogger($this->module);
         }
+
         return $this->client;
     }
 
@@ -252,11 +356,13 @@ class KassaPaymentMethod
         } catch (\Exception $e) {
             return false;
         }
+
         return true;
     }
 
     /**
      * @param \jshopOrder $order
+     *
      * @return string
      */
     private function createDescription($order)
@@ -283,6 +389,7 @@ class KassaPaymentMethod
 
     /**
      * @param string $paymentMethod
+     *
      * @return bool
      */
     private function getCaptureValue($paymentMethod)
