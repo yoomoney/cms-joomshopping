@@ -99,15 +99,17 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
     </div>
 </div>
 <?php foreach (\YandexCheckout\Model\PaymentMethodType::getEnabledValues() as $value) : ?>
-    <div class="row with-select">
-        <div class="span11 offset1">
-            <div class="span8 offset2">
-                <input type = "checkbox" class = "form-control input-kassa" name = "pm_params[method_<?php echo $value; ?>]" value = "1"
-                    <?php if($params['method_'.$value]=='1') echo "checked"; ?> />
-                <?php echo constant('_JSHOP_YM_METHOD_'.strtoupper($value).'_DESCRIPTION');?>
+    <?php if($value != \YandexCheckout\Model\PaymentMethodType::B2B_SBERBANK): ?>
+        <div class="row with-select">
+            <div class="span11 offset1">
+                <div class="span8 offset2">
+                    <input type = "checkbox" class = "form-control input-kassa" name = "pm_params[method_<?php echo $value; ?>]" value = "1"
+                        <?php if($params['method_'.$value]=='1') echo "checked"; ?> />
+                    <?php echo constant('_JSHOP_YM_METHOD_'.strtoupper($value).'_DESCRIPTION');?>
+                </div>
             </div>
         </div>
-    </div>
+    <?php endif;?>
 <?php endforeach; ?>
 <div class="row">
     <div class="span11 offset1">

@@ -12,15 +12,16 @@ use YandexCheckout\Model\Notification\NotificationWaitingForCapture;
 use YandexCheckout\Model\NotificationEventType;
 use YandexCheckout\Model\PaymentMethodType;
 use YandexCheckout\Model\PaymentStatus;
+use YandexMoney\Model\KassaPaymentMethod;
 
 defined('_JEXEC') or die('Restricted access');
 
 define('JSH_DIR', realpath(dirname(__FILE__).'/../..'));
 define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
-include dirname(__FILE__).'/lib/autoload.php';
+require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.0.14');
+define('_JSHOP_YM_VERSION', '1.1.0');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -48,7 +49,7 @@ class pm_yandex_money extends PaymentRoot
     private $orderModel;
 
     /**
-     * @var \YandexMoney\Model\KassaPaymentMethod
+     * @var KassaPaymentMethod
      */
     private $kassa;
 
@@ -514,11 +515,11 @@ class pm_yandex_money extends PaymentRoot
                     header('HTTP/1.1 400 Invalid body');
                     die();
                 }
-                $kassa = $this->getKassaPaymentMethod($pmConfigs);
+                $kassa        = $this->getKassaPaymentMethod($pmConfigs);
                 $notification = ($json['event'] === NotificationEventType::PAYMENT_SUCCEEDED)
                     ? new NotificationSucceeded($json)
                     : new NotificationWaitingForCapture($json);
-                $payment = $kassa->fetchPayment($notification->getObject()->getId());
+                $payment      = $kassa->fetchPayment($notification->getObject()->getId());
                 if (!$payment) {
                     $this->log('debug', 'Notification error: payment not exist');
                     header('HTTP/1.1 404 Payment not exists');
@@ -562,6 +563,7 @@ class pm_yandex_money extends PaymentRoot
                     try {
                         $jshopConfig = JSFactory::getConfig();
 
+
                         /** @var jshopCheckout $checkout */
                         $checkout             = JSFactory::getModel('checkout', 'jshop');
                         $endStatus            = $pmConfigs['transaction_end_status'];
@@ -581,6 +583,30 @@ class pm_yandex_money extends PaymentRoot
                             $order->changeProductQTYinStock("-");
                         }
                         $checkout->changeStatusOrder($order->order_id, $endStatus, 0);
+
+                        $payerBankDetails = $payment->getPaymentMethod()->getPayerBankDetails();
+
+                        $fields  = array(
+                            'fullName'   => 'Полное наименование организации',
+                            'shortName'  => 'Сокращенное наименование организации',
+                            'adress'     => 'Адрес организации',
+                            'inn'        => 'ИНН организации',
+                            'kpp'        => 'КПП организации',
+                            'bankName'   => 'Наименование банка организации',
+                            'bankBranch' => 'Отделение банка организации',
+                            'bankBik'    => 'БИК банка организации',
+                            'account'    => 'Номер счета организации',
+                        );
+                        $message = '';
+
+                        foreach ($fields as $field => $caption) {
+                            if (isset($requestData[$field])) {
+                                $message .= $caption.': '.$payerBankDetails->offsetGet($field).'\n';
+                            }
+                        }
+                        if (!empty($message)) {
+                            $this->saveOrderHistory($order, $message);
+                        }
                     } catch (Exception $e) {
                         $this->log('debug', $e->getMessage());
                         header('HTTP/1.1 500 Internal Server Error');
@@ -1014,7 +1040,7 @@ class pm_yandex_money extends PaymentRoot
     {
         $this->loadLanguageFile();
         if ($this->kassa === null) {
-            $this->kassa = new \YandexMoney\Model\KassaPaymentMethod($this, $pmConfigs);
+            $this->kassa = new KassaPaymentMethod($this, $pmConfigs);
         }
 
         return $this->kassa;
@@ -1178,7 +1204,8 @@ class pm_yandex_money extends PaymentRoot
         $dir = DIR_DOWNLOAD.'/'.$this->versionDirectory;
         if (!file_exists($dir)) {
             if (!mkdir($dir)) {
-                $this->log('error', _JSHOP_YM_FAILED_CREATE_DIRECTORY .$dir);
+                $this->log('error', _JSHOP_YM_FAILED_CREATE_DIRECTORY.$dir);
+
                 return false;
             }
         } elseif ($useCache) {
@@ -1192,6 +1219,7 @@ class pm_yandex_money extends PaymentRoot
         $fileName  = $connector->downloadRelease($this->repository, $tag, $dir);
         if (empty($fileName)) {
             $this->log('error', _JSHOP_YM_FAILED_DOWNLOAD_UPDATE);
+
             return false;
         }
 
@@ -1249,7 +1277,7 @@ class pm_yandex_money extends PaymentRoot
 
     private function installExtension()
     {
-        $addon = JTable::getInstance('addon', 'jshop');
+        $addon    = JTable::getInstance('addon', 'jshop');
         $manifest = '{"creationDate":"20.07.2018","author":"YandexMoney","authorEmail":"cms@yamoney.ru","authorUrl":"https://kassa.yandex.ru","version":"'._JSHOP_YM_VERSION.'"}';
         $addon->installJoomlaExtension(
             array(
@@ -1261,17 +1289,19 @@ class pm_yandex_money extends PaymentRoot
                 'enabled'        => 1,
                 'access'         => 1,
                 'protected'      => 0,
-                'manifest_cache' => $manifest
+                'manifest_cache' => $manifest,
             ));
     }
 
-    public function saveOrderHistory($order, $comments) {
-        $history = JSFactory::getTable('orderHistory', 'jshop');
-        $history->order_id = $order->order_id;
-        $history->order_status_id = $order->order_status;
+    public function saveOrderHistory($order, $comments)
+    {
+        $history                    = JSFactory::getTable('orderHistory', 'jshop');
+        $history->order_id          = $order->order_id;
+        $history->order_status_id   = $order->order_status;
         $history->status_date_added = getJsDate();
-        $history->customer_notify = 0;
-        $history->comments = $comments;
+        $history->customer_notify   = 0;
+        $history->comments          = $comments;
+
         return $history->store();
     }
 
