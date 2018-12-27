@@ -36,6 +36,10 @@ class KassaPaymentMethod
     private $descriptionTemplate;
     private $isEnableHoldMode;
     private $pmconfigs;
+    private $defaultPaymentMode;
+    private $defaultPaymentSubject;
+    private $defaultDeliveryPaymentMode;
+    private $defaultDeliveryPaymentSubject;
 
     /**
      * KassaPaymentMethod constructor.
@@ -54,8 +58,25 @@ class KassaPaymentMethod
             : _JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER;
 
         $this->defaultTaxRateId = 1;
+
         if (!empty($pmConfig['ya_kassa_default_tax'])) {
             $this->defaultTaxRateId = $pmConfig['ya_kassa_default_tax'];
+        }
+
+        if (!empty($pmConfig['ya_kassa_default_payment_mode'])) {
+            $this->defaultPaymentMode = $pmConfig['ya_kassa_default_payment_mode'];
+        }
+
+        if (!empty($pmConfig['ya_kassa_default_payment_subject'])) {
+            $this->defaultPaymentSubject = $pmConfig['ya_kassa_default_payment_subject'];
+        }
+
+        if (!empty($pmConfig['ya_kassa_default_delivery_payment_mode'])) {
+            $this->defaultDeliveryPaymentMode = $pmConfig['ya_kassa_default_delivery_payment_mode'];
+        }
+
+        if (!empty($pmConfig['ya_kassa_default_delivery_payment_subject'])) {
+            $this->defaultDeliveryPaymentSubject = $pmConfig['ya_kassa_default_delivery_payment_subject'];
         }
 
         $this->taxRates = array();
@@ -303,7 +324,8 @@ class KassaPaymentMethod
                 } else {
                     $taxId = $defaultTaxRate;
                 }
-                $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $taxId);
+                $builder->addReceiptItem($product['product_name'], $product['price'], $product['quantity'], $taxId,
+                    $this->defaultPaymentMode, $this->defaultPaymentSubject);
             } elseif (is_object($product)) {
                 $taxId         = $defaultTaxRate;
                 $suitableTaxes = array_filter($allTaxes, function ($tax) use ($product) {
@@ -316,16 +338,18 @@ class KassaPaymentMethod
                     }
                 }
                 $builder->addReceiptItem($product->product_name, $product->product_item_price,
-                    $product->product_quantity, $taxId);
+                    $product->product_quantity, $taxId, $this->defaultPaymentMode, $this->defaultPaymentSubject);
             }
         }
 
         if ($order->shipping_method_id && $shipping) {
             if (!empty($this->taxRates[$shipping->shipping_tax_id])) {
                 $taxId = $this->taxRates[$shipping->shipping_tax_id];
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $taxId);
+                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $taxId,
+                    $this->defaultDeliveryPaymentMode, $this->defaultDeliveryPaymentSubject);
             } else {
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $defaultTaxRate);
+                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $defaultTaxRate,
+                    $this->defaultDeliveryPaymentMode, $this->defaultDeliveryPaymentSubject);
             }
         }
     }
@@ -408,5 +432,4 @@ class KassaPaymentMethod
     {
         return $this->sendReceipt;
     }
-
 }

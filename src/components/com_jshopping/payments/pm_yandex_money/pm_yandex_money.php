@@ -12,6 +12,8 @@ use YandexCheckout\Model\Notification\NotificationWaitingForCapture;
 use YandexCheckout\Model\NotificationEventType;
 use YandexCheckout\Model\PaymentMethodType;
 use YandexCheckout\Model\PaymentStatus;
+use YandexCheckout\Model\Receipt\PaymentMode;
+use YandexCheckout\Model\Receipt\PaymentSubject;
 use YandexMoney\Model\KassaPaymentMethod;
 
 defined('_JEXEC') or die('Restricted access');
@@ -222,8 +224,42 @@ class pm_yandex_money extends PaymentRoot
             'ya_kassa_default_tax',
             'method_mp',
             'debug_log',
+            'ya_kassa_default_payment_mode',
+            'ya_kassa_default_payment_subject',
+            'ya_kassa_default_delivery_payment_mode',
+            'ya_kassa_default_delivery_payment_subject',
         );
-        $taxes        = JSFactory::getAllTaxes();
+
+        $paymentModeEnum = array(
+            PaymentMode::FULL_PREPAYMENT    => 'Полная предоплата ('.PaymentMode::FULL_PREPAYMENT.')',
+            PaymentMode::PARTIAL_PREPAYMENT => 'Частичная предоплата ('.PaymentMode::PARTIAL_PREPAYMENT.')',
+            PaymentMode::ADVANCE            => 'Аванс ('.PaymentMode::ADVANCE.')',
+            PaymentMode::FULL_PAYMENT       => 'Полный расчет ('.PaymentMode::FULL_PAYMENT.')',
+            PaymentMode::PARTIAL_PAYMENT    => 'Частичный расчет и кредит ('.PaymentMode::PARTIAL_PAYMENT.')',
+            PaymentMode::CREDIT             => 'Кредит ('.PaymentMode::CREDIT.')',
+            PaymentMode::CREDIT_PAYMENT     => 'Выплата по кредиту ('.PaymentMode::CREDIT_PAYMENT.')',
+        );
+
+        $paymentSubjectEnum = array(
+            PaymentSubject::COMMODITY             => 'Товар ('.PaymentSubject::COMMODITY.')',
+            PaymentSubject::EXCISE                => 'Подакцизный товар ('.PaymentSubject::EXCISE.')',
+            PaymentSubject::JOB                   => 'Работа ('.PaymentSubject::JOB.')',
+            PaymentSubject::SERVICE               => 'Услуга ('.PaymentSubject::SERVICE.')',
+            PaymentSubject::GAMBLING_BET          => 'Ставка в азартной игре ('.PaymentSubject::GAMBLING_BET.')',
+            PaymentSubject::GAMBLING_PRIZE        => 'Выигрыш в азартной игре ('.PaymentSubject::GAMBLING_PRIZE.')',
+            PaymentSubject::LOTTERY               => 'Лотерейный билет ('.PaymentSubject::LOTTERY.')',
+            PaymentSubject::LOTTERY_PRIZE         => 'Выигрыш в лотерею ('.PaymentSubject::LOTTERY_PRIZE.')',
+            PaymentSubject::INTELLECTUAL_ACTIVITY => 'Результаты интеллектуальной деятельности ('.PaymentSubject::INTELLECTUAL_ACTIVITY.')',
+            PaymentSubject::PAYMENT               => 'Платеж ('.PaymentSubject::PAYMENT.')',
+            PaymentSubject::AGENT_COMMISSION      => 'Агентское вознаграждение ('.PaymentSubject::AGENT_COMMISSION.')',
+            PaymentSubject::COMPOSITE             => 'Несколько вариантов ('.PaymentSubject::COMPOSITE.')',
+            PaymentSubject::ANOTHER               => 'Другое ('.PaymentSubject::ANOTHER.')',
+        );
+
+        $params['paymentModeEnum']    = $paymentModeEnum;
+        $params['paymentSubjectEnum'] = $paymentSubjectEnum;
+
+        $taxes = JSFactory::getAllTaxes();
 
         foreach ($taxes as $k => $tax) {
             $array_params[] = 'ya_kassa_tax_'.$k;
