@@ -23,7 +23,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.1.0');
+define('_JSHOP_YM_VERSION', '1.1.3');
 
 class pm_yandex_money extends PaymentRoot
 {

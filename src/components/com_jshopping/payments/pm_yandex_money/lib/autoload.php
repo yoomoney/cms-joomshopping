@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('DS')) {
-    define(DS, DIRECTORY_SEPARATOR);
+    define('DS', DIRECTORY_SEPARATOR);
 }
 
 require_once dirname(__FILE__) . DS . 'yandex-checkout-sdk/lib' . DS . 'autoload.php';

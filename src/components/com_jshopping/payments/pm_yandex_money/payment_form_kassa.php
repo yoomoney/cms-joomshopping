@@ -28,6 +28,7 @@ if ($pmConfigs['paymode'] != '1') : ?>
             \YandexCheckout\Model\PaymentMethodType::ALFABANK       => 'AB',
             \YandexCheckout\Model\PaymentMethodType::QIWI           => 'QW',
             \YandexCheckout\Model\PaymentMethodType::INSTALLMENTS   => 'installments',
+            \YandexCheckout\Model\PaymentMethodType::TINKOFF_BANK   => \YandexCheckout\Model\PaymentMethodType::TINKOFF_BANK,
         );
         $num += 0;
         foreach ($listMethods as $long => $short) :
@@ -83,14 +84,14 @@ function check_pm_yandex_money() {
     if (checkList.value === 'qiwi') {
         var phone = form['params[pm_yandex_money][qiwiPhone]'].value.replace(/[^\d]+/, '');
         if (phone.length == 0) {
-            jQuery('#ym-qiwi-phone-error').text('<?= constant(_JSHOP_YM_FILL_PHONE_MESSAGE)?>');
+            jQuery('#ym-qiwi-phone-error').text('<?= constant('_JSHOP_YM_FILL_PHONE_MESSAGE')?>');
             return;
         }
     }
     if (checkList.value === 'alfabank') {
         var login = form['params[pm_yandex_money][alfaLogin]'].value.trim();
         if (login.length == 0) {
-            jQuery('#ym-alfa-login-error').text('<?= constant(_JSHOP_YM_FILL_ALFA_CLICK_LOGIN)?>');
+            jQuery('#ym-alfa-login-error').text('<?= constant('_JSHOP_YM_FILL_ALFA_CLICK_LOGIN')?>');
             return;
         }
     }
