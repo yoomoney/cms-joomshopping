@@ -15,5 +15,5 @@ $cart_data = JSFactory::getModel('cart', 'jshop');
 $cart_data->load();
 ?>
 
-<input type="hidden" name="params[pm_yandex_money][payment_type]" value="ym-b2b-sberbank"
+<input type="hidden" name="params[pm_yandex_money_sbbol][payment_type]" value="ym-b2b-sberbank"
        id="pm_yandex_money_payment_type"/>

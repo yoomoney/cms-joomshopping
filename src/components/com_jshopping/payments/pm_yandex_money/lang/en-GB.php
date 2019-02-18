@@ -60,6 +60,7 @@ define('_JSHOP_YM_METHOD_SBERBANK_DESCRIPTION', 'Sberbank Online');
 define('_JSHOP_YM_METHOD_MA_DESCRIPTION', 'MasterPass');
 define('_JSHOP_YM_METHOD_PB_DESCRIPTION', 'Promsvyazbank');
 define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');
+define('_JSHOP_YM_METHOD_TINKOFF_BANK_DESCRIPTION', 'Tinkoff online banking');
 define('_JSHOP_YM_METHOD_MP_DESCRIPTION', 'Mobile payment kiosk');
 define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION', 'Installments');
 define('_JSHOP_YM_METHOD_INSTALLMENTS_AMOUNT', ' (%s ₽ per month)');

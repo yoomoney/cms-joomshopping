@@ -20,7 +20,7 @@ use YandexCheckout\Request\Payments\Payment\CreateCaptureRequestBuilder;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YM_VERSION)) {
-    define('_JSHOP_YM_VERSION', '1.1.2');
+    define('_JSHOP_YM_VERSION', '1.1.3');
 }
 
 
@@ -343,12 +343,13 @@ class KassaPaymentMethod
         }
 
         if ($order->shipping_method_id && $shipping) {
+            $shippingPrice = $order->order_shipping;
             if (!empty($this->taxRates[$shipping->shipping_tax_id])) {
                 $taxId = $this->taxRates[$shipping->shipping_tax_id];
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $taxId,
+                $builder->addReceiptShipping($shipping->name, $shippingPrice, $taxId,
                     $this->defaultDeliveryPaymentMode, $this->defaultDeliveryPaymentSubject);
             } else {
-                $builder->addReceiptShipping($shipping->name, $shipping->shipping_stand_price, $defaultTaxRate,
+                $builder->addReceiptShipping($shipping->name, $shippingPrice, $defaultTaxRate,
                     $this->defaultDeliveryPaymentMode, $this->defaultDeliveryPaymentSubject);
             }
         }

@@ -65,6 +65,7 @@ define('_JSHOP_YM_METHOD_MOBILE_BALANCE_DESCRIPTION', 'Баланс мобиль
 define('_JSHOP_YM_METHOD_WEBMONEY_DESCRIPTION', 'Кошелек WebMoney');
 define('_JSHOP_YM_METHOD_ALFABANK_DESCRIPTION', 'Альфа-Клик');
 define('_JSHOP_YM_METHOD_SBERBANK_DESCRIPTION', 'Сбербанк Онлайн');
+define('_JSHOP_YM_METHOD_TINKOFF_BANK_DESCRIPTION', 'Интернет-банк Тинькофф');
 define('_JSHOP_YM_METHOD_MA_DESCRIPTION', 'MasterPass');
 define('_JSHOP_YM_METHOD_PB_DESCRIPTION', 'Интернет-банк Промсвязьбанка');
 define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');
