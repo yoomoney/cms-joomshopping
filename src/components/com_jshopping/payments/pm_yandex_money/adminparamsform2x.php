@@ -155,11 +155,11 @@ foreach ($list_methods as $m_long => $m_short) : ?>
                     <td>
                         <select name="pm_params[ya_kassa_tax_<?php echo $k; ?>]" class=" fixed-width-xl" id="pm_params[ya_kassa_tax_<?php echo $k; ?>]">
                             <option <?php if ($params['ya_kassa_tax_'.$k] == 1) { ?> selected="selected" <?php } ?> value="1"><?= _JSHOP_YM_WITHOUT_VAT?></option>
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 2) { ?> selected="selected" <?php } ?> value="2">0%</option>
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 3) { ?> selected="selected" <?php } ?> value="3">10%</option>
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 4) { ?> selected="selected" <?php } ?> value="4">18%</option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 2) { ?> selected="selected" <?php } ?> value="2"><?= _JSHOP_YM_VAT_0?></option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 3) { ?> selected="selected" <?php } ?> value="3"><?= _JSHOP_YM_VAT_10?></option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 4) { ?> selected="selected" <?php } ?> value="4"><?= _JSHOP_YM_VAT_20?></option>
                             <option <?php if ($params['ya_kassa_tax_'.$k] == 5) { ?> selected="selected" <?php } ?> value="5"><?= _JSHOP_YM_VAT_10_100?></option>
-                            <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?> value="6"><?= _JSHOP_YM_VAT_18_118?></option>
+                            <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?> value="6"><?= _JSHOP_YM_VAT_20_120?></option>
                         </select>
                     </td>
                 </tr>
