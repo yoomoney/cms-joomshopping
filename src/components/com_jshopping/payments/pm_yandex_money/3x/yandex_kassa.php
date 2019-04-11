@@ -226,18 +226,15 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
                     <option <?php if ($params['ya_kassa_default_tax'] == 1) { ?> selected="selected" <?php } ?>
                             value="1"><?= _JSHOP_YM_WITHOUT_VAT ?></option>
                     <option <?php if ($params['ya_kassa_default_tax'] == 2) { ?> selected="selected" <?php } ?>
-                            value="2">0%
-                    </option>
+                            value="2"><?= _JSHOP_YM_VAT_0 ?></option>
                     <option <?php if ($params['ya_kassa_default_tax'] == 3) { ?> selected="selected" <?php } ?>
-                            value="3">10%
-                    </option>
+                            value="3"><?= _JSHOP_YM_VAT_10 ?></option>
                     <option <?php if ($params['ya_kassa_default_tax'] == 4) { ?> selected="selected" <?php } ?>
-                            value="4">18%
-                    </option>
+                            value="4"><?= _JSHOP_YM_VAT_20 ?></option>
                     <option <?php if ($params['ya_kassa_default_tax'] == 5) { ?> selected="selected" <?php } ?>
                             value="5"><?= _JSHOP_YM_VAT_10_100 ?></option>
                     <option <?php if ($params['ya_kassa_default_tax'] == 6) { ?> selected="selected" <?php } ?>
-                            value="6"><?= _JSHOP_YM_VAT_18_118 ?></option>
+                            value="6"><?= _JSHOP_YM_VAT_20_120 ?></option>
                 </select>
                 <p class="help-block"><?= _JSHOP_YM_DEFAULT_TAX_DESCRIPTION; ?></p>
             </div>
@@ -261,18 +258,15 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
                         <option <?php if ($params['ya_kassa_tax_'.$k] == 1) { ?> selected="selected" <?php } ?>
                                 value="1"><?= _JSHOP_YM_WITHOUT_VAT ?></option>
                         <option <?php if ($params['ya_kassa_tax_'.$k] == 2) { ?> selected="selected" <?php } ?>
-                                value="2">0%
-                        </option>
+                                value="2"><?= _JSHOP_YM_VAT_0 ?></option>
                         <option <?php if ($params['ya_kassa_tax_'.$k] == 3) { ?> selected="selected" <?php } ?>
-                                value="3">10%
-                        </option>
+                                value="3"><?= _JSHOP_YM_VAT_10 ?></option>
                         <option <?php if ($params['ya_kassa_tax_'.$k] == 4) { ?> selected="selected" <?php } ?>
-                                value="4">18%
-                        </option>
+                                value="4"><?= _JSHOP_YM_VAT_20 ?></option>
                         <option <?php if ($params['ya_kassa_tax_'.$k] == 5) { ?> selected="selected" <?php } ?>
                                 value="5"><?= _JSHOP_YM_VAT_10_100 ?></option>
                         <option <?php if ($params['ya_kassa_tax_'.$k] == 6) { ?> selected="selected" <?php } ?>
-                                value="6"><?= _JSHOP_YM_VAT_18_118 ?></option>
+                                value="6"><?= _JSHOP_YM_VAT_20_120 ?></option>
                     </select>
                 </div>
             </div>
