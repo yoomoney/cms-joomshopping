@@ -317,29 +317,30 @@ class pm_yandex_money_sbbol extends PaymentRoot
                         $order->changeProductQTYinStock("-");
                     }
                     $checkout->changeStatusOrder($order->order_id, $endStatus, 0);
-                    $this->saveOrderHistory($order, sprintf(_JSHOP_YM_HOLD_MODE_COMMENT_ON_HOLD,
-                        $payment->getExpiresAt()->format('d.m.Y H:i')));
-
-                    $payerBankDetails = $payment->getPaymentMethod()->getPayerBankDetails();
-
-                    $fields  = array(
-                        'fullName'   => 'Полное наименование организации',
-                        'shortName'  => 'Сокращенное наименование организации',
-                        'adress'     => 'Адрес организации',
-                        'inn'        => 'ИНН организации',
-                        'kpp'        => 'КПП организации',
-                        'bankName'   => 'Наименование банка организации',
-                        'bankBranch' => 'Отделение банка организации',
-                        'bankBik'    => 'БИК банка организации',
-                        'account'    => 'Номер счета организации',
-                    );
                     $message = '';
+                    $paymentMethod = $payment->getPaymentMethod();
+                    if($paymentMethod->getType() == PaymentMethodType::B2B_SBERBANK) {
+                        $payerBankDetails = $payment->getPaymentMethod()->getPayerBankDetails();
 
-                    foreach ($fields as $field => $caption) {
-                        if (isset($requestData[$field])) {
-                            $message .= $caption.': '.$payerBankDetails->offsetGet($field).'\n';
+                        $fields  = array(
+                            'fullName'   => 'Полное наименование организации',
+                            'shortName'  => 'Сокращенное наименование организации',
+                            'adress'     => 'Адрес организации',
+                            'inn'        => 'ИНН организации',
+                            'kpp'        => 'КПП организации',
+                            'bankName'   => 'Наименование банка организации',
+                            'bankBranch' => 'Отделение банка организации',
+                            'bankBik'    => 'БИК банка организации',
+                            'account'    => 'Номер счета организации',
+                        );
+
+                        foreach ($fields as $field => $caption) {
+                            if (isset($requestData[$field])) {
+                                $message .= $caption.': '.$payerBankDetails->offsetGet($field).'\n';
+                            }
                         }
                     }
+
                     if (!empty($message)) {
                         $this->saveOrderHistory($order, $message);
                     }
