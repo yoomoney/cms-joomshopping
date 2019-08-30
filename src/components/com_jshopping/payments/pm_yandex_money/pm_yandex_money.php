@@ -23,7 +23,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.1.5');
+define('_JSHOP_YM_VERSION', '1.1.6');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -148,6 +148,8 @@ class pm_yandex_money extends PaymentRoot
      * function call in admin
      *
      * @param string|array $params
+     * @return void
+     *
      */
     public function showAdminFormParams($params)
     {
@@ -256,6 +258,10 @@ class pm_yandex_money extends PaymentRoot
             PaymentSubject::ANOTHER               => 'Другое ('.PaymentSubject::ANOTHER.')',
         );
 
+        if (!is_array($params)) {
+            $params = array();
+        }
+
         $params['paymentModeEnum']    = $paymentModeEnum;
         $params['paymentSubjectEnum'] = $paymentSubjectEnum;
 
@@ -265,9 +271,6 @@ class pm_yandex_money extends PaymentRoot
             $array_params[] = 'ya_kassa_tax_'.$k;
         }
 
-        if (!is_array($params)) {
-            $params = array();
-        }
         foreach ($array_params as $key) {
             if (!isset($params[$key])) {
                 $params[$key] = '';
@@ -497,9 +500,9 @@ class pm_yandex_money extends PaymentRoot
     {
         if ($this->mode == self::MODE_MONEY) {
             $string = $callbackParams['notification_type'].'&'.$callbackParams['operation_id'].'&'
-                      .$callbackParams['amount'].'&'.$callbackParams['currency'].'&'.$callbackParams['datetime'].'&'
-                      .$callbackParams['sender'].'&'.$callbackParams['codepro'].'&'.$this->ym_password.'&'
-                      .$callbackParams['label'];
+                .$callbackParams['amount'].'&'.$callbackParams['currency'].'&'.$callbackParams['datetime'].'&'
+                .$callbackParams['sender'].'&'.$callbackParams['codepro'].'&'.$this->ym_password.'&'
+                .$callbackParams['label'];
             $check  = (sha1($string) == $callbackParams['sha1_hash']);
             if (!$check) {
                 header('HTTP/1.0 401 Unauthorized');
@@ -729,7 +732,18 @@ class pm_yandex_money extends PaymentRoot
     function showEndForm($pmConfigs, $order)
     {
         $this->ym_test_mode = isset($pmConfigs['testmode']) ? $pmConfigs['testmode'] : false;
+
         $this->mode         = $this->getMode($pmConfigs);
+
+        if (!isset($pmConfigs['paymode'])) {
+            $this->log('error', 'Please activate payment method');
+            $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+            JError::raiseWarning('', _JSHOP_ERROR_PAYMENT);
+            $app         = JFactory::getApplication();
+
+            $app->redirect($redirectUrl);
+        }
+
         if ($this->mode === self::MODE_KASSA) {
             $this->processKassaPayment($pmConfigs, $order);
             // если произошла ошибка, редиректим на шаг выбора метода оплаты
@@ -807,7 +821,7 @@ class pm_yandex_money extends PaymentRoot
     {
         $uri         = JURI::getInstance();
         $redirectUrl = $uri->toString(array('scheme', 'host', 'port'))
-                       .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&no_lang=1&order_id=".$order->order_id);
+            .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&no_lang=1&order_id=".$order->order_id);
         $redirectUrl = htmlspecialchars_decode($redirectUrl);
 
         /** @var jshopCart $cart */
@@ -939,10 +953,10 @@ class pm_yandex_money extends PaymentRoot
     {
         if ($this->mode == -1) {
             $this->mode = self::MODE_OFF;
-            if ($paymentConfig['kassamode'] == '1') {
+            if (isset($paymentConfig['kassamode']) && $paymentConfig['kassamode'] == '1') {
                 $this->mode        = self::MODE_KASSA;
                 $this->ym_password = $paymentConfig['shoppassword'];
-            } elseif ($paymentConfig['moneymode'] == '1') {
+            } elseif (isset($paymentConfig['moneymode']) && $paymentConfig['moneymode'] == '1') {
                 $this->mode        = self::MODE_MONEY;
                 $this->ym_password = $paymentConfig['password'];
             } elseif (isset($paymentConfig['paymentsmode']) && $paymentConfig['paymentsmode'] == '1') {
