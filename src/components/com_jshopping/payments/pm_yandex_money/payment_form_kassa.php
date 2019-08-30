@@ -53,8 +53,10 @@ if ($pmConfigs['paymode'] != '1') : ?>
                 </tr>
                 <?php if ($long === \YandexCheckout\Model\PaymentMethodType::ALFABANK) : ?>
                 <tr class="highlight additional-field" id="ym-alfa-login-block" style="display:none;">
-                    <td colspan="3">
-                        <label for="ym-alfa-login"><?= constant(_JSHOP_YM_ALFA_CLICK_TEXT)?></label><br />
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <label for="ym-alfa-login"><?=constant("_JSHOP_YM_ALFA_CLICK_TEXT")?></label><br />
                         <input type="text" name="params[pm_yandex_money][alfaLogin]" value="" id="ym-alfa-login" />
                         <div id="ym-alfa-login-error"></div>
                     </td>
@@ -62,8 +64,10 @@ if ($pmConfigs['paymode'] != '1') : ?>
                 <?php endif; ?>
                 <?php if ($long === \YandexCheckout\Model\PaymentMethodType::QIWI) : ?>
                 <tr class="highlight additional-field" id="ym-qiwi-phone-block" style="display:none;">
-                    <td colspan="3">
-                        <label for="ym-qiwi-phone"><?= constant(_JSHOP_YM_QIWI_PHONE_TEXT)?></label><br />
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <label for="ym-qiwi-phone"><?=constant("_JSHOP_YM_QIWI_PHONE_TEXT")?></label><br />
                         <input type="text" name="params[pm_yandex_money][qiwiPhone]" value="" id="ym-qiwi-phone" />
                         <div id="ym-qiwi-phone-error"></div>
                     </td>

@@ -5,7 +5,8 @@ use YandexCheckout\Request\Payments\Payment\CreateCaptureRequest;
 
 defined('_JEXEC') or die('Restricted access');
 
-include dirname(__FILE__).'/../../../components/com_jshopping/payments/pm_yandex_money/pm_yandex_money.php';
+require_once dirname(__FILE__).'/../../../components/com_jshopping/payments/payment.php';
+require_once dirname(__FILE__).'/../../../components/com_jshopping/payments/pm_yandex_money/pm_yandex_money.php';
 
 class plgJshoppingAdminPm_yandex_money extends JPlugin
 {
