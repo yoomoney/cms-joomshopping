@@ -47,10 +47,10 @@ function escapeValue($value)
         <div class="row">
             <div class="span11 offset1">
                 <div class="form-group">
-                    <div class="span2"><label for="pm_params[shopid]">shopId</label></div>
+                    <div class="span2"><label for="pm_params[shop_id]">shopId</label></div>
                     <div class="span8">
-                        <input name="pm_params[shopid]" type="text" class="form-control" id="pm_params[shop_id]"
-                               value="<?php echo escapeValue($params['shopid']); ?>">
+                        <input name="pm_params[shop_id]" type="text" class="form-control" id="pm_params[shop_id]"
+                               value="<?php echo escapeValue($params['shop_id']); ?>">
                         <p class="help-block"><?php echo _JSHOP_YM_KASSA_SHOP_ID_DESCRIPTION; ?></p>
                     </div>
                 </div>
@@ -59,11 +59,11 @@ function escapeValue($value)
         <div class="row">
             <div class="span11 offset1">
                 <div class="form-group">
-                    <div class="span2"><label for="pm_params[shoppassword]" class="">Секретное слово</label></div>
+                    <div class="span2"><label for="pm_params[shop_password]" class="">Секретное слово</label></div>
                     <div class="span8">
-                        <input name="pm_params[shoppassword]" type="text" class="form-control"
-                               id="pm_params[shoppassword]"
-                               value="<?php echo escapeValue($params['shoppassword']); ?>">
+                        <input name="pm_params[shop_password]" type="text" class="form-control"
+                               id="pm_params[shop_password]"
+                               value="<?php echo escapeValue($params['shop_password']); ?>">
                         <p class="help-block"><?php echo _JSHOP_YM_KASSA_PASSWORD_DESCRIPTION; ?></p>
                     </div>
                 </div>
