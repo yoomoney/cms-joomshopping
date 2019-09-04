@@ -9,8 +9,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-if ($pmconfigs['paymentsmode'] != '3') {
-    if (empty($pmconfigs['ya_payments_fio'])) {
+if ($pmConfigs['paymentsmode'] != '3') {
+    if (empty($pmConfigs['ya_payments_fio'])) {
         $parts = array();
         $user = JSFactory::getUserShop();
         if (!empty($user->l_name)) {
@@ -22,19 +22,28 @@ if ($pmconfigs['paymentsmode'] != '3') {
         if (!empty($user->m_name)) {
             $parts[] = $user->m_name;
         }
-        $pmconfigs['ya_payments_fio'] = implode(' ', $parts);
+        $pmConfigs['ya_payments_fio'] = implode(' ', $parts);
     }
 }
 
-if (isset($pmconfigs['kassamode']) && $pmconfigs['paymode']=='1' && $pmconfigs['kassamode']=='1') return; ?>
+if (isset($pmConfigs['kassamode']) && $pmConfigs['paymode']=='1' && $pmConfigs['kassamode']=='1') return; ?>
 <table class="radio" style="margin-left: 50px;">
     <tbody>
     <?php
-    if ($pmconfigs['paymentsmode'] != '1') {
-        $list_methods=(isset($pmconfigs['kassamode']) && $pmconfigs['kassamode']!='1')?array('ym2'=>'PC','cards2'=>'AC'):array('ym'=>'PC','cards'=>'AC','cash'=>'GP','phone'=>'MC','wm'=>'WM','sb'=>'SB','ab'=>'AB','pb'=>'PB','ma'=>'MA', 'qw'=>'QW', 'qp'=>'QP', 'mp'=>'MP');
+    if ($pmConfigs['moneymode'] == '1') {
+        $list_methods = array();
+
+        if (isset($pmConfigs['method_ym2']) && $pmConfigs['method_ym2'] == '1') {
+            $list_methods['ym2'] = 'PC';
+        }
+
+        if (isset($pmConfigs['method_cards2']) && $pmConfigs['method_cards2'] == '1') {
+            $list_methods['cards2'] = 'AC';
+        }
+
         $num+=0;
         foreach ($list_methods as $m_long => $m_short) {
-            if (isset($pmconfigs['method_' . $m_long]) && $pmconfigs['method_' . $m_long] == '1' || ($pmconfigs['moneymode'] == '1' && ($m_short == "PC" || $m_short == "AC"))) {
+            if (isset($pmConfigs['method_' . $m_long]) && $pmConfigs['method_' . $m_long] == '1' || ($pmConfigs['moneymode'] == '1' && ($m_short == "PC" || $m_short == "AC"))) {
                 $num += 1; ?>
                 <tr class="highlight">
                     <td><input type="radio" name="params[pm_yandex_money][ym-payment-type]"
@@ -51,13 +60,13 @@ if (isset($pmconfigs['kassamode']) && $pmconfigs['paymode']=='1' && $pmconfigs['
                 </tr>
             <?php }
         }
-    } else { ?>
+    } elseif ($pmConfigs['paymentsmode'] == '1') { ?>
         <tr>
             <td width="150" rowspan="2" valign="top" style="padding-top: 5px;">
                 <label for="ya_payments_fio"><?php echo _JSHOP_YM_PAYMENTS_FIO_LABEL; ?></label>
             </td>
             <td>
-                <input type="text" class="inputbox" name="params[pm_yandex_money][ya_payments_fio]" id="ya_payments_fio" value="<?php print $pmconfigs['ya_payments_fio']?>"/>
+                <input type="text" class="inputbox" name="params[pm_yandex_money][ya_payments_fio]" id="ya_payments_fio" value="<?php print $pmConfigs['ya_payments_fio']?>"/>
             </td>
         </tr>
         <tr>
@@ -70,7 +79,7 @@ if (isset($pmconfigs['kassamode']) && $pmconfigs['paymode']=='1' && $pmconfigs['
  </table>
 <script type="text/javascript">
 function check_pm_yandex_money(){
-    <?php if ($pmconfigs['paymentsmode'] == '1') : ?>
+    <?php if ($pmConfigs['paymentsmode'] == '1') : ?>
     var value = jQuery("#ya_payments_fio").val().trim();
     if (value.length == 0) {
         jQuery("#ya_payments_fio_error").text('<?php echo _JSHOP_YM_PAYMENTS_EMPTY_NAME_ERROR; ?>');

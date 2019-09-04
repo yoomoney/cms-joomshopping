@@ -23,7 +23,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.1.6');
+define('_JSHOP_YM_VERSION', '1.1.7');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -64,6 +64,7 @@ class pm_yandex_money extends PaymentRoot
     {
         $this->loadLanguageFile();
         $this->mode = $this->getMode($pmConfigs);
+
         if ($this->mode === self::MODE_KASSA) {
             include(dirname(__FILE__)."/payment_form_kassa.php");
         } else {
@@ -95,7 +96,14 @@ class pm_yandex_money extends PaymentRoot
     public function checkPaymentInfo($params, $pmConfigs)
     {
         $this->mode = $this->getMode($pmConfigs);
-        if ($this->mode == self::MODE_PAYMENTS) {
+
+
+        if ($this->mode === self::MODE_OFF) {
+            $this->log('error', 'Please activate payment method');
+            $this->setErrorMessage(_JSHOP_ERROR_PAYMENT);
+
+            return false;
+        } elseif ($this->mode === self::MODE_PAYMENTS) {
             // если платёжка, то проверяем ФИО указанные пользователем
             if (empty($params) || empty($params['ya_payments_fio'])) {
                 return false;
@@ -735,15 +743,6 @@ class pm_yandex_money extends PaymentRoot
 
         $this->mode         = $this->getMode($pmConfigs);
 
-        if (!isset($pmConfigs['paymode'])) {
-            $this->log('error', 'Please activate payment method');
-            $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
-            JError::raiseWarning('', _JSHOP_ERROR_PAYMENT);
-            $app         = JFactory::getApplication();
-
-            $app->redirect($redirectUrl);
-        }
-
         if ($this->mode === self::MODE_KASSA) {
             $this->processKassaPayment($pmConfigs, $order);
             // если произошла ошибка, редиректим на шаг выбора метода оплаты
@@ -751,7 +750,7 @@ class pm_yandex_money extends PaymentRoot
             $app         = JFactory::getApplication();
             $app->redirect($redirectUrl);
         }
-        $this->ym_pay_mode = ($pmConfigs['paymode'] == '1');
+        $this->ym_pay_mode = (isset($pmConfigs['paymode']) && $pmConfigs['paymode'] == '1');
 
         $uri         = JURI::getInstance();
         $liveUrlHost = $uri->toString(array("scheme", 'host', 'port'));
@@ -819,6 +818,7 @@ class pm_yandex_money extends PaymentRoot
 
     public function processKassaPayment($pmConfigs, $order)
     {
+        $app         = JFactory::getApplication();
         $uri         = JURI::getInstance();
         $redirectUrl = $uri->toString(array('scheme', 'host', 'port'))
             .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yandex_money&no_lang=1&order_id=".$order->order_id);
@@ -832,7 +832,13 @@ class pm_yandex_money extends PaymentRoot
             $cart->load('cart');
         }
 
-        $payment = $this->getKassaPaymentMethod($pmConfigs)->createPayment($order, $cart, $redirectUrl);
+        try {
+            $payment = $this->getKassaPaymentMethod($pmConfigs)->createPayment($order, $cart, $redirectUrl);
+        } catch (\Exception $e) {
+            $redirect = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
+            $app->enqueueMessage(_JSHOP_YM_ERROR_MESSAGE_CREATE_PAYMENT, 'error');
+            $app->redirect($redirectUrl);
+        }
 
         $redirect = $redirectUrl;
         if ($payment !== null) {
@@ -843,10 +849,9 @@ class pm_yandex_money extends PaymentRoot
             $this->getOrderModel()->savePayment($order->order_id, $payment);
         } else {
             $redirect = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
-            $this->setErrorMessage(_JSHOP_YM_ERROR_MESSAGE_CREATE_PAYMENT);
+            $app->enqueueMessage(_JSHOP_YM_ERROR_MESSAGE_CREATE_PAYMENT, 'error');
         }
 
-        $app = JFactory::getApplication();
         $app->redirect($redirect);
     }
 

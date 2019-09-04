@@ -3,6 +3,7 @@
 
 namespace YandexMoney\Model;
 
+use http\Exception;
 use YandexCheckout\Client;
 use YandexCheckout\Common\Exceptions\NotFoundException;
 use YandexCheckout\Model\ConfirmationType;
@@ -20,7 +21,7 @@ use YandexCheckout\Request\Payments\Payment\CreateCaptureRequestBuilder;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YM_VERSION)) {
-    define('_JSHOP_YM_VERSION', '1.1.6');
+    define('_JSHOP_YM_VERSION', '1.1.7');
 }
 
 
@@ -166,8 +167,7 @@ class KassaPaymentMethod
             $payment = $this->getClient()->createPayment($request);
         } catch (\Exception $e) {
             $this->module->log('error', 'Failed to create payment: '.$e->getMessage());
-
-            return null;
+            throw $e;
         }
 
         return $payment;
@@ -247,8 +247,7 @@ class KassaPaymentMethod
             $payment = $this->getClient()->createPayment($request);
         } catch (\Exception $e) {
             $this->module->log('error', 'Failed to create payment: '.$e->getMessage());
-
-            return null;
+            throw $e;
         }
 
         return $payment;
