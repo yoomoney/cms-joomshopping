@@ -99,7 +99,7 @@ class OrderModel
         $query = $this->_db->getQuery(true);
         $query->update('#__ya_money_payments')
             ->set(
-                $this->_db->quoteName('payment_id') . ' = ' . $this->_db->quoteName('payment_id') . ',' .
+                $this->_db->quoteName('payment_id') . ' = ' . $this->_db->quote($payment->getId()) . ',' .
                 $this->_db->quoteName('status') . ' = ' . $this->_db->quote($payment->getStatus()) . ',' .
                 $this->_db->quoteName('amount') . ' = ' . $this->_db->quote($payment->getAmount()->getValue()) . ',' .
                 $this->_db->quoteName('currency') . ' = ' . $this->_db->quote($payment->getAmount()->getCurrency()) . ',' .

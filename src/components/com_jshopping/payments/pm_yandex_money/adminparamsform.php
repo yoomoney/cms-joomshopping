@@ -72,6 +72,18 @@ function escapeValue($value)
             }
         });
     }
+
+    function toggleShowSecondReceipt(isShow)
+    {
+        jQuery(function($) {
+            if (isShow == 1) {
+                $(".secondReceiptArea").show();
+            } else {
+                $(".secondReceiptArea").hide();
+            }
+        });
+    }
+
     function taxes_validate_mode(paymode) {
         jQuery(function($) {
             if (paymode == 1) {
@@ -107,6 +119,15 @@ function escapeValue($value)
                 });
             }
         });
+
+        jQuery(function ($) {
+            toggleShowSecondReceipt($("input[name='pm_params[send_second_receipt]']:checked").val());
+
+            $("input[name='pm_params[send_second_receipt]']").on('change', function (e) {
+                toggleShowSecondReceipt($(this).val());
+            })
+        });
+
         jQuery('.transaction-end-status').change(function () {
             var id = this.dataset.type;
             if (document.getElementById(id).checked) {
