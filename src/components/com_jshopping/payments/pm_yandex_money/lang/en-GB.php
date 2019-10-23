@@ -28,6 +28,11 @@ define('_JSHOP_YM_KASSA_PASSWORD_DESCRIPTION', 'Issue and activate a secret key 
 define('_JSHOP_YM_KASSA_PAYMODE_HEAD', 'Check the preferable scenario of selecting the payment method');
 define('_JSHOP_YM_KASSA_PAYMODE_LABEL', 'Select payment method');
 define('_JSHOP_YM_KASSA_SEND_RECEIPT_LABEL', 'Transmit details for receipts to Yandex.Checkout (Federal Law 54-FZ)');
+define('_JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_LABEL', 'Второй чек:');
+define('_JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_STATUS_LABEL', 'Формировать второй чек при переходе заказа в статус');
+define('_JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_INFO', 'Два чека нужно формировать, если покупатель вносит предоплату и потом получает товар или услугу. Первый чек — когда деньги поступают вам на счёт, второй — при отгрузке товаров или выполнении услуг.');
+define('_JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_HELP_BLOCK', 'Если в заказе будут позиции с признаками «Полная предоплата» — второй чек отправится автоматически, когда заказ перейдёт в выбранный статус.');
+define('_JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_HISTORY', 'Отправлен второй чек. Сумма %s рублей.');
 define('_JSHOP_YM_KASSA_PAYMODE_KASSA', 'On Yandex.Checkout\'s site');
 define('_JSHOP_YM_KASSA_PAYMODE_SHOP', 'On the store\'s site');
 define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/doc/payment-solution/payment-form/payment-form-docpage/\' target=\'_blank\'>More about payment scenarios</a>');

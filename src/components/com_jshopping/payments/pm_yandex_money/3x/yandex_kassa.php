@@ -110,7 +110,7 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
         </div>
     </div>
 <?php foreach (\YandexCheckout\Model\PaymentMethodType::getEnabledValues() as $value) : ?>
-    <?php if ($value != \YandexCheckout\Model\PaymentMethodType::B2B_SBERBANK): ?>
+    <?php if (!in_array($value, $offPaymentMethods)): ?>
         <div class="row with-select">
             <div class="span11 offset1">
                 <div class="span8 offset2">
@@ -330,13 +330,54 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
         </div>
     </div>
 
+    <div class="taxesArea row">
+        <div class="span11 offset1">
+            <div class="span8 offset2">
+                <?= _JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_LABEL ?>
+                <label>
+                    <input style="vertical-align:middle;margin:-2px 3px 0 0;cursor: pointer" name="pm_params[send_second_receipt]" <?= $params['send_second_receipt'] ? "checked" : "" ?> type="radio" value="1">
+                    <?= _JSHOP_YM_ENABLE ?>
+                </label>
+
+                <label>
+                    <input style="vertical-align:middle;margin:-2px 3px 0 0;cursor: pointer" name="pm_params[send_second_receipt]" <?= $params['send_second_receipt'] ? "" : "checked" ?> type="radio" value="0">
+                    <?= _JSHOP_YM_DISABLE ?>
+                </label>
+            </div>
+            <div class="secondReceiptArea row offset2">
+                <div class="span8">
+                    <?= _JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_INFO ?>
+                </div>
+                <table style="max-width: 700px" class="table table-hover">
+                    <tbody>
+                    <tr>
+                        <td style="border: none">
+                            <?=_JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_STATUS_LABEL?>
+                        </td>
+                        <td style="border: none">
+                            <?php
+                            print JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
+                                'pm_params[kassa_second_receipt_status]',
+                                '', 'status_id', 'name',
+                                $params['kassa_second_receipt_status']);
+                            ?>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p class="help-block">
+                    <?= _JSHOP_YM_KASSA_SEND_SECOND_RECEIPT_HELP_BLOCK ?>
+                </p>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="span11 offset1" style="padding-top: 10px;">
             <div class="form-group">
                 <div class="span2"><label class=""><?= _JSHOP_YM_NOTIFICATION_URL_LABEL ?></label></div>
                 <div class="span8">
-                    <input class="form-control span8 disabled" value="<?php echo escapeValue($notify_url); ?>" disabled><br>
-                    <p class="help-block"><?php echo _JSHOP_YM_NOTIFICATION_URL_HELP_TEXT; ?></p>
+                    <input class="form-control span8 disabled" value="<?= escapeValue($notify_url) ?>" disabled><br>
+                    <p class="help-block"><?= _JSHOP_YM_NOTIFICATION_URL_HELP_TEXT ?></p>
                 </div>
             </div>
         </div>
@@ -344,7 +385,7 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
 
     <div class="row">
         <div class="span11 offset1">
-            <h4><?php echo _JSHOP_YM_COMMON_HEAD; ?></h4>
+            <h4><?= _JSHOP_YM_COMMON_HEAD ?></h4>
         </div>
     </div>
     <div class="row">
@@ -355,10 +396,10 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
                 </div>
                 <div class="span8">
                     <?php
-                    print JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
-                        'pm_params[kassa_transaction_end_status]',
-                        'class="inputbox transaction-end-status" size="1" data-type="kassa"', 'status_id', 'name',
-                        $params['kassa_transaction_end_status']);
+                        print JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
+                            'pm_params[kassa_transaction_end_status]',
+                            'class="inputbox transaction-end-status" size="1" data-type="kassa"', 'status_id', 'name',
+                            $params['kassa_transaction_end_status']);
                     ?>
                 </div>
             </div>
@@ -388,9 +429,9 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div style="overflow:scroll;" class="modal-body">
                     <div style="padding:10px;">
-                        <pre id="logs-list" style="overflow:scroll;"></pre>
+                        <pre id="logs-list"></pre>
                     </div>
                 </div>
                 <div class="modal-footer">

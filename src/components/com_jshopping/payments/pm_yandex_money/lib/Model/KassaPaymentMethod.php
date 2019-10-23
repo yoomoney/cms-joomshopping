@@ -21,7 +21,7 @@ use YandexCheckout\Request\Payments\Payment\CreateCaptureRequestBuilder;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YM_VERSION)) {
-    define('_JSHOP_YM_VERSION', '1.1.7');
+    define('_JSHOP_YM_VERSION', '1.2.0');
 }
 
 
@@ -29,13 +29,9 @@ class KassaPaymentMethod
 {
     private $module;
     private $client;
-    private $shopId;
-    private $password;
     private $defaultTaxRateId;
     private $taxRates;
-    private $sendReceipt;
     private $descriptionTemplate;
-    private $isEnableHoldMode;
     private $pmconfigs;
     private $defaultPaymentMode;
     private $defaultPaymentSubject;
@@ -52,8 +48,6 @@ class KassaPaymentMethod
     {
         $this->pmconfigs           = $pmConfig;
         $this->module              = $module;
-        $this->shopId              = $pmConfig['shop_id'];
-        $this->password            = $pmConfig['shop_password'];
         $this->descriptionTemplate = !empty($pmConfig['ya_kassa_description_template'])
             ? $pmConfig['ya_kassa_description_template']
             : _JSHOP_YM_DESCRIPTION_DEFAULT_PLACEHOLDER;
@@ -87,19 +81,16 @@ class KassaPaymentMethod
                 $this->taxRates[$taxRateId] = $value;
             }
         }
-
-        $this->sendReceipt      = isset($pmConfig['ya_kassa_send_check']) && $pmConfig['ya_kassa_send_check'] == '1';
-        $this->isEnableHoldMode = isset($pmConfig['ya_kassa_enable_hold_mode']) && $pmConfig['ya_kassa_enable_hold_mode'] == '1';
     }
 
     public function getShopId()
     {
-        return $this->shopId;
+        return $this->pmconfigs['shop_id'];
     }
 
     public function getPassword()
     {
-        return $this->password;
+        return $this->pmconfigs['shop_password'];
     }
 
     /**
@@ -109,6 +100,7 @@ class KassaPaymentMethod
      *
      * @return null|\YandexCheckout\Request\Payments\CreatePaymentResponse
      *
+     * @throws \Exception
      * @since version
      */
     public function createPayment($order, $cart, $returnUrl)
@@ -149,7 +141,7 @@ class KassaPaymentMethod
             $builder->setConfirmation($confirmation);
 
             $receipt = null;
-            if (count($cart->products) && $this->sendReceipt) {
+            if (count($cart->products) && $this->isSendReceipt()) {
                 $this->factoryReceipt($builder, $cart->products, $order);
             }
 
@@ -174,6 +166,13 @@ class KassaPaymentMethod
     }
 
 
+    /**
+     * @param $order
+     * @param $cart
+     * @param $returnUrl
+     * @return \YandexCheckout\Request\Payments\CreatePaymentResponse|null
+     * @throws \SbbolException
+     */
     public function createSbbolPayment($order, $cart, $returnUrl)
     {
         try {
@@ -361,8 +360,12 @@ class KassaPaymentMethod
     {
         if ($this->client === null) {
             $this->client = new Client();
-            $this->client->setAuth($this->shopId, $this->password);
+            $this->client->setAuth($this->getShopId(), $this->getPassword());
             $this->client->setLogger($this->module);
+            $userAgent   = $this->client->getApiClient()->getUserAgent();
+            $userAgent->setCms('Joomla', \JPlatform::getLongVersion());
+            $userAgent->setFramework('Joomshopping', \JSFactory::getConfig()->getVersion());
+            $userAgent->setModule('Y.CMS Joomshopping ', _JSHOP_YM_VERSION);
         }
 
         return $this->client;
@@ -408,7 +411,7 @@ class KassaPaymentMethod
      */
     public function isEnableHoldMode()
     {
-        return $this->isEnableHoldMode;
+        return isset($this->pmconfigs['ya_kassa_enable_hold_mode']) && $this->pmconfigs['ya_kassa_enable_hold_mode'] == '1';
     }
 
     /**
@@ -430,6 +433,19 @@ class KassaPaymentMethod
      */
     public function isSendReceipt()
     {
-        return $this->sendReceipt;
+        return isset($this->pmconfigs['ya_kassa_send_check']) && $this->pmconfigs['ya_kassa_send_check'] == '1';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSendSecondReceipt()
+    {
+        return isset($this->pmconfigs['send_second_receipt']) && $this->pmconfigs['send_second_receipt'] == '1';
+    }
+
+    public function getSecondReceiptStatus()
+    {
+        return (int)$this->pmconfigs['kassa_second_receipt_status'];
     }
 }
