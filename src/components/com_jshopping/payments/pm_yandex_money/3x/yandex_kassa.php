@@ -7,6 +7,8 @@
  * @copyright Copyright (C) 2012-2017 YandexMoney. All rights reserved.
  */
 
+use YandexCheckout\Model\PaymentMethodType;
+
 defined('_JEXEC') or die('Restricted access');
 
 echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
@@ -109,21 +111,19 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
             <p><?php echo _JSHOP_YM_KASSA_SELECT_TEXT; ?></p>
         </div>
     </div>
-<?php foreach (\YandexCheckout\Model\PaymentMethodType::getEnabledValues() as $value) : ?>
-    <?php if (!in_array($value, $offPaymentMethods)): ?>
-        <div class="row with-select">
-            <div class="span11 offset1">
-                <div class="span8 offset2">
-                    <input type="checkbox" class="form-control input-kassa"
-                           name="pm_params[method_<?php echo $value; ?>]" value="1"
-                        <?php if ($params['method_'.$value] == '1') {
-                            echo "checked";
-                        } ?> />
-                    <?php echo constant('_JSHOP_YM_METHOD_'.strtoupper($value).'_DESCRIPTION'); ?>
-                </div>
+<?php foreach ($params['paymentMethods'] as $value) : ?>
+    <div class="row with-select">
+        <div class="span11 offset1">
+            <div class="span8 offset2">
+                <input type="checkbox" class="form-control input-kassa"
+                       name="pm_params[method_<?php echo $value; ?>]" value="1"
+                    <?php if ($params['method_'.$value] == '1') {
+                        echo "checked";
+                    } ?> />
+                <?php echo constant('_JSHOP_YM_METHOD_'.strtoupper($value).'_DESCRIPTION'); ?>
             </div>
         </div>
-    <?php endif; ?>
+    </div>
 <?php endforeach; ?>
     <div class="row">
         <div class="span11 offset1">

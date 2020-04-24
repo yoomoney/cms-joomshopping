@@ -7,9 +7,13 @@
  * @copyright Copyright (C) 2012-2017 YandexMoney. All rights reserved.
  */
 
+use YandexCheckout\Model\PaymentMethodType;
+
 defined('_JEXEC') or die('Restricted access');
 
 const INSTALLMENTS_MIN_AMOUNT = 3000;
+
+const PAYMENT_METHOD_WIDGET = 'widget';
 
 $cart_data = JSFactory::getModel('cart', 'jshop');
 $cart_data->load();
@@ -19,21 +23,22 @@ if ($pmConfigs['paymode'] != '1') : ?>
     <tbody>
     <?php
         $listMethods = array(
-            \YandexCheckout\Model\PaymentMethodType::YANDEX_MONEY   => 'PC',
-            \YandexCheckout\Model\PaymentMethodType::BANK_CARD      => 'AC',
-            \YandexCheckout\Model\PaymentMethodType::CASH           => 'GP',
-            \YandexCheckout\Model\PaymentMethodType::MOBILE_BALANCE => 'MC',
-            \YandexCheckout\Model\PaymentMethodType::WEBMONEY       => 'WM',
-            \YandexCheckout\Model\PaymentMethodType::SBERBANK       => 'SB',
-            \YandexCheckout\Model\PaymentMethodType::ALFABANK       => 'AB',
-            \YandexCheckout\Model\PaymentMethodType::QIWI           => 'QW',
-            \YandexCheckout\Model\PaymentMethodType::INSTALLMENTS   => 'installments',
-            \YandexCheckout\Model\PaymentMethodType::TINKOFF_BANK   => \YandexCheckout\Model\PaymentMethodType::TINKOFF_BANK,
+            PaymentMethodType::YANDEX_MONEY   => 'PC',
+            PaymentMethodType::BANK_CARD      => 'AC',
+            PaymentMethodType::CASH           => 'GP',
+            PaymentMethodType::MOBILE_BALANCE => 'MC',
+            PaymentMethodType::WEBMONEY       => 'WM',
+            PaymentMethodType::SBERBANK       => 'SB',
+            PaymentMethodType::ALFABANK       => 'AB',
+            PaymentMethodType::QIWI           => 'QW',
+            PaymentMethodType::INSTALLMENTS   => 'installments',
+            PaymentMethodType::TINKOFF_BANK   => PaymentMethodType::TINKOFF_BANK,
+            PAYMENT_METHOD_WIDGET             => PAYMENT_METHOD_WIDGET,
         );
         $num += 0;
         foreach ($listMethods as $long => $short) :
             if (isset($pmConfigs['method_' . $long]) && $pmConfigs['method_' . $long] == '1') :
-                if ($long === \YandexCheckout\Model\PaymentMethodType::INSTALLMENTS) {
+                if ($long === PaymentMethodType::INSTALLMENTS) {
                     if (isset($cart_data->price_product)
                         && ($cart_data->price_product < INSTALLMENTS_MIN_AMOUNT)) {
                         continue;
@@ -48,10 +53,10 @@ if ($pmConfigs['paymode'] != '1') : ?>
                     <td><img src="<?php echo JURI::root(); ?>components/com_jshopping/images/yandex_money/<?php echo strtolower($short); ?>.png">
                     </td>
                     <td>
-                        <label for="yandex_money_<?php echo $long; ?>"><?php echo constant('_JSHOP_YM_METHOD_' . strtoupper($long) . '_DESCRIPTION'); ?></label>
+                        <label for="yandex_money_<?php echo $long; ?>"><?php echo constant('_JSHOP_YM_METHOD_' . strtoupper($long) . '_DESCRIPTION_PUBLIC'); ?></label>
                     </td>
                 </tr>
-                <?php if ($long === \YandexCheckout\Model\PaymentMethodType::ALFABANK) : ?>
+                <?php if ($long === PaymentMethodType::ALFABANK) : ?>
                 <tr class="highlight additional-field" id="ym-alfa-login-block" style="display:none;">
                     <td></td>
                     <td></td>
@@ -62,7 +67,7 @@ if ($pmConfigs['paymode'] != '1') : ?>
                     </td>
                 </tr>
                 <?php endif; ?>
-                <?php if ($long === \YandexCheckout\Model\PaymentMethodType::QIWI) : ?>
+                <?php if ($long === PaymentMethodType::QIWI) : ?>
                 <tr class="highlight additional-field" id="ym-qiwi-phone-block" style="display:none;">
                     <td></td>
                     <td></td>
