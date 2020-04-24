@@ -62,6 +62,7 @@ define('_JSHOP_YM_KASSA_PAYMODE_LINK', '<a href=\'https://tech.yandex.ru/money/d
 define('_JSHOP_YM_KASSA_SELECT_TEXT', 'Отметьте способы оплаты, которые указаны в вашем договоре с Яндекс.Деньгами');
 define('_JSHOP_YM_KASSA_CREDENTIALS_ERROR', 'Проверьте shopId и Секретный ключ — где-то есть ошибка. А лучше скопируйте их прямо из <a href="https://kassa.yandex.ru/my" target="_blank">личного кабинета Яндекс.Кассы</a>');
 define('_JSHOP_YM_KASSA_TEST_WARNING', 'Вы включили тестовый режим приема платежей. Проверьте, как проходит оплата, и напишите менеджеру Кассы. Он выдаст рабочие shopId и Секретный ключ. <a href="https://yandex.ru/support/checkout/payments/api.html#api__04" target="_blank">Инструкция</a>');
+
 define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION', 'Яндекс.Деньги');
 define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION', 'Банковские карты');
 define('_JSHOP_YM_METHOD_BANK_CARD_DESCRIPTION', 'Банковские карты');
@@ -76,7 +77,26 @@ define('_JSHOP_YM_METHOD_PB_DESCRIPTION', 'Интернет-банк Промс�
 define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');
 define('_JSHOP_YM_METHOD_QP_DESCRIPTION', 'Доверительный платеж (Куппи.ру)');
 define('_JSHOP_YM_METHOD_MP_DESCRIPTION', 'Мобильный терминал');
+define('_JSHOP_YM_METHOD_WIDGET_DESCRIPTION', 'Платёжный виджет Кассы (карты, Apple Pay и Google Pay)');
 define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION', 'Заплатить по частям');
+
+define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION_PUBLIC', 'Яндекс.Деньги');
+define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION_PUBLIC', 'Банковские карты');
+define('_JSHOP_YM_METHOD_BANK_CARD_DESCRIPTION_PUBLIC', 'Банковские карты');
+define('_JSHOP_YM_METHOD_CASH_DESCRIPTION_PUBLIC', 'Наличные через терминалы');
+define('_JSHOP_YM_METHOD_MOBILE_BALANCE_DESCRIPTION_PUBLIC', 'Баланс мобильного');
+define('_JSHOP_YM_METHOD_WEBMONEY_DESCRIPTION_PUBLIC', 'Кошелек WebMoney');
+define('_JSHOP_YM_METHOD_ALFABANK_DESCRIPTION_PUBLIC', 'Альфа-Клик');
+define('_JSHOP_YM_METHOD_SBERBANK_DESCRIPTION_PUBLIC', 'Сбербанк Онлайн');
+define('_JSHOP_YM_METHOD_TINKOFF_BANK_DESCRIPTION_PUBLIC', 'Интернет-банк Тинькофф');
+define('_JSHOP_YM_METHOD_MA_DESCRIPTION_PUBLIC', 'MasterPass');
+define('_JSHOP_YM_METHOD_PB_DESCRIPTION_PUBLIC', 'Интернет-банк Промсвязьбанка');
+define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION_PUBLIC', 'QIWI Wallet');
+define('_JSHOP_YM_METHOD_QP_DESCRIPTION_PUBLIC', 'Доверительный платеж (Куппи.ру)');
+define('_JSHOP_YM_METHOD_MP_DESCRIPTION_PUBLIC', 'Мобильный терминал');
+define('_JSHOP_YM_METHOD_WIDGET_DESCRIPTION_PUBLIC', 'Банковские карты, Apple Pay, Google Pay');
+define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION_PUBLIC', 'Заплатить по частям');
+
 define('_JSHOP_YM_METHOD_INSTALLMENTS_AMOUNT', ' (%s ₽ в месяц)');
 define('_JSHOP_YM_KASSA_MPOS_LABEL', 'Страница успеха для способа «Оплата картой при доставке»');
 define('_JSHOP_YM_KASSA_MPOS_HELP', 'Это страница с информацией о доставке. Укажите на ней, когда привезут товар и как его можно будет оплатить');
@@ -94,6 +114,9 @@ define('_JSHOP_YM_MONEY_SELECT_HEAD', 'Настройка сценария оп�
 define('_JSHOP_YM_MONEY_SELECT_LABEL', 'Способы оплаты');
 define('_JSHOP_YM_METHOD_YM2_DESCRIPTION', 'Кошелек Яндекс.Деньги');
 define('_JSHOP_YM_METHOD_CARDS2_DESCRIPTION', 'Банковская карта');
+
+define('_JSHOP_YM_METHOD_YM2_DESCRIPTION_PUBLIC', 'Кошелек Яндекс.Деньги');
+define('_JSHOP_YM_METHOD_CARDS2_DESCRIPTION_PUBLIC', 'Банковская карта');
 
 define('_JSHOP_YM_COMMON_HEAD', 'Дополнительные настройки для администратора');
 define('_JSHOP_YM_COMMON_STATUS', 'Статус заказа после оплаты');
@@ -216,3 +239,4 @@ define('_JSHOP_YM_LOGS_LABEL', 'Журнал сообщений модуля');
 
 define('_JSHOP_YM_TAB_UPDATE', 'Обновления');
 
+define('_JSHOP_YM_BTN_BACK', 'Назад');

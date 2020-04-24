@@ -21,12 +21,14 @@ use YandexCheckout\Request\Payments\Payment\CreateCaptureRequestBuilder;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yandex_money_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YM_VERSION)) {
-    define('_JSHOP_YM_VERSION', '1.2.0');
+    define('_JSHOP_YM_VERSION', '1.3.0');
 }
 
 
 class KassaPaymentMethod
 {
+    const PAYMENT_METHOD_WIDGET = 'widget';
+
     private $module;
     private $client;
     private $defaultTaxRateId;
@@ -135,9 +137,15 @@ class KassaPaymentMethod
                         'type'  => $paymentType,
                         'phone' => preg_replace('/[^\d]+/', '', $params['qiwiPhone']),
                     );
+                } elseif ($paymentType === self::PAYMENT_METHOD_WIDGET) {
+                    $confirmation = ConfirmationType::EMBEDDED;
                 }
-                $builder->setPaymentMethodData($paymentType);
+
+                if ($paymentType !== self::PAYMENT_METHOD_WIDGET) {
+                    $builder->setPaymentMethodData($paymentType);
+                }
             }
+
             $builder->setConfirmation($confirmation);
 
             $receipt = null;

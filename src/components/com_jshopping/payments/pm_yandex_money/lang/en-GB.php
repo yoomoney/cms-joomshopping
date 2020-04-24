@@ -67,7 +67,25 @@ define('_JSHOP_YM_METHOD_PB_DESCRIPTION', 'Promsvyazbank');
 define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');
 define('_JSHOP_YM_METHOD_TINKOFF_BANK_DESCRIPTION', 'Tinkoff online banking');
 define('_JSHOP_YM_METHOD_MP_DESCRIPTION', 'Mobile payment kiosk');
+define('_JSHOP_YM_METHOD_WIDGET_DESCRIPTION', 'Payment widget from Yandex.Checkout (cards, Apple Pay and Google Play)');
 define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION', 'Installments');
+
+define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION_PUBLIC', 'Yandex.Money');
+define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION_PUBLIC', 'Bank cards');
+define('_JSHOP_YM_METHOD_BANK_CARD_DESCRIPTION_PUBLIC', 'Bank cards');
+define('_JSHOP_YM_METHOD_CASH_DESCRIPTION_PUBLIC', 'Cash via payment kiosks');
+define('_JSHOP_YM_METHOD_MOBILE_BALANCE_DESCRIPTION_PUBLIC', 'Direct carrier billing');
+define('_JSHOP_YM_METHOD_WEBMONEY_DESCRIPTION_PUBLIC', 'Webmoney');
+define('_JSHOP_YM_METHOD_ALFABANK_DESCRIPTION_PUBLIC', 'Alfa-Click');
+define('_JSHOP_YM_METHOD_SBERBANK_DESCRIPTION_PUBLIC', 'Sberbank Online');
+define('_JSHOP_YM_METHOD_MA_DESCRIPTION_PUBLIC', 'MasterPass');
+define('_JSHOP_YM_METHOD_PB_DESCRIPTION_PUBLIC', 'Promsvyazbank');
+define('_JSHOP_YM_METHOD_QIWI_DESCRIPTION_PUBLIC', 'QIWI Wallet');
+define('_JSHOP_YM_METHOD_TINKOFF_BANK_DESCRIPTION_PUBLIC', 'Tinkoff online banking');
+define('_JSHOP_YM_METHOD_MP_DESCRIPTION_PUBLIC', 'Mobile payment kiosk');
+define('_JSHOP_YM_METHOD_WIDGET_DESCRIPTION_PUBLIC', 'Bank cards, Apple Pay, Google Play');
+define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION_PUBLIC', 'Installments');
+
 define('_JSHOP_YM_METHOD_INSTALLMENTS_AMOUNT', ' (%s ₽ per month)');
 
 define('_JSHOP_YM_KASSA_MPOS_LABEL', 'Success page for the Payment by Card on Delivery method');
@@ -84,8 +102,8 @@ define('_JSHOP_YM_MONEY_PSW', 'Codeword');
 
 define('_JSHOP_YM_MONEY_SELECT_HEAD', 'Check the preferable scenario of selecting the payment method');
 define('_JSHOP_YM_MONEY_SELECT_LABEL', 'Select payment method');
-define('_JSHOP_YM_METHOD_YM2_DESCRIPTION', 'Yandex.Money');
-define('_JSHOP_YM_METHOD_CARDS2_DESCRIPTION', 'Bank cards');
+define('_JSHOP_YM_METHOD_YM2_DESCRIPTION_PUBLIC', 'Yandex.Money');
+define('_JSHOP_YM_METHOD_CARDS2_DESCRIPTION_PUBLIC', 'Bank cards');
 
 define('_JSHOP_YM_COMMON_HEAD', 'Additional settings for administrator');
 define('_JSHOP_YM_COMMON_STATUS', 'Order status after the payment');
@@ -205,4 +223,6 @@ define('_JSHOP_YM_CLOSE', 'Close');
 define('_JSHOP_YM_LOGS_LABEL', 'Logs');
 
 define('_JSHOP_YM_TAB_UPDATE', 'Module update');
+
+define('_JSHOP_YM_BTN_BACK', 'Back');
 

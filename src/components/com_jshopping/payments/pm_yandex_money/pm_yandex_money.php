@@ -7,6 +7,8 @@
  * @copyright Copyright (C) 2012-2017 YandexMoney. All rights reserved.
  */
 
+use YandexCheckout\Model\Confirmation\ConfirmationEmbedded;
+use YandexCheckout\Model\Confirmation\ConfirmationRedirect;
 use YandexCheckout\Model\Notification\NotificationSucceeded;
 use YandexCheckout\Model\Notification\NotificationWaitingForCapture;
 use YandexCheckout\Model\NotificationEventType;
@@ -14,6 +16,7 @@ use YandexCheckout\Model\PaymentMethodType;
 use YandexCheckout\Model\PaymentStatus;
 use YandexCheckout\Model\Receipt\PaymentMode;
 use YandexCheckout\Model\Receipt\PaymentSubject;
+use YandexCheckout\Request\Payments\CreatePaymentResponse;
 use YandexMoney\Model\KassaPaymentMethod;
 use YandexMoney\Model\KassaSecondReceiptModel;
 
@@ -24,7 +27,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.2.0');
+define('_JSHOP_YM_VERSION', '1.3.0');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -42,6 +45,15 @@ class pm_yandex_money extends PaymentRoot
     private $downloadDirectory = 'pm_yandex_money';
     private $backupDirectory = 'pm_yandex_money/backups';
     private $versionDirectory = 'pm_yandex_money/download';
+
+    private static $disabledPaymentMethods = array(
+        PaymentMethodType::B2B_SBERBANK,
+        PaymentMethodType::WECHAT,
+    );
+
+    private static $customPaymentMethods = array(
+        'widget',
+    );
 
     public $existentcheckform = true;
     public $ym_pay_mode, $ym_test_mode, $ym_password, $ym_shopid, $ym_scid;
@@ -119,8 +131,8 @@ class pm_yandex_money extends PaymentRoot
             if (empty($paymentType) && $pmConfigs['paymode'] == '1') {
                 return true;
             } else {
-                if (\YandexCheckout\Model\PaymentMethodType::valueExists($paymentType)) {
-                    if ($paymentType === \YandexCheckout\Model\PaymentMethodType::QIWI) {
+                if (in_array($paymentType, self::getPaymentMethods())) {
+                    if ($paymentType === PaymentMethodType::QIWI) {
                         if (empty($params['qiwiPhone'])) {
                             return false;
                         }
@@ -131,7 +143,7 @@ class pm_yandex_money extends PaymentRoot
                             return false;
                         }
                         $params['qiwiPhone'] = $phone;
-                    } elseif ($paymentType === \YandexCheckout\Model\PaymentMethodType::ALFABANK) {
+                    } elseif ($paymentType === PaymentMethodType::ALFABANK) {
                         if (empty($params['alfaLogin'])) {
                             $this->setErrorMessage('Укажите логин в Альфа-клике');
 
@@ -220,6 +232,7 @@ class pm_yandex_money extends PaymentRoot
             'method_pb',
             'method_qw',
             'method_qp',
+            'method_widget',
             'password',
             'shoppassword',
             'shopid',
@@ -239,11 +252,6 @@ class pm_yandex_money extends PaymentRoot
             'ya_kassa_default_payment_subject',
             'ya_kassa_default_delivery_payment_mode',
             'ya_kassa_default_delivery_payment_subject',
-        );
-
-        $offPaymentMethods = array(
-            \YandexCheckout\Model\PaymentMethodType::B2B_SBERBANK,
-            \YandexCheckout\Model\PaymentMethodType::WECHAT,
         );
 
         $paymentModeEnum = array(
@@ -278,6 +286,7 @@ class pm_yandex_money extends PaymentRoot
 
         $params['paymentModeEnum']    = $paymentModeEnum;
         $params['paymentSubjectEnum'] = $paymentSubjectEnum;
+        $params['paymentMethods']     = self::getPaymentMethods();
 
         $taxes = JSFactory::getAllTaxes();
 
@@ -750,11 +759,12 @@ class pm_yandex_money extends PaymentRoot
     function showEndForm($pmConfigs, $order)
     {
         $this->ym_test_mode = isset($pmConfigs['testmode']) ? $pmConfigs['testmode'] : false;
-
-        $this->mode         = $this->getMode($pmConfigs);
+        $this->mode = $this->getMode($pmConfigs);
 
         if ($this->mode === self::MODE_KASSA) {
-            $this->processKassaPayment($pmConfigs, $order);
+            if ($this->processKassaPayment($pmConfigs, $order)) {
+                return;
+            }
             // если произошла ошибка, редиректим на шаг выбора метода оплаты
             $redirectUrl = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step5');
             $app         = JFactory::getApplication();
@@ -853,11 +863,14 @@ class pm_yandex_money extends PaymentRoot
         $redirect = $redirectUrl;
         if ($payment !== null) {
             $confirmation = $payment->getConfirmation();
-            if ($confirmation instanceof \YandexCheckout\Model\Confirmation\ConfirmationRedirect) {
-                $redirect = $confirmation->getConfirmationUrl();
-            }
-
             $this->getOrderModel()->savePayment($order->order_id, $payment);
+
+            if ($confirmation instanceof ConfirmationRedirect) {
+                $redirect = $confirmation->getConfirmationUrl();
+            }  elseif ($confirmation instanceof ConfirmationEmbedded) {
+                $this->renderWidget($payment, $redirect);
+                return true;
+            }
         } else {
             $redirect = JRoute::_(JURI::root().'index.php?option=com_jshopping&controller=checkout&task=step3');
             $app->enqueueMessage(_JSHOP_YM_ERROR_MESSAGE_CREATE_PAYMENT, 'error');
@@ -951,6 +964,16 @@ class pm_yandex_money extends PaymentRoot
         }
 
         return $params;
+    }
+
+    /**
+     * @param CreatePaymentResponse $payment
+     * @param string $returnUrl
+     */
+    private function renderWidget($payment, $returnUrl)
+    {
+        $token = $payment->getConfirmation()->getConfirmationToken();
+        require_once __DIR__ . "/widget.php";
     }
 
     private function fixOrderTotal($order)
@@ -1436,4 +1459,20 @@ class pm_yandex_money extends PaymentRoot
         return true;
     }
 
+    /**
+     * Возвращает доступные способы оплаты.
+     * @return array
+     */
+    private static function getPaymentMethods()
+    {
+        $enabledPaymentMethods = array();
+        $paymentMethods = array_merge(self::$customPaymentMethods, PaymentMethodType::getEnabledValues());
+        foreach ($paymentMethods as $value) {
+            if (!in_array($value, self::$disabledPaymentMethods)) {
+                $enabledPaymentMethods[] = $value;
+            }
+        }
+
+        return $enabledPaymentMethods;
+    }
 }
