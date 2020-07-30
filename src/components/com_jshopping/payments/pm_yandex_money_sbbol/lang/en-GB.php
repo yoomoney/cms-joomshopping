@@ -14,7 +14,7 @@ define('_JSHOP_YM_VERSION_DESCRIPTION','Module version ');
 
 define('_JSHOP_YM_TAB_MONEY', 'Yandex.Money');
 define('_JSHOP_YM_TAB_KASSA', 'Yandex.Checkout');
-define('_JSHOP_YM_TAB_PAYMENTS', 'Yandex.Billing');
+define('_JSHOP_YM_TAB_PAYMENTS', 'Billing');
 
 define('_JSHOP_YM_KASSA_ON', 'Enable payment acceptance via Yandex.Checkout');
 define('_JSHOP_YM_KASSA_HELP_CHECKURL', 'Only required if Yandex.Checkout\'s specialists ask for it');
@@ -89,11 +89,11 @@ cards and Yandex.Money wallets, without a contract.<br />
 Setting up requires the form\'s ID: it will be indicated in the email once you
 <a href="https://money.yandex.ru/fastpay/" target="_blank">build the form in the constructor</a>.');
 
-define('_JSHOP_YM_PAYMENTS_ON', 'Activate payments via Yandex.Billing');
+define('_JSHOP_YM_PAYMENTS_ON', 'Activate payments via Billing');
 define('_JSHOP_YM_PAYMENTS_ID_LABEL', 'Form ID');
 define('_JSHOP_YM_PAYMENTS_DESCRIPTION_LABEL', 'Payment purpose');
-define('_JSHOP_YM_PAYMENTS_DESCRIPTION_PLACEHOLDER', 'Order No. %order_id% Payment via Yandex.Billing');
-define('_JSHOP_YM_PAYMENTS_DESCRIPTION_INFO', 'Payment purpose is added to the payment order: specify whatever will help identify the order paid via Yandex.Billing');
+define('_JSHOP_YM_PAYMENTS_DESCRIPTION_PLACEHOLDER', 'Order No. %order_id% Payment via Billing');
+define('_JSHOP_YM_PAYMENTS_DESCRIPTION_INFO', 'Payment purpose is added to the payment order: specify whatever will help identify the order paid via Billing');
 define('_JSHOP_YM_PAYMENTS_STATUS_LABEL', 'Order status');
 define('_JSHOP_YM_PAYMENTS_STATUS_INFO', 'The status should indicate that the result of the payment is unknown: you can only find out if the customer paid or not by checking the notification sent to your email or by contacting your bank.');
 define('_JSHOP_YM_PAYMENTS_FIO_LABEL', 'Payer\'s full name');
@@ -109,7 +109,7 @@ define('_JSHOP_YM_MODE_DESCRIPTION', 'Payment acceptance settings');
 define('_JSHOP_YM_MODE1_DESCRIPTION', 'Yandex.Money');
 define('_JSHOP_YM_MODE2_DESCRIPTION', 'Yandex.Checkout (On the store\'s site)');
 define('_JSHOP_YM_MODE3_DESCRIPTION', 'Yandex.Checkout (On Yandex.Checkout\'s site)');
-define('_JSHOP_YM_MODE4_DESCRIPTION', 'Yandex.Billing (bank cards, e-money)');
+define('_JSHOP_YM_MODE4_DESCRIPTION', 'Billing (bank cards, e-money)');
 define('_JSHOP_YM_REG_IND', 'If you don\'t have a Yandex.Money account, register here - <a href="https://money.yandex.ru/" target="_blank">https://money.yandex.ru/</a><br/><b>IMPORTANT!</b> Copy this link to the Redirect URL field at the <a href=\'https://money.yandex.ru/myservices/online.xml\' target=\'_blank\'>notifications settings page</a>.');
 
 define('_JSHOP_YM_REG_ORG', "To start operating the module, connect your store to <a target=\"_blank\" href=\"https://checkout.yandex.com/\">Yandex.Checkout</a>. Shop ID, scid, ShopPassword can be found in the <a href='https://kassa.yandex.ru/my' target='_blank'>Merchant Profile</a> after the onboarding process.");
