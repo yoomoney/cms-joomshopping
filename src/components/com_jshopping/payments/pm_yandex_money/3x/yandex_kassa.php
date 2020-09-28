@@ -110,6 +110,7 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YM_TAB_KASSA);
         <div class="span10 offset3">
             <p><?php echo _JSHOP_YM_KASSA_SELECT_TEXT; ?></p>
         </div>
+        <div style="display: none" id="warning_for_verify_file_install" class="span9 offset3 alert alert-warning"></div>
     </div>
 <?php foreach ($params['paymentMethods'] as $value) : ?>
     <div class="row with-select">

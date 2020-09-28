@@ -147,6 +147,34 @@ function escapeValue($value)
         jQuery('#adminForm > ul.nav-tabs a:last').tab('show');
     });
 
+    jQuery('input[name="pm_params[method_widget]"]').change(function (){
+        if (jQuery(this).prop('checked') === true) {
+            installWidgetHandler();
+        }
+    })
+
+    function installWidgetHandler() {
+        var form = document.getElementById('adminForm');
+        var paymentId = form.payment_id.value;
+        jQuery.ajax({
+            method: 'GET',
+            url: 'index.php',
+            data: {
+                option: 'com_jshopping',
+                controller: 'payments',
+                task: 'edit',
+                payment_id: paymentId,
+                subaction: 'install_widget_well_known'
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data['is_success'] !== true) {
+                    jQuery('#warning_for_verify_file_install').html(data['message']).slideDown();
+                }
+            }
+        })
+    }
+
     function showLogsHandler() {
         var form = document.getElementById('adminForm');
         var paymentId = form.payment_id.value;

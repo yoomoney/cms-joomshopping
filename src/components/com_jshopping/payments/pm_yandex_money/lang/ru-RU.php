@@ -80,6 +80,9 @@ define('_JSHOP_YM_METHOD_MP_DESCRIPTION', 'Мобильный терминал')
 define('_JSHOP_YM_METHOD_WIDGET_DESCRIPTION', 'Платёжный виджет Кассы (карты, Apple Pay и Google Pay)');
 define('_JSHOP_YM_METHOD_INSTALLMENTS_DESCRIPTION', 'Заплатить по частям');
 
+
+define('_JSHOP_YM_INSTALL_VERIFY_APPLE_PAY_FILE_WARNING', 'Чтобы покупатели могли заплатить вам через Apple Pay, <a href="https://kassa.yandex.ru/docs/merchant.ru.yandex.kassa">скачайте файл apple-developer-merchantid-domain-association</a> и добавьте его в папку ./well-known на вашем сайте. Если не знаете, как это сделать, обратитесь к администратору сайта или в поддержку хостинга. Не забудьте также подключить оплату через Apple Pay <a href="https://kassa.yandex.ru/my/payment-methods/settings#applePay">в личном кабинете Кассы</a>. <a href="https://kassa.yandex.ru/developers/payment-forms/widget#apple-pay-configuration">Почитать о подключении Apple Pay в документации Кассы</a>');
+
 define('_JSHOP_YM_METHOD_YANDEX_MONEY_DESCRIPTION_PUBLIC', 'Яндекс.Деньги');
 define('_JSHOP_YM_METHOD_CARDS_DESCRIPTION_PUBLIC', 'Банковские карты');
 define('_JSHOP_YM_METHOD_BANK_CARD_DESCRIPTION_PUBLIC', 'Банковские карты');
