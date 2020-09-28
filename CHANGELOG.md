@@ -1,3 +1,6 @@
+### v1.4.2 от 28.09.2020
+* Добавлен файл apple-developer-merchantid-domain-association для виджета
+
 ### v1.4.1 от 30.07.2020
 * Мелкие правки
 
