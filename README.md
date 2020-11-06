@@ -7,7 +7,7 @@
 ### Установка модуля
 Для установки данного модуля необходимо:
 * перейти в раздел установка/обновление компонента JoomShopping
-* указать [архив](https://github.com/yandex-money/yandex-money-cms-v2-joomshopping/blob/master/yandex-money-cms-v2-joomshopping.zip?raw=true) в качестве файла пакета обновления
+* указать [архив](https://github.com/yoomoney/yandex-money-cms-v2-joomshopping/blob/master/yandex-money-cms-v2-joomshopping.zip?raw=true) в качестве файла пакета обновления
 * загрузить пакет, щелкнув по `Загрузить`
 
 Пожалуйста, обязательно делайте бекапы!
