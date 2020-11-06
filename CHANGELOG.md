@@ -1,3 +1,7 @@
+### v1.4.3 от 06.11.2020
+* Изменена ссылка для обновления модуля yandex-money -> yoomoney
+* Обновлен SDK до версии 1.6.8
+
 ### v1.4.2 от 28.09.2020
 * Добавлен файл apple-developer-merchantid-domain-association для виджета
 

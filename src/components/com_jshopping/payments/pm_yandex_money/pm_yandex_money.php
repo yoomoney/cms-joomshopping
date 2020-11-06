@@ -27,7 +27,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YM_VERSION', '1.4.2');
+define('_JSHOP_YM_VERSION', '1.4.3');
 
 class pm_yandex_money extends PaymentRoot
 {
@@ -41,7 +41,7 @@ class pm_yandex_money extends PaymentRoot
     private $debugLog = true;
 
     private $element = 'pm_yandex_money';
-    private $repository = 'yandex-money/yandex-money-cms-v2-joomshopping';
+    private $repository = 'yoomoney/yandex-money-cms-v2-joomshopping';
     private $downloadDirectory = 'pm_yandex_money';
     private $backupDirectory = 'pm_yandex_money/backups';
     private $versionDirectory = 'pm_yandex_money/download';
