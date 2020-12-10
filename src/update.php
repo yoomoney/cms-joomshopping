@@ -1,7 +1,7 @@
 <?php
 $db = JFactory:: getDbo();
 
-$query = "CREATE TABLE IF NOT EXISTS `#__ya_money_payments` (
+$query = "CREATE TABLE IF NOT EXISTS `#__yoomoney_payments` (
     `order_id`          INTEGER  NOT NULL,
     `payment_id`        CHAR(36) NOT NULL,
     `status`            ENUM('pending', 'waiting_for_capture', 'succeeded', 'canceled') NOT NULL,
@@ -11,8 +11,8 @@ $query = "CREATE TABLE IF NOT EXISTS `#__ya_money_payments` (
     `paid`              ENUM('Y', 'N') NOT NULL,
     `created_at`        DATETIME NOT NULL,
     `captured_at`       DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
-    CONSTRAINT `' . DB_PREFIX . 'ya_money_payment_pk` PRIMARY KEY (`order_id`),
-    CONSTRAINT `' . DB_PREFIX . 'ya_money_payment_unq_payment_id` UNIQUE (`payment_id`)
+    CONSTRAINT `' . DB_PREFIX . 'yoomoney_payment_pk` PRIMARY KEY (`order_id`),
+    CONSTRAINT `' . DB_PREFIX . 'yoomoney_payment_unq_payment_id` UNIQUE (`payment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COLLATE=utf8_general_ci";
 
 $db->setQuery($query)->execute();
@@ -34,8 +34,8 @@ $queryParams = array(
 );
 
 $valuesYm = array(
-    $db->quote('YandexMoney20'),
-    $db->quote('pm_yandex_money'),
+    $db->quote('YooMoney'),
+    $db->quote('pm_yoomoney'),
     1,
     0,
     2,
@@ -43,13 +43,13 @@ $valuesYm = array(
     0,
     1,
     0,
-    $db->quote('Yandex.Money 2.0'),
-    $db->quote('Yandex.Money 2.0'),
+    $db->quote('YooMoney'),
+    $db->quote('YooMoney'),
 );
 
 $valuesYmSbbol = array(
-    $db->quote('YandexMoneySbbol'),
-    $db->quote('pm_yandex_money_sbbol'),
+    $db->quote('YooMoneySbbol'),
+    $db->quote('pm_yoomoney_sbbol'),
     1,
     0,
     2,
@@ -57,16 +57,16 @@ $valuesYmSbbol = array(
     0,
     1,
     0,
-    $db->quote('Yandex.Kassa 2.0: Sbbol'),
-    $db->quote('Yandex.Kassa 2.0: Sbbol'),
+    $db->quote('YooKassa: Sbbol'),
+    $db->quote('YooKassa: Sbbol'),
 );
 
 
-$query->delete($db->quoteName("#__jshopping_payment_method"))->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YandexMoney20')));
+$query->delete($db->quoteName("#__jshopping_payment_method"))->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YooMoney')));
 $db->setQuery($query)->execute();
 
 $query = $db->getQuery(true);
-$query->delete($db->quoteName("#__jshopping_payment_method"))->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YandexMoneySbbol')));
+$query->delete($db->quoteName("#__jshopping_payment_method"))->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YooMoneySbbol')));
 $db->setQuery($query)->execute();
 
 $query = $db->getQuery(true);
@@ -86,13 +86,13 @@ $columns = $db->getTableColumns('#__jshopping_payment_method');
 if (isset($columns['name_ru-RU'])) {
     $query = $db->getQuery(true);
     $query->update('#__jshopping_payment_method')
-        ->set($db->quoteName('name_ru-RU') . ' = ' . $db->quote('Яндекс.Деньги 2.0'))
-        ->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YandexMoney20')));
+        ->set($db->quoteName('name_ru-RU') . ' = ' . $db->quote('ЮMoney'))
+        ->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YooMoney')));
     $db->setQuery($query)->execute();
 
     $query = $db->getQuery(true);
     $query->update('#__jshopping_payment_method')
-        ->set($db->quoteName('name_ru-RU') . ' = ' . $db->quote('Яндекс.Касса 2.0: Сббол'))
-        ->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YandexMoneySbbol')));
+        ->set($db->quoteName('name_ru-RU') . ' = ' . $db->quote('ЮKassa: Сббол'))
+        ->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YooMoneySbbol')));
     $db->setQuery($query)->execute();
 }
