@@ -21,7 +21,7 @@ use YooMoney\Model\SbbolException;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yoomoney_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YOO_VERSION)) {
-    define('_JSHOP_YOO_VERSION', '2.0.0');
+    define('_JSHOP_YOO_VERSION', '2.0.1');
 }
 
 
@@ -209,8 +209,6 @@ class KassaPaymentMethod
                         $usedTaxes[] = $pmconfigs['yoo_sbbol_default_tax'];
                     }
                 }
-            } else {
-
             }
 
             $usedTaxes = array_unique($usedTaxes);
@@ -310,8 +308,9 @@ class KassaPaymentMethod
         $defaultTaxRate  = $this->defaultTaxRateId;
         if (!empty($order->email)) {
             $builder->setReceiptEmail($order->email);
-        } else {
-            $builder->setReceiptPhone($order->phone);
+        }
+        if (!empty($order->phone)) {
+            $builder->setReceiptPhone(preg_replace('/\D/', '', $order->phone));
         }
         $shipping = false;
         foreach ($shippingMethods as $tmp) {
