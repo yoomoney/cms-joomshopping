@@ -412,8 +412,8 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YOO_TAB_KASSA);
                 <div class="span2"><label for="pm_params-debug_log">Debug log</label></div>
                 <div class="span8">
                     <select name="pm_params[debug_log]" id="pm_params-debug_log">
-                        <option value="1"<?php $params['debug_log'] == '1' ? ' selected' : '' ?>><?= _JSHOP_YOO_ENABLE ?></option>
-                        <option value="0"<?php $params['debug_log'] == '1' ? '' : ' selected' ?>> <?= _JSHOP_YOO_DISABLE ?></option>
+                        <option value="1"<?= $params['debug_log'] == '1' ? ' selected' : '' ?>><?= _JSHOP_YOO_ENABLE ?></option>
+                        <option value="0"<?= $params['debug_log'] == '1' ? '' : ' selected' ?>> <?= _JSHOP_YOO_DISABLE ?></option>
                     </select><br/>
                     <a href="javascript://" id="show_module_log"><?= _JSHOP_YOO_LOG_VIEW_LABEL ?></a>
                 </div>
@@ -421,25 +421,19 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YOO_TAB_KASSA);
         </div>
     </div>
 
-    <div class="modal fade" id="log-modal-window" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><?= _JSHOP_YOO_LOGS_LABEL ?></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div style="overflow:scroll;" class="modal-body">
-                    <div style="padding:10px;">
-                        <pre id="logs-list"></pre>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="clear-logs"><?= _JSHOP_YOO_CLEAR_LOGS ?></button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><?= _JSHOP_YOO_CLOSE ?></button>
-                </div>
+    <div class="modal hide fade" id="log-modal-window">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3><?= _JSHOP_YOO_LOGS_LABEL ?></h3>
+        </div>
+        <div style="overflow:auto;max-height:60vh;" class="modal-body">
+            <div style="padding:10px;">
+                <pre id="logs-list"></pre>
             </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger pull-left" id="clear-logs"><?= _JSHOP_YOO_CLEAR_LOGS ?></button>
+            <button type="button" class="btn" data-dismiss="modal"><?= _JSHOP_YOO_CLOSE ?></button>
         </div>
     </div>
 
