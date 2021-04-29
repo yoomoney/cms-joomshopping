@@ -21,7 +21,7 @@ use YooMoney\Model\SbbolException;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yoomoney_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YOO_VERSION)) {
-    define('_JSHOP_YOO_VERSION', '2.0.1');
+    define('_JSHOP_YOO_VERSION', '2.1.0');
 }
 
 
@@ -32,6 +32,7 @@ class KassaPaymentMethod
     private $module;
     private $client;
     private $defaultTaxRateId;
+    private $defaultTaxSystemCode;
     private $taxRates;
     private $descriptionTemplate;
     private $pmconfigs;
@@ -58,6 +59,10 @@ class KassaPaymentMethod
 
         if (!empty($pmConfig['yookassa_default_tax'])) {
             $this->defaultTaxRateId = $pmConfig['yookassa_default_tax'];
+        }
+
+        if (!empty($pmConfig['yookassa_default_tax_system'])) {
+            $this->defaultTaxSystemCode = $pmConfig['yookassa_default_tax_system'];
         }
 
         if (!empty($pmConfig['yookassa_default_payment_mode'])) {
@@ -357,6 +362,10 @@ class KassaPaymentMethod
                 $builder->addReceiptShipping($shipping->name, $shippingPrice, $defaultTaxRate,
                     $this->defaultDeliveryPaymentMode, $this->defaultDeliveryPaymentSubject);
             }
+        }
+
+        if (!empty($this->defaultTaxSystemCode)) {
+            $builder->setTaxSystemCode($this->defaultTaxSystemCode);
         }
     }
 

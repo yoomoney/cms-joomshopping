@@ -221,6 +221,16 @@ define('_JSHOP_YOO_VAT_20', '20%');
 define('_JSHOP_YOO_VAT_10_100', 'Расчётная ставка 10/110');
 define('_JSHOP_YOO_VAT_18_118', 'Расчётная ставка 18/118');
 define('_JSHOP_YOO_VAT_20_120', 'Расчётная ставка 20/120');
+
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_LABEL', 'Система налогообложения по умолчанию');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_DESCRIPTION', 'Выберите систему налогообложения по умолчанию. Параметр необходим, только если у вас несколько систем налогообложения, в остальных случаях не передается.');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_1_LABEL', 'Общая система налогообложения');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_2_LABEL', 'Упрощенная (УСН, доходы)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_3_LABEL', 'Упрощенная (УСН, доходы минус расходы)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_4_LABEL', 'Единый налог на вмененный доход (ЕНВД)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_5_LABEL', 'Единый сельскохозяйственный налог (ЕСН)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_6_LABEL', 'Патентная система налогообложения');
+
 define('_JSHOP_YOO_NOTIFICATION_URL_LABEL', 'Адрес для уведомлений');
 define('_JSHOP_YOO_NOTIFICATION_URL_HELP_TEXT', 'Этот адрес понадобится, только если его попросят специалисты ЮKassa');
 define('_JSHOP_YOO_LOG_VIEW_LABEL', 'Просмотр логов модуля');
