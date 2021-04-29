@@ -205,6 +205,16 @@ define('_JSHOP_YOO_VAT_20', '20%');
 define('_JSHOP_YOO_VAT_10_100', 'Applicable rate 10/110');
 define('_JSHOP_YOO_VAT_18_118', 'Applicable rate 18/118');
 define('_JSHOP_YOO_VAT_20_120', 'Applicable rate 20/120');
+
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_LABEL', 'Default tax system');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_DESCRIPTION', 'Select the default tax system. This parameter is only required if you have several tax systems, otherwise it is not passed.');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_1_LABEL', 'General tax system');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_2_LABEL', 'Simplified (STS, income)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_3_LABEL', 'Simplified (STS, income with costs deducted)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_4_LABEL', 'Unified tax on imputed income (ENVD)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_5_LABEL', 'Unified agricultural tax (ESN)');
+define('_JSHOP_YOO_DEFAULT_TAX_SYSTEM_6_LABEL', 'Patent Based Tax System');
+
 define('_JSHOP_YOO_NOTIFICATION_URL_LABEL', 'Address for notifications');
 define('_JSHOP_YOO_NOTIFICATION_URL_HELP_TEXT', 'Only required if YooMoney\'s specialists ask for it');
 define('_JSHOP_YOO_LOG_VIEW_LABEL', 'View logs');

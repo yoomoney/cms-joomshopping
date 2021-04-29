@@ -277,6 +277,22 @@ echo JHtml::_('bootstrap.addTab', 'yamTab', 'kassa-tab', _JSHOP_YOO_TAB_KASSA);
     <div class="taxesArea row">
         <div class="span11 offset1">
             <div class="span8 offset2">
+                <label for="pm_params[yookassa_default_tax_system]"><?= _JSHOP_YOO_DEFAULT_TAX_SYSTEM_LABEL; ?></label>
+                <select name="pm_params[yookassa_default_tax_system]" class="fixed-width-xl" id="pm_params[yookassa_default_tax_system]">
+                    <option value="">-</option>
+                    <?php foreach(range(1, 6) as $tax_id) : ?>
+                    <option <?php if ($params['yookassa_default_tax_system'] == $tax_id) { ?> selected="selected" <?php } ?>
+                            value="<?= $tax_id ?>"><?= constant("_JSHOP_YOO_DEFAULT_TAX_SYSTEM_{$tax_id}_LABEL") ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="help-block"><?= _JSHOP_YOO_DEFAULT_TAX_DESCRIPTION; ?></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="taxesArea row">
+        <div class="span11 offset1">
+            <div class="span8 offset2">
                 <label for="pm_params[yookassa_default_payment_mode]"> Признак способа расчета</label>
                 <select name="pm_params[yookassa_default_payment_mode]" class="fixed-width-xl"
                         id="pm_params[yookassa_default_payment_mode]">

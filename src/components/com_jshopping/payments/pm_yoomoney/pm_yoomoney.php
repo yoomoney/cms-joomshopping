@@ -27,7 +27,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YOO_VERSION', '2.0.1');
+define('_JSHOP_YOO_VERSION', '2.1.0');
 
 class pm_yoomoney extends PaymentRoot
 {
@@ -253,6 +253,7 @@ class pm_yoomoney extends PaymentRoot
             'yookassa_description_template',
             'yookassa_send_check',
             'yookassa_default_tax',
+            'yookassa_default_tax_system',
             'method_mp',
             'debug_log',
             'yookassa_default_payment_mode',
