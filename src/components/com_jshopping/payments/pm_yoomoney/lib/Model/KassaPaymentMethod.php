@@ -21,7 +21,7 @@ use YooMoney\Model\SbbolException;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yoomoney_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YOO_VERSION)) {
-    define('_JSHOP_YOO_VERSION', '2.1.0');
+    define('_JSHOP_YOO_VERSION', '2.1.1');
 }
 
 
