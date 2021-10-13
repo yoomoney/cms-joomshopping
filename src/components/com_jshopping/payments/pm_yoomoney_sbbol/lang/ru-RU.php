@@ -63,7 +63,7 @@ define('_JSHOP_YOO_METHOD_CASH_DESCRIPTION', 'Наличные через тер
 define('_JSHOP_YOO_METHOD_MOBILE_BALANCE_DESCRIPTION', 'Баланс мобильного');
 define('_JSHOP_YOO_METHOD_WEBMONEY_DESCRIPTION', 'Кошелек WebMoney');
 define('_JSHOP_YOO_METHOD_ALFABANK_DESCRIPTION', 'Альфа-Клик');
-define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'Сбербанк Онлайн');
+define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'SberPay');
 define('_JSHOP_YOO_METHOD_MA_DESCRIPTION', 'MasterPass');
 define('_JSHOP_YOO_METHOD_PB_DESCRIPTION', 'Интернет-банк Промсвязьбанка');
 define('_JSHOP_YOO_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');
