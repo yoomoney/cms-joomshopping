@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'cac62d3071b2bd4c79741324f4ae573e69e0efc6',
+    'reference' => 'c76b110bead61151e6c69de1fe93d7d3695ae685',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'cac62d3071b2bd4c79741324f4ae573e69e0efc6',
+      'reference' => 'c76b110bead61151e6c69de1fe93d7d3695ae685',
     ),
     'psr/log' => 
     array (
@@ -31,12 +31,12 @@
     ),
     'yoomoney/yookassa-sdk-php' => 
     array (
-      'pretty_version' => '2.1.2',
-      'version' => '2.1.2.0',
+      'pretty_version' => '2.1.7',
+      'version' => '2.1.7.0',
       'aliases' => 
       array (
       ),
-      'reference' => '8d62f9d56b2ed926ac299775faa02effa100fbb2',
+      'reference' => '4ea726f9bdd6bb57f1b1e371c33baa852fdaf0aa',
     ),
   ),
 );

@@ -55,7 +55,7 @@ define('_JSHOP_YOO_METHOD_CASH_DESCRIPTION', 'Cash via payment kiosks');
 define('_JSHOP_YOO_METHOD_MOBILE_BALANCE_DESCRIPTION', 'Direct carrier billing');
 define('_JSHOP_YOO_METHOD_WEBMONEY_DESCRIPTION', 'Webmoney');
 define('_JSHOP_YOO_METHOD_ALFABANK_DESCRIPTION', 'Alfa-Click');
-define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'Sberbank Online');
+define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'SberPay');
 define('_JSHOP_YOO_METHOD_MA_DESCRIPTION', 'MasterPass');
 define('_JSHOP_YOO_METHOD_PB_DESCRIPTION', 'Promsvyazbank');
 define('_JSHOP_YOO_METHOD_QIWI_DESCRIPTION', 'QIWI Wallet');

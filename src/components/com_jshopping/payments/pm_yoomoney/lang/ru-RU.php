@@ -69,7 +69,7 @@ define('_JSHOP_YOO_METHOD_CASH_DESCRIPTION', 'Наличные через тер
 define('_JSHOP_YOO_METHOD_MOBILE_BALANCE_DESCRIPTION', 'Баланс мобильного');
 define('_JSHOP_YOO_METHOD_WEBMONEY_DESCRIPTION', 'Кошелек WebMoney');
 define('_JSHOP_YOO_METHOD_ALFABANK_DESCRIPTION', 'Альфа-Клик');
-define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'Сбербанк Онлайн');
+define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'SberPay');
 define('_JSHOP_YOO_METHOD_TINKOFF_BANK_DESCRIPTION', 'Интернет-банк Тинькофф');
 define('_JSHOP_YOO_METHOD_MA_DESCRIPTION', 'MasterPass');
 define('_JSHOP_YOO_METHOD_PB_DESCRIPTION', 'Интернет-банк Промсвязьбанка');
@@ -89,7 +89,7 @@ define('_JSHOP_YOO_METHOD_CASH_DESCRIPTION_PUBLIC', 'Наличные через
 define('_JSHOP_YOO_METHOD_MOBILE_BALANCE_DESCRIPTION_PUBLIC', 'Баланс мобильного');
 define('_JSHOP_YOO_METHOD_WEBMONEY_DESCRIPTION_PUBLIC', 'Кошелек WebMoney');
 define('_JSHOP_YOO_METHOD_ALFABANK_DESCRIPTION_PUBLIC', 'Альфа-Клик');
-define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION_PUBLIC', 'Сбербанк Онлайн');
+define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION_PUBLIC', 'SberPay');
 define('_JSHOP_YOO_METHOD_TINKOFF_BANK_DESCRIPTION_PUBLIC', 'Интернет-банк Тинькофф');
 define('_JSHOP_YOO_METHOD_MA_DESCRIPTION_PUBLIC', 'MasterPass');
 define('_JSHOP_YOO_METHOD_PB_DESCRIPTION_PUBLIC', 'Интернет-банк Промсвязьбанка');
