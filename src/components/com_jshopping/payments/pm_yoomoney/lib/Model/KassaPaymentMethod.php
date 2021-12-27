@@ -21,7 +21,7 @@ use YooMoney\Model\SbbolException;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yoomoney_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YOO_VERSION)) {
-    define('_JSHOP_YOO_VERSION', '2.2.1');
+    define('_JSHOP_YOO_VERSION', '2.3.0');
 }
 
 
@@ -379,7 +379,7 @@ class KassaPaymentMethod
             $this->client->setAuth($this->getShopId(), $this->getPassword());
             $this->client->setLogger($this->module);
             $userAgent   = $this->client->getApiClient()->getUserAgent();
-            $userAgent->setCms('Joomla', \JPlatform::getLongVersion());
+            $userAgent->setCms('Joomla', JVERSION);
             $userAgent->setFramework('Joomshopping', \JSFactory::getConfig()->getVersion());
             $userAgent->setModule('Y.CMS Joomshopping ', _JSHOP_YOO_VERSION);
         }
