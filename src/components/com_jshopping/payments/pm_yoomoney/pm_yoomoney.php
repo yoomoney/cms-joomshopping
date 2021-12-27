@@ -27,7 +27,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YOO_VERSION', '2.2.1');
+define('_JSHOP_YOO_VERSION', '2.3.0');
 
 class pm_yoomoney extends PaymentRoot
 {
@@ -71,6 +71,15 @@ class pm_yoomoney extends PaymentRoot
     public function __construct()
     {
         $this->joomlaVersion = (version_compare(JVERSION, '3.0', '<') == 1) ? 2 : 3;
+        $this->joomlaVersion = (version_compare(JVERSION, '4.0', '<') == 1) ? $this->joomlaVersion : 4;
+    }
+
+    /**
+     * get save payment params
+     * @return boolean
+     */
+    function getSavePaymentParams(){
+        return true;
     }
 
     function showPaymentForm($params, $pmConfigs)
@@ -312,12 +321,16 @@ class pm_yoomoney extends PaymentRoot
         }
 
         $orders = JModelLegacy::getInstance('orders', 'JshoppingModel'); //admin model
+        $filename   = '';
         if ($this->joomlaVersion === 2) {
             $filename = '2x';
-        } else {
-            $filename   = '';
+        }
+        if ($this->joomlaVersion === 3) {
+            $filename = '3x';
             $dispatcher = JDispatcher::getInstance();
             $dispatcher->register('onBeforeEditPayments', array($this, 'onBeforeEditPayments'));
+        } else {
+            JFactory::getApplication()->getDispatcher()->addListener('onBeforeEditPayments', array($this, 'onBeforeEditPayments'));
         }
 
         $zip_enabled  = function_exists('zip_open');
@@ -666,8 +679,12 @@ class pm_yoomoney extends PaymentRoot
                         $order->order_created = 1;
                         $order->order_status  = $endStatus;
                         $order->store();
-                        if ($jshopConfig->send_order_email) {
-                            $checkout->sendOrderEmail($order->order_id);
+                        try {
+                            if ($jshopConfig->send_order_email) {
+                                $checkout->sendOrderEmail($order->order_id);
+                            }
+                        } catch (\Exception $exception) {
+                            $this->log('debug', $exception->getMessage());
                         }
                         if ($jshopConfig->order_stock_removed_only_paid_status) {
                             $product_stock_removed = in_array($endStatus,
@@ -798,10 +815,10 @@ class pm_yoomoney extends PaymentRoot
 
         $yooparams = unserialize($order->payment_params_data);
 
-        $item_name = $liveUrlHost." ".sprintf(_JSHOP_PAYMENT_NUMBER, $order->order_number);
         $this->loadLanguageFile();
+        $item_name = $liveUrlHost." ".sprintf(_JSHOP_PAYMENT_NUMBER, $order->order_number);
 
-        $return = $liveUrlHost.SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney&order_id=".$order->id);
+        $return = $liveUrlHost.$this->getSefLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney&order_id=".$order->id);
 
         $order->order_total = $this->fixOrderTotal($order);
         if ($yooparams['yoo-payment-type'] == 'MP') {
@@ -857,12 +874,21 @@ class pm_yoomoney extends PaymentRoot
         die();
     }
 
+    private function getSefLink($link)
+    {
+        if ($this->joomlaVersion == 4) {
+            return \JSHelper::SEFLink($link);
+        }
+
+        return SEFLink($link);
+    }
+
     public function processKassaPayment($pmConfigs, $order)
     {
         $app         = JFactory::getApplication();
         $uri         = JURI::getInstance();
         $redirectUrl = $uri->toString(array('scheme', 'host', 'port'))
-            .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney&no_lang=1&order_id=".$order->order_id);
+            .$this->getSefLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney&no_lang=1&order_id=".$order->order_id);
         $redirectUrl = htmlspecialchars_decode($redirectUrl);
 
         /** @var jshopCart $cart */
@@ -1066,8 +1092,12 @@ class pm_yoomoney extends PaymentRoot
             $order->order_created = 1;
             $order->order_status  = $endStatus;
             $order->store();
-            if ($jshopConfig->send_order_email) {
-                $checkout->sendOrderEmail($order->order_id);
+            try {
+                if ($jshopConfig->send_order_email) {
+                    $checkout->sendOrderEmail($order->order_id);
+                }
+            } catch (\Exception $exception) {
+                $this->log('debug', $exception->getMessage());
             }
             if ($jshopConfig->order_stock_removed_only_paid_status) {
                 $product_stock_removed = (in_array($endStatus, $jshopConfig->payment_status_enable_download_sale_file));
@@ -1394,7 +1424,8 @@ class pm_yoomoney extends PaymentRoot
 
     private function installExtension()
     {
-        $addon    = JTable::getInstance('addon', 'jshop');
+        $addon = $this->getAddonTableObj();
+
         $manifest = '{"creationDate":"20.07.2018","author":"YooMoney","authorEmail":"cms@yoomoney.ru","authorUrl":"https://yookassa.ru","version":"'._JSHOP_YOO_VERSION.'"}';
         $addon->installJoomlaExtension(
             array(
@@ -1410,12 +1441,24 @@ class pm_yoomoney extends PaymentRoot
             ));
     }
 
+    private function getAddonTableObj()
+    {
+        if (JVERSION == 4) {
+            $app = JFactory::getApplication();
+
+            /** @var MVCFactoryInterface $factory */
+            $factory = $app->bootComponent('com_jshopping')->getMVCFactory();
+            return $factory->createTable('addon', 'Site');
+        }
+        return JTable::getInstance('addon', 'jshop');
+    }
+
     public function saveOrderHistory($order, $comments)
     {
         $history                    = JSFactory::getTable('orderHistory', 'jshop');
         $history->order_id          = $order->order_id;
         $history->order_status_id   = $order->order_status;
-        $history->status_date_added = getJsDate();
+        $history->status_date_added = $this->getJsDate();
         $history->customer_notify   = 0;
         $history->comments          = $comments;
 
@@ -1495,5 +1538,14 @@ class pm_yoomoney extends PaymentRoot
         }
 
         return $enabledPaymentMethods;
+    }
+
+    private function getJsDate()
+    {
+        if ($this->joomlaVersion == 4) {
+            return \JSHelper::getJsDate();
+        }
+
+        return getJsDate();
     }
 }

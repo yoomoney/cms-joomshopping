@@ -13,7 +13,7 @@ $uri         = JURI::getInstance();
 $liveurlhost = $uri->toString(array("scheme", 'host', 'port'));
 $sslurlhost  = $uri->toString(array('host', 'port'));
 
-$notify_url = 'https://'.$sslurlhost.SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=notify&js_paymentclass=pm_yoomoney_sbbol&no_lang=1");
+$notify_url = 'https://'.$sslurlhost.\JSHelper::SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=notify&js_paymentclass=pm_yoomoney_sbbol&no_lang=1");
 $notify_url = htmlspecialchars_decode($notify_url);
 
 
@@ -23,6 +23,14 @@ function escapeValue($value)
 }
 
 ?>
+<style>
+    table.adminFormKassaTable td {
+        vertical-align: top !important;
+    }
+    table.adminFormKassaTable td.key {
+        width: 250px;
+    }
+</style>
 <div class="col100">
     <fieldset class="adminform">
         <p><?php echo _JSHOP_YOO_LICENSE_TEXT2; ?></p>
@@ -39,61 +47,51 @@ function escapeValue($value)
                 <p><?php echo _JSHOP_YOO_LICENSE_TEXT; ?></p>
             </div>
         </div>
-        <div class="row">
-            <div class="span11 offset1">
-                <h4><?php echo _JSHOP_YOO_KASSA_HEAD_LK; ?></h4>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span11 offset1">
-                <div class="form-group">
-                    <div class="span2"><label for="pm_params[shop_id]">shopId</label></div>
-                    <div class="span8">
-                        <input name="pm_params[shop_id]" type="text" class="form-control" id="pm_params[shop_id]"
-                               value="<?php echo escapeValue($params['shop_id']); ?>">
-                        <p class="help-block"><?php echo _JSHOP_YOO_KASSA_SHOP_ID_DESCRIPTION; ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span11 offset1">
-                <div class="form-group">
-                    <div class="span2"><label for="pm_params[shop_password]" class="">Секретное слово</label></div>
-                    <div class="span8">
-                        <input name="pm_params[shop_password]" type="text" class="form-control"
-                               id="pm_params[shop_password]"
-                               value="<?php echo escapeValue($params['shop_password']); ?>">
-                        <p class="help-block"><?php echo _JSHOP_YOO_KASSA_PASSWORD_DESCRIPTION; ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div>
-            <div class="row">
-                <div class="span11 offset1">
-                    <div class="form-group">
-                        <div class="span2"><label for="pm_params[sbbol_purpose]" class="">Шаблон для назначения
-                                платежа</label></div>
-                        <div class="span8">
-                            <input name="pm_params[sbbol_purpose]" type="text" class="form-control"
-                                   id="pm_params[sbbol_purpose]"
-                                   value="<?php echo escapeValue($params['sbbol_purpose']); ?>">
-                            <p class="help-block">Это назначение платежа будет в платёжном поручении.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="sbbolTaxesArea" style="padding-left: 360px;">
-                <div class="row with-select">
-                    <div class="span11 offset1">
-                        <div class="form-group">
-                            <div class="span2"><label for="pm_params[yoo_sbbol_default_tax]" class="">Ставка НДС по
-                                    умолчанию</label></div>
-                            <div class="span8">
-                                <select name="pm_params[yoo_sbbol_default_tax]" class="fixed-width-xl"
+        <table class="adminFormKassaTable">
+            <tr>
+                <td colspan="2">
+                    <h4><?= _JSHOP_YOO_KASSA_HEAD_LK; ?></h4>
+                </td>
+            </tr>
+            <tr>
+                <td class="key">
+                    <label for="pm_params[shop_id]">shopId</label>
+                </td>
+                <td>
+                    <input name="pm_params[shop_id]" type="text" class="form-control" id="pm_params[shop_id]"
+                           value="<?php echo escapeValue($params['shop_id']); ?>">
+                    <p class="help-block"><?php echo _JSHOP_YOO_KASSA_SHOP_ID_DESCRIPTION; ?></p>
+                </td>
+            </tr>
+            <tr>
+                <td class="key">
+                    <label for="pm_params[shop_password]" class="">Секретное слово</label>
+                </td>
+                <td>
+                    <input name="pm_params[shop_password]" type="text" class="form-control"
+                           id="pm_params[shop_password]"
+                           value="<?php echo escapeValue($params['shop_password']); ?>">
+                    <p class="help-block"><?php echo _JSHOP_YOO_KASSA_PASSWORD_DESCRIPTION; ?></p>
+                </td>
+            </tr>
+            <tr>
+                <td class="key">
+                    <label for="pm_params[sbbol_purpose]">Шаблон для назначения платежа</label>
+                </td>
+                <td>
+                    <input name="pm_params[sbbol_purpose]" type="text" class="form-control"
+                           id="pm_params[sbbol_purpose]"
+                           value="<?php echo escapeValue($params['sbbol_purpose']); ?>">
+                    <p class="help-block">Это назначение платежа будет в платёжном поручении.</p>
+                    <table>
+                        <tr>
+                            <td>
+                                <label for="pm_params[yoo_sbbol_default_tax]" class="">Ставка НДС по
+                                    умолчанию</label>
+                            </td>
+                            <td>
+                                <select name="pm_params[yoo_sbbol_default_tax]"
+                                        class="form-select form-control form-select-sm"
                                         id="pm_params[yoo_sbbol_default_tax]">
                                     <option <?php if ($params['yoo_sbbol_default_tax'] == 'untaxed') { ?> selected="selected" <?php } ?>
                                             value="untaxed">Без НДС
@@ -108,31 +106,21 @@ function escapeValue($value)
                                             value="18">18%
                                     </option>
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="sbbolTaxesArea" style="padding-left: 360px;">
-                <div class="row">
-                    <div class="span11 offset1"><label><?php echo _JSHOP_YOO_SBBOL_TAX_RATES_HEAD; ?></label></div>
-                </div>
-                <div class="row">
-                    <div class="span11 offset1">
-                        <div class="span2"><label>Ставка в вашем магазине.</label></div>
-                        <p class="help-block">Слева — ставка НДС в вашем магазине, справа — в ЮKassa. Пожалуйста,
-                            сопоставьте их.</p>
-                    </div>
-                </div>
-                <?php foreach ($taxes as $k => $tax) { ?>
-                    <div class="row with-select">
-                        <div class="span11 offset1">
-                            <div class="form-group">
-                                <div class="span2"><label for="pm_params[yoo_sbbol_tax_<?php echo $k; ?>]"
-                                                          class=""><?php echo $tax; ?>% передавать в ЮKassa
-                                        как</label></div>
-                                <div class="span8">
-                                    <select name="pm_params[yoo_sbbol_tax_<?php echo $k; ?>]" class=" fixed-width-xl"
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <p><?php echo _JSHOP_YOO_SBBOL_TAX_RATES_HEAD; ?></p>
+                                <p class="help-block">Слева — ставка НДС в вашем магазине, справа — в ЮKassa. Пожалуйста,
+                                    сопоставьте их.</p>
+                            </td>
+                        </tr>
+                        <?php foreach ($taxes as $k => $tax) { ?>
+                            <tr>
+                                <td colspan="2">
+                                    <label for="pm_params[yoo_sbbol_tax_<?php echo $k; ?>]" class=""><?php echo $tax; ?>
+                                        % передавать в ЮKassa как</label>
+                                    <select name="pm_params[yoo_sbbol_tax_<?php echo $k; ?>]" class="form-select form-control form-select-sm"
                                             id="pm_params[yoo_sbbol_tax_<?php echo $k; ?>]">
                                         <option <?php if ($params['yoo_sbbol_tax_'.$k] == 'untaxed') { ?> selected="selected" <?php } ?>
                                                 value="untaxed">Без НДС
@@ -147,58 +135,49 @@ function escapeValue($value)
                                                 value="18">18%
                                         </option>
                                     </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php } ?>
-                <div class="row">
-                    <div class="span11 offset1">
-                        <p class="help-block">
-                            <?php echo _JSHOP_YOO_SBBOL_HELP_TEXT; ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span11 offset1" style="padding-top: 10px;">
-                <div class="form-group">
-                    <div class="span2"><label class=""><?= _JSHOP_YOO_NOTIFICATION_URL_LABEL ?></label></div>
-                    <div class="span8">
-                        <input class="form-control span8 disabled" value="<?php echo escapeValue($notify_url); ?>"
-                               disabled><br>
-                        <p class="help-block"><?php echo _JSHOP_YOO_NOTIFICATION_URL_HELP_TEXT; ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span11 offset1">
-                <h4><?php echo _JSHOP_YOO_COMMON_HEAD; ?></h4>
-            </div>
-        </div>
-        <div class="row">
-            <div class="span11 offset1">
-                <div class="form-group">
-                    <div class="span2"><label
-                                for="pm_params[kassa_transaction_end_status]"><?php echo _JSHOP_YOO_COMMON_STATUS; ?></label>
-                    </div>
-                    <div class="span8">
-                        <?php
-                        print JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
-                            'pm_params[kassa_transaction_end_status]',
-                            'class="inputbox transaction-end-status" size="1" data-type="kassa"', 'status_id', 'name',
-                            $params['kassa_transaction_end_status']);
-                        ?>
-                    </div>
-                </div>
-            </div>
-        </div>
 
+                                </td>
+                            </tr>
+                        <?php } ?>
+                    </table>
+                    <p class="help-block">
+                        <?php echo _JSHOP_YOO_SBBOL_HELP_TEXT; ?>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td class="key">
+                    <label class=""><?= _JSHOP_YOO_NOTIFICATION_URL_LABEL ?></label>
+                </td>
+                <td>
+                    <div class="input-group has-success">
+                        <input type="text" class="form-control valid form-control-success" readonly=""
+                               value="<?= escapeValue($notify_url) ?>" aria-invalid="false">
+                    </div>
+                    <p class="help-block"><?php echo _JSHOP_YOO_NOTIFICATION_URL_HELP_TEXT; ?></p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <h4><?php echo _JSHOP_YOO_COMMON_HEAD; ?></h4>
+                </td>
+            </tr>
+            <tr>
+                <td class="key">
+                    <label for="pm_params[kassa_transaction_end_status]"><?php echo _JSHOP_YOO_COMMON_STATUS; ?></label>
+                </td>
+                <td>
+                    <?php
+                    print JHTML::_('select.genericlist', $orders->getAllOrderStatus(),
+                        'pm_params[kassa_transaction_end_status]',
+                        'class="form-select form-control form-select-sm transaction-end-status" size="1" data-type="kassa"', 'status_id', 'name',
+                        $params['kassa_transaction_end_status']);
+                    ?>
+                </td>
+            </tr>
+        </table>
         <input type="hidden" name="pm_params[transaction_end_status]" id="transaction-end-status"
                value="<?php echo $params['transaction_end_status']; ?>"/>
-
     </fieldset>
 </div>
 <div class="clr"></div>
@@ -222,7 +201,7 @@ function escapeValue($value)
         });
     }
 
-    window.addEvent('domready', function () {
+    window.addEventListener('DOMContentLoaded', function () {
         yoomoney_validate_mode(<?php if ($params['paymode'] == '1') {
             echo "1";
         } ?>);

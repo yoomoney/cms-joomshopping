@@ -241,3 +241,5 @@ define('_JSHOP_YOO_LOGS_LABEL', 'Журнал сообщений модуля');
 define('_JSHOP_YOO_TAB_UPDATE', 'Обновления');
 
 define('_JSHOP_YOO_BTN_BACK', 'Назад');
+define('_JSHOP_REDIRECT_TO_PAYMENT_PAGE', 'Перенаправление на страницу оплаты');
+define('_JSHOP_PAYMENT_NUMBER', 'Номер заказа %s');

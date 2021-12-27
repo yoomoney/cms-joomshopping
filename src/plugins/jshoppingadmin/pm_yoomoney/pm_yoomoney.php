@@ -11,7 +11,6 @@ require_once dirname(__FILE__) . '/../../../components/com_jshopping/payments/pm
 
 class plgJshoppingAdminPm_yoomoney extends JPlugin
 {
-
     public function onBeforeChangeOrderStatusAdmin($order_id, &$status)
     {
         $paymentMethod = JSFactory::getTable('paymentmethod', 'jshop');
@@ -32,12 +31,10 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
             return;
         }
 
-        $paymentMethod->load($pm_kassa->payment_id);
-        $parseString = new parseString($pm_kassa->payment_params);
-        $pmconfig    = $parseString->parseStringToParams();
+        $pmconfig = $this->parsePaymentParams($pm_kassa->payment_params);
 
         $pm_yoomoney = new pm_yoomoney();
-        $kassa           = $pm_yoomoney->getKassaPaymentMethod($pmconfig);
+        $kassa = $pm_yoomoney->getKassaPaymentMethod($pmconfig);
 
         $pm_yoomoney->sendSecondReceipt($order_id, $pmconfig, $status);
 
@@ -68,7 +65,7 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
 
         if ($status === $completeStatus) {
             $apiClient = $kassa->getClient();
-            $payment   = $apiClient->getPaymentInfo($pm_yoomoney->getOrderModel()->getPaymentIdByOrderId($order->order_id));
+            $payment = $apiClient->getPaymentInfo($pm_yoomoney->getOrderModel()->getPaymentIdByOrderId($order->order_id));
             try {
                 $builder = CreateCaptureRequest::builder();
                 $builder->setAmount($order->order_total);
@@ -80,7 +77,7 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
                 $request = $builder->build();
                 $payment = $apiClient->capturePayment($request, $payment->getId());
             } catch (\Exception $e) {
-                $pm_yoomoney->log('error', 'Capture error: '.$e->getMessage());
+                $pm_yoomoney->log('error', 'Capture error: ' . $e->getMessage());
             }
 
             if (!$payment || $payment->getStatus() !== PaymentStatus::SUCCEEDED) {
@@ -104,7 +101,7 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
             try {
                 $payment = $apiClient->cancelPayment($order->transaction);
             } catch (\Exception $e) {
-                $pm_yoomoney->log('error', 'Capture error: '.$e->getMessage());
+                $pm_yoomoney->log('error', 'Capture error: ' . $e->getMessage());
             }
 
             if (!$payment || $payment->getStatus() !== PaymentStatus::CANCELED) {
@@ -116,6 +113,25 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
             $order->order_status = $cancelStatus;
             $pm_yoomoney->saveOrderHistory($order, _JSHOP_YOO_HOLD_MODE_CANCEL_PAYMENT_SUCCESS);
         }
+    }
+
+    private function parsePaymentParams($params)
+    {
+        if ($this->getJoomlaVersion() == 4) {
+            return (array)json_decode($params, true);
+        }
+
+        $parseString = new parseString($params);
+        return $parseString->parseStringToParams();
+    }
+
+    /**
+     * @return int
+     */
+    private function getJoomlaVersion()
+    {
+        $version = (version_compare(JVERSION, '3.0', '<') == 1) ? 2 : 3;
+        return (version_compare(JVERSION, '4.0', '<') == 1) ? $version : 4;
     }
 
 }
