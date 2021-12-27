@@ -103,7 +103,9 @@ define('_JSHOP_YOO_MONEY_PSW', 'Codeword');
 
 define('_JSHOP_YOO_MONEY_SELECT_HEAD', 'Check the preferable scenario of selecting the payment method');
 define('_JSHOP_YOO_MONEY_SELECT_LABEL', 'Select payment method');
+define('_JSHOP_YOO_METHOD_YM2_DESCRIPTION', 'YooMoney Wallet');
 define('_JSHOP_YOO_METHOD_YM2_DESCRIPTION_PUBLIC', 'YooMoney');
+define('_JSHOP_YOO_METHOD_CARDS2_DESCRIPTION', 'Bank cards');
 define('_JSHOP_YOO_METHOD_CARDS2_DESCRIPTION_PUBLIC', 'Bank cards');
 
 define('_JSHOP_YOO_COMMON_HEAD', 'Additional settings for administrator');
@@ -225,4 +227,5 @@ define('_JSHOP_YOO_LOGS_LABEL', 'Logs');
 define('_JSHOP_YOO_TAB_UPDATE', 'Module update');
 
 define('_JSHOP_YOO_BTN_BACK', 'Back');
-
+define('_JSHOP_REDIRECT_TO_PAYMENT_PAGE', 'Redirecting to the Payment page, please wait...');
+define('_JSHOP_PAYMENT_NUMBER', 'Order number %s');

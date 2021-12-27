@@ -13,7 +13,7 @@ $uri = JURI::getInstance();
 $liveurlhost = $uri->toString(array("scheme",'host', 'port'));
 $sslurlhost = $uri->toString(array('host', 'port'));
 
-$notify_url = 'https://'.$sslurlhost.\JSHelper::SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=notify&js_paymentclass=pm_yoomoney&no_lang=1");
+$notify_url = 'https://'.$sslurlhost.SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=notify&js_paymentclass=pm_yoomoney&no_lang=1");
 $notify_url = htmlspecialchars_decode($notify_url);
 
 function isSelected($params, $type)
@@ -43,20 +43,19 @@ function escapeValue($value)
         <p><?php echo _JSHOP_YOO_LICENSE_TEXT2; ?></p>
         <p><?php echo _JSHOP_YOO_VERSION_DESCRIPTION; ?> <?php echo _JSHOP_YOO_VERSION; ?></p>
 
-        <?php echo JHtml::_('uitab.startTabSet', 'yamTab', array('active' => 'kassa-tab')); ?>
+        <?php echo JHtml::_('bootstrap.startTabSet', 'yamTab', array('active' => 'kassa-tab')); ?>
 
-        <?php include(dirname(__FILE__) . '/4x/yookassa.php'); ?>
-        <?php include(dirname(__FILE__).'/4x/yoomoney.php'); ?>
-
+        <?php include(dirname(__FILE__) . '/3x/yookassa.php'); ?>
+        <?php include(dirname(__FILE__).'/3x/yoomoney.php'); ?>
         <?php if (isset($newVersionInfo)) : ?>
-            <?php include(dirname(__FILE__) . '/4x/yoomoney_update.php'); ?>
+            <?php include(dirname(__FILE__) . '/3x/yoomoney_update.php'); ?>
         <?php else: ?>
-            <?php include(dirname(__FILE__) . '/4x/yoomoney_update_disable.php'); ?>
+            <?php include(dirname(__FILE__) . '/3x/yoomoney_update_disable.php'); ?>
         <?php endif; ?>
 
         <input type="hidden" name="pm_params[transaction_end_status]" id="transaction-end-status" />
 
-        <?php echo JHtml::_('uitab.endTabSet'); ?>
+        <?php echo JHtml::_('bootstrap.endTabSet'); ?>
     </fieldset>
 </div>
 <div class="clr"></div>
@@ -101,7 +100,7 @@ function escapeValue($value)
             : 'none';
     }
 
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEvent('domready', function() {
         yaKassaEnableHoldModeChangeHandler();
         document.getElementById('yookassa_enable_hold_mode').addEventListener("change", yaKassaEnableHoldModeChangeHandler);
         yoomoney_validate_mode(<?php if ($params['paymode']=='1') echo "1"; ?>);
@@ -153,10 +152,6 @@ function escapeValue($value)
         }
     })
 
-    function closeModalLog() {
-        jQuery('#log-modal-window').modal('hide');
-    }
-
     function installWidgetHandler() {
         var form = document.getElementById('adminForm');
         var paymentId = form.payment_id.value;
@@ -201,7 +196,9 @@ function escapeValue($value)
                     jQuery('#logs-list').html('Сообщений нет');
                     jQuery('#clear-logs').css('display', 'none');
                 }
-                jQuery('#log-modal-window').modal('show');
+                jQuery('#log-modal-window').modal({
+                    show: true
+                });
             }
         });
     }
@@ -223,7 +220,9 @@ function escapeValue($value)
                 },
                 dataType: 'json',
                 success: function (logs) {
-                    jQuery('#log-modal-window').modal('hide');
+                    jQuery('#log-modal-window').modal({
+                        show: false
+                    });
                 }
             });
         }

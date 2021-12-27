@@ -27,10 +27,12 @@ class pm_yoomoney_sbbol extends PaymentRoot
 {
     private $orderModel;
     private $kassa;
+    private $joomlaVersion;
 
     public function __construct()
     {
         $this->joomlaVersion = (version_compare(JVERSION, '3.0', '<') == 1) ? 2 : 3;
+        $this->joomlaVersion = (version_compare(JVERSION, '4.0', '<') == 1) ? $this->joomlaVersion : 4;
     }
 
     function showPaymentForm($params, $pmconfigs)
@@ -149,13 +151,13 @@ class pm_yoomoney_sbbol extends PaymentRoot
         $params['articles'] = $this->getArticlesList();
         $this->loadLanguageFile();
         $orders     = JModelLegacy::getInstance('orders', 'JshoppingModel'); //admin model
-        $dispatcher = JDispatcher::getInstance();
-        if ($this->joomlaVersion === 2) {
-            $filename = '2x';
-        } else {
-            $filename = '';
-
+        $filename   = '';
+        if ($this->joomlaVersion === 3) {
+            $filename = '3x';
+            $dispatcher = JDispatcher::getInstance();
             $dispatcher->register('onBeforeEditPayments', array($this, 'onBeforeEditPayments'));
+        } else {
+            JFactory::getApplication()->getDispatcher()->addListener('onBeforeEditPayments', array($this, 'onBeforeEditPayments'));
         }
 
         include(dirname(__FILE__)."/sbboladminparamsform".$filename.".php");
@@ -205,7 +207,7 @@ class pm_yoomoney_sbbol extends PaymentRoot
 
 
         $redirectUrl = $uri->toString(array('scheme', 'host', 'port'))
-            .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney&no_lang=1&order_id=".$order->order_id);
+            .$this->getSefLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney&no_lang=1&order_id=".$order->order_id);
         $redirectUrl = htmlspecialchars_decode($redirectUrl);
 
         try {
@@ -305,8 +307,12 @@ class pm_yoomoney_sbbol extends PaymentRoot
                     $order->order_created = 1;
                     $order->order_status  = $endStatus;
                     $order->store();
-                    if ($jshopConfig->send_order_email) {
-                        $checkout->sendOrderEmail($order->order_id);
+                    try {
+                        if ($jshopConfig->send_order_email) {
+                            $checkout->sendOrderEmail($order->order_id);
+                        }
+                    } catch (\Exception $exception) {
+                        $this->log('debug', $exception->getMessage());
                     }
                     if ($jshopConfig->order_stock_removed_only_paid_status) {
                         $product_stock_removed = in_array($endStatus,
@@ -450,7 +456,7 @@ class pm_yoomoney_sbbol extends PaymentRoot
     {
         $uri         = JURI::getInstance();
         $redirectUrl = $uri->toString(array('scheme', 'host', 'port'))
-            .SEFLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney_sbbol&no_lang=1&order_id=".$order->order_id);
+            .$this->getSefLink("index.php?option=com_jshopping&controller=checkout&task=step7&act=return&js_paymentclass=pm_yoomoney_sbbol&no_lang=1&order_id=".$order->order_id);
         $redirectUrl = htmlspecialchars_decode($redirectUrl);
 
         return $redirectUrl;
@@ -466,5 +472,14 @@ class pm_yoomoney_sbbol extends PaymentRoot
         $history->comments          = $comments;
 
         return $history->store();
+    }
+
+    private function getSefLink($link)
+    {
+        if ($this->joomlaVersion == 4) {
+            return \JSHelper::SEFLink($link);
+        }
+
+        return SEFLink($link);
     }
 }
