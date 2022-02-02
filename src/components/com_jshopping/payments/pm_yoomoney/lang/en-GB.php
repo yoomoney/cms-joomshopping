@@ -229,3 +229,4 @@ define('_JSHOP_YOO_TAB_UPDATE', 'Module update');
 define('_JSHOP_YOO_BTN_BACK', 'Back');
 define('_JSHOP_REDIRECT_TO_PAYMENT_PAGE', 'Redirecting to the Payment page, please wait...');
 define('_JSHOP_PAYMENT_NUMBER', 'Order number %s');
+define('_JSHOP_YOO_KASSA_REFUND_SUCCEDED_ORDER_HISTORY', 'Refund was made. Amount is %s ₽.');

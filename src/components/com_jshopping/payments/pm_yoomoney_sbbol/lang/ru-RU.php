@@ -55,13 +55,13 @@ define('_JSHOP_YOO_KASSA_PAYMODE_SHOP', 'На стороне магазина');
 define('_JSHOP_YOO_KASSA_PAYMODE_LINK', '<a href=\'https://yookassa.ru/docs/payment-solution/payment-form/basics\' target=\'_blank\'>Подробнее о сценариях оплаты</a>');
 define('_JSHOP_YOO_KASSA_SELECT_TEXT', 'Отметьте способы оплаты, которые указаны в вашем договоре с ЮMoney');
 define('_JSHOP_YOO_KASSA_CREDENTIALS_ERROR', 'Проверьте shopId и Секретный ключ — где-то есть ошибка. А лучше скопируйте их прямо из <a href="https://yookassa.ru/my/" target="_blank">личного кабинета ЮKassa</a>');
-define('_JSHOP_YOO_KASSA_TEST_WARNING', 'Вы включили тестовый режим приема платежей. Проверьте, как проходит оплата, и напишите менеджеру ЮKassa. Он выдаст рабочие shopId и Секретный ключ. <a href="https://yookassa.ru/docs/support/payments/onboarding/integration#api__04" target="_blank">Инструкция</a>');
+define('_JSHOP_YOO_KASSA_TEST_WARNING', 'Вы включили тестовый режим приёма платежей. Проверьте, как проходит оплата, и напишите менеджеру ЮKassa. Он выдаст рабочие shopId и Секретный ключ. <a href="https://yookassa.ru/docs/support/payments/onboarding/integration#api__04" target="_blank">Инструкция</a>');
 define('_JSHOP_YOO_METHOD_YOO_MONEY_DESCRIPTION', 'ЮMoney');
 define('_JSHOP_YOO_METHOD_CARDS_DESCRIPTION', 'Банковские карты');
 define('_JSHOP_YOO_METHOD_BANK_CARD_DESCRIPTION', 'Банковские карты');
 define('_JSHOP_YOO_METHOD_CASH_DESCRIPTION', 'Наличные через терминалы');
 define('_JSHOP_YOO_METHOD_MOBILE_BALANCE_DESCRIPTION', 'Баланс мобильного');
-define('_JSHOP_YOO_METHOD_WEBMONEY_DESCRIPTION', 'Кошелек WebMoney');
+define('_JSHOP_YOO_METHOD_WEBMONEY_DESCRIPTION', 'Кошелёк WebMoney');
 define('_JSHOP_YOO_METHOD_ALFABANK_DESCRIPTION', 'Альфа-Клик');
 define('_JSHOP_YOO_METHOD_SBERBANK_DESCRIPTION', 'SberPay');
 define('_JSHOP_YOO_METHOD_MA_DESCRIPTION', 'MasterPass');
@@ -74,18 +74,18 @@ define('_JSHOP_YOO_METHOD_INSTALLMENTS_AMOUNT', ' (%s ₽ в месяц)');
 define('_JSHOP_YOO_KASSA_MPOS_LABEL', 'Страница успеха для способа «Оплата картой при доставке»');
 define('_JSHOP_YOO_KASSA_MPOS_HELP', 'Это страница с информацией о доставке. Укажите на ней, когда привезут товар и как его можно будет оплатить');
 
-define('_JSHOP_YOO_MONEY_HEAD', 'Для работы с модулем нужно <a href="https://yoomoney.ru/" target="_blank">открыть кошелек</a> на ЮMoney и
+define('_JSHOP_YOO_MONEY_HEAD', 'Для работы с модулем нужно <a href="https://yoomoney.ru/" target="_blank">открыть кошелёк</a> на ЮMoney и
 					<a href="https://yoomoney.ru/transfer/myservices/http-notification" target="_blank">зарегистрировать приложение</a> на сайте ЮMoney');
-define('_JSHOP_YOO_MONEY_ON', 'Включить прием платежей в кошелек на ЮMoney');
+define('_JSHOP_YOO_MONEY_ON', 'Включить приём платежей в кошелёк на ЮMoney');
 define('_JSHOP_YOO_MONEY_REDIRECT_HELP', 'Скопируйте эту ссылку в поле Redirect URL на <a href=\'https://yoomoney.ru/transfer/myservices/http-notification\' target=\'_blank\'>странице регистрации приложения</a>.');
 
-define('_JSHOP_YOO_MONEY_SET_HEAD', 'Настройки приема платежей');
+define('_JSHOP_YOO_MONEY_SET_HEAD', 'Настройки приёма платежей');
 define('_JSHOP_YOO_MONEY_WALLET', 'Номер кошелька');
 define('_JSHOP_YOO_MONEY_PSW', 'Секретное слово');
 
 define('_JSHOP_YOO_MONEY_SELECT_HEAD', 'Настройка сценария оплаты');
 define('_JSHOP_YOO_MONEY_SELECT_LABEL', 'Способы оплаты');
-define('_JSHOP_YOO_METHOD_YM2_DESCRIPTION', 'Кошелек ЮMoney');
+define('_JSHOP_YOO_METHOD_YM2_DESCRIPTION', 'Кошелёк ЮMoney');
 define('_JSHOP_YOO_METHOD_CARDS2_DESCRIPTION', 'Банковская карта');
 
 define('_JSHOP_YOO_COMMON_HEAD', 'Дополнительные настройки для администратора');
@@ -103,13 +103,13 @@ define('_JSHOP_YOO_PAYMENTS_INVALID_NAME_ERROR', 'ФИО плательщика 
 define('_JSHOP_YOO_LICENSE','Лицензионный договор:');
 define('_JSHOP_YOO_LICENSE_TEXT2',"<p>Любое использование Вами программы означает полное и безоговорочное принятие Вами условий лицензионного договора, размещенного по адресу <a href='https://yoomoney.ru/doc.xml?id=527132' target='_blank'>https://yoomoney.ru/doc.xml?id=527132</a> (далее – «Лицензионный договор»). Если Вы не принимаете условия Лицензионного договора в полном объёме, Вы не имеете права использовать программу в каких-либо целях.</p>");
 define('_JSHOP_YOO_TESTMODE_DESCRIPTION', 'Использовать в тестовом режиме?');
-define('_JSHOP_YOO_MODE_DESCRIPTION', 'Способ приема платежей:');
+define('_JSHOP_YOO_MODE_DESCRIPTION', 'Способ приёма платежей:');
 define('_JSHOP_YOO_MODE1_DESCRIPTION', 'ЮMoney');
 define('_JSHOP_YOO_MODE2_DESCRIPTION', 'ЮKassa (выбор оплаты на стороне сайта)');
 define('_JSHOP_YOO_MODE3_DESCRIPTION', 'ЮKassa (выбор оплаты на стороне ЮKassa)');
-define('_JSHOP_YOO_REG_IND', 'Если у вас нет аккаунта в ЮMoney, то следует зарегистрироваться тут - <a href="https://yoomoney.ru/" target="_blank">https://yoomoney.ru/</a><br/><b>ВАЖНО!</b> Вам нужно будет указать ссылку для приема HTTP уведомлений здесь - <a href="https://yoomoney.ru/transfer/myservices/http-notification">https://yoomoney.ru/transfer/myservices/http-notification</a>');
+define('_JSHOP_YOO_REG_IND', 'Если у вас нет аккаунта в ЮMoney, то следует зарегистрироваться тут - <a href="https://yoomoney.ru/" target="_blank">https://yoomoney.ru/</a><br/><b>ВАЖНО!</b> Вам нужно будет указать ссылку для приёма HTTP уведомлений здесь - <a href="https://yoomoney.ru/transfer/myservices/http-notification">https://yoomoney.ru/transfer/myservices/http-notification</a>');
 
-define('_JSHOP_YOO_REG_ORG', 'Для работы с модулем необходимо <a href="https://yookassa.ru/joinups">подключить магазин к ЮKassa</a>. После подключения вы получите параметры для приема платежей (идентификатор магазина — shopId и номер витрины — scid).');
+define('_JSHOP_YOO_REG_ORG', 'Для работы с модулем необходимо <a href="https://yookassa.ru/joinups">подключить магазин к ЮKassa</a>. После подключения вы получите параметры для приёма платежей (идентификатор магазина — shopId и номер витрины — scid).');
 define('_JSHOP_YOO_METHODS_DESCRIPTION', 'Укажите необходимые способы оплаты');
 define('_JSHOP_YOO_PASSWORD', 'Секретное слово (shopPassword) для обмена сообщениями:');
 define('_JSHOP_YOO_SHOPID', 'Идентификатор вашего магазина в ЮMoney (ShopID):');

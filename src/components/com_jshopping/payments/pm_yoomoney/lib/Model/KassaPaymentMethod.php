@@ -16,12 +16,12 @@ use YooKassa\Model\PaymentMethodType;
 use YooKassa\Request\Payments\CreatePaymentRequest;
 use YooKassa\Request\Payments\Payment\CreateCaptureRequest;
 use YooKassa\Request\Payments\Payment\CreateCaptureRequestBuilder;
-use YooMoney\Model\SbbolException;
+use YooKassa\Request\Refunds\RefundResponse;
 
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yoomoney_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YOO_VERSION)) {
-    define('_JSHOP_YOO_VERSION', '2.3.0');
+    define('_JSHOP_YOO_VERSION', '2.3.1');
 }
 
 
@@ -44,7 +44,7 @@ class KassaPaymentMethod
     /**
      * KassaPaymentMethod constructor.
      *
-     * @param \pm_yoomoney $module
+     * @param \pm_yoomoney|\pm_yoomoney_sbbol $module
      * @param array $pmConfig
      */
     public function __construct($module, $pmConfig)
@@ -299,6 +299,25 @@ class KassaPaymentMethod
         }
 
         return $payment;
+    }
+
+    /**
+     * Получает по API Юkassa объект возврата по переданному id
+     *
+     * @param string $refundId
+     *
+     * @return RefundResponse|null
+     */
+    public function fetchRefund($refundId)
+    {
+        $refund = null;
+        try {
+            $refund = $this->getClient()->getRefundInfo($refundId);
+        } catch (\Exception $e) {
+            $this->module->log('error', 'Failed to fetch refund information from API: '.$e->getMessage());
+        }
+
+        return $refund;
     }
 
     /**
