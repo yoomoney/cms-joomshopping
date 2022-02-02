@@ -3,6 +3,7 @@
 namespace YooMoney\Model;
 
 use YooKassa\Model\PaymentInterface;
+use YooKassa\Model\RefundInterface;
 
 class OrderModel
 {
@@ -31,12 +32,40 @@ class OrderModel
         }
     }
 
+    /**
+     * Возвращает payment id по id заказа
+     *
+     * @param $orderId
+     * @return null|string
+     */
     public function getPaymentIdByOrderId($orderId)
     {
         $query = $this->_db->getQuery(true);
         $query->select('payment_id')
             ->from('#__yoomoney_payments')
             ->where($this->_db->quoteName('order_id') . ' = ' . (int)$orderId);
+        $this->_db->setQuery($query);
+        $record = $this->_db->loadRow();
+        if (empty($record)) {
+            return null;
+        }
+        return $record[0];
+    }
+
+    /**
+     * Возвращает id заказа по payment id
+     *
+     * @param $paymentId
+     * @return null|string
+     */
+    public function getOrderIdByPaymentId($paymentId)
+    {
+        $query = $this->_db->getQuery(true);
+        $query->select('order_id')
+            ->from('#__yoomoney_payments')
+            ->where(
+                $this->_db->quoteName('payment_id') . ' = \'' . $paymentId . '\''
+            );
         $this->_db->setQuery($query);
         $record = $this->_db->loadRow();
         if (empty($record)) {
@@ -115,5 +144,53 @@ class OrderModel
         catch (\JDatabaseExceptionExecuting $e) {
             \JError::raiseError(500, $e->getMessage());
         }
+    }
+
+    /**
+     * Возвращает запись из таблицы возвратов
+     *
+     * @param $refundId
+     * @return null|array
+     */
+    public function getRefundById($refundId)
+    {
+        $query = $this->_db->getQuery(true);
+        $query->select('*')
+            ->from('#__yoomoney_refunds')
+            ->where(
+                $this->_db->quoteName('refund_id') . ' = \'' . $refundId . '\''
+            );
+        $this->_db->setQuery($query);
+        $record = $this->_db->loadRow();
+        if (empty($record)) {
+            return null;
+        }
+        return $record;
+    }
+
+    /**
+     * Добавляет запись в таблицу возвратов
+     *
+     * @param int $orderId
+     * @param RefundInterface $refund
+     */
+    public function insertRefund($orderId, $refund)
+    {
+        $query = $this->_db->getQuery(true);
+        $query->clear()->insert('#__yoomoney_refunds')
+            ->columns(
+                array(
+                    $this->_db->quoteName('refund_id'),
+                    $this->_db->quoteName('order_id'),
+                    $this->_db->quoteName('created_at')
+                )
+            )
+            ->values(
+                $this->_db->quote($refund->getId()) . ","
+                . (int)$orderId . ','
+                . $this->_db->quote($refund->getCreatedAt()->format('Y-m-d H:i:s'))
+            );
+        $this->_db->setQuery($query);
+        $this->_db->execute();
     }
 }

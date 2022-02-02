@@ -96,3 +96,15 @@ if (isset($columns['name_ru-RU'])) {
         ->where(array($db->quoteName('payment_code') . ' = ' . $db->quote('YooMoneySbbol')));
     $db->setQuery($query)->execute();
 }
+
+/**
+ * Создание таблицы возвратов
+ */
+$query = "CREATE TABLE IF NOT EXISTS `#__yoomoney_refunds` (
+    `refund_id`        CHAR(36) NOT NULL,
+    `order_id`          INTEGER  NOT NULL,
+    `created_at`        DATETIME NOT NULL,
+    CONSTRAINT `' . DB_PREFIX . 'yoomoney_refund_pk` PRIMARY KEY (`refund_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8 COLLATE=utf8_general_ci";
+
+$db->setQuery($query)->execute();

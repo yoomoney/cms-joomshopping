@@ -129,7 +129,7 @@ class KassaSecondReceiptModel
 
             $resendItems = $this->getResendItems($lastReceipt->getItems());
 
-            if (count($resendItems['items']) < 1) {
+            if (!count($resendItems['items'])) {
                 $this->log("info", "Second receipt isn't need");
                 return;
             }

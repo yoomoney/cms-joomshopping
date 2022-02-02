@@ -87,9 +87,9 @@ function escapeValue($value)
     function taxes_validate_mode(paymode) {
         jQuery(function($) {
             if (paymode == 1) {
-                $(".taxesArea").show();
+                $(".taxesArea").slideDown();
             } else {
-                $(".taxesArea").hide();
+                $(".taxesArea").slideUp();
             }
         });
     }
@@ -174,7 +174,9 @@ function escapeValue($value)
             success: function (data) {
                 if (data['is_success'] !== true) {
                     jQuery('#warning_for_verify_file_install').html(data['message']).slideDown();
+                    return false;
                 }
+                jQuery('#success_for_verify_file_install').html(data['message']).slideDown();
             }
         })
     }
