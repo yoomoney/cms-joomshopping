@@ -1,3 +1,7 @@
+### v2.3.2 от 14.02.2022
+* Отключен способ оплаты Webmoney
+* Обноление SDK до версии 2.2.6
+
 ### v2.3.1 от 01.02.2022
 * Добавлена обработка уведомлений от юкассы: PAYMENT_CANCELED, REFUND_SUCCEEDED, DEAL_CLOSED, PAYOUT_CANCELED,
 PAYOUT_SUCCEEDED.
