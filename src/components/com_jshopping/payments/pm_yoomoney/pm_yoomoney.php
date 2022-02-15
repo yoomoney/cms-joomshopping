@@ -29,7 +29,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YOO_VERSION', '2.3.1');
+define('_JSHOP_YOO_VERSION', '2.3.2');
 
 class pm_yoomoney extends PaymentRoot
 {
@@ -70,6 +70,7 @@ class pm_yoomoney extends PaymentRoot
     private static $disabledPaymentMethods = array(
         PaymentMethodType::B2B_SBERBANK,
         PaymentMethodType::WECHAT,
+        PaymentMethodType::WEBMONEY,
     );
 
     private static $customPaymentMethods = array(
