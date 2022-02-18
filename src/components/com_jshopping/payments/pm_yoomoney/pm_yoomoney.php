@@ -29,7 +29,7 @@ define('DIR_DOWNLOAD', JSH_DIR.'/log');
 
 require_once dirname(__FILE__).'/lib/autoload.php';
 
-define('_JSHOP_YOO_VERSION', '2.3.2');
+define('_JSHOP_YOO_VERSION', '2.3.3');
 
 class pm_yoomoney extends PaymentRoot
 {

@@ -263,6 +263,17 @@ class TransactionHelper
             $order->order_created = 1;
             $order->order_status  = $onHoldStatus;
             $order->store();
+
+            $jshopConfig = \JSFactory::getConfig();
+
+            try {
+                if ($jshopConfig->send_order_email) {
+                    $checkout->sendOrderEmail($order->order_id);
+                }
+            } catch (\Exception $exception) {
+                $this->logger->log('debug', $exception->getMessage());
+            }
+
             $checkout->changeStatusOrder($order->order_id, $onHoldStatus, 0);
             $this->orderHelper->saveOrderHistory(
                 $order,

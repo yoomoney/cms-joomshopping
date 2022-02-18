@@ -12,7 +12,8 @@ class JVersionDependenciesHelper
     public function __construct()
     {
         $this->joomlaVersion = (version_compare(JVERSION, '3.0', '<') == 1) ? 2 : 3;
-        $this->joomlaVersion = (version_compare(JVERSION, '4.0', '<') == 1) ? $this->joomlaVersion : 4;
+        $this->joomlaVersion =
+            (version_compare(JVERSION, '4.0', '<') == 1) ? $this->joomlaVersion : 4;
     }
 
     /**
@@ -46,7 +47,7 @@ class JVersionDependenciesHelper
      */
     public function getAddonTableObj()
     {
-        if (JVERSION == 4) {
+        if ($this->getJoomlaVersion() == 4) {
             $app = \JFactory::getApplication();
 
             /** @var MVCFactoryInterface $factory */
