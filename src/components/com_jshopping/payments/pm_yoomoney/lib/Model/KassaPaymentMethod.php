@@ -21,7 +21,7 @@ use YooKassa\Request\Refunds\RefundResponse;
 require_once JPATH_ROOT.'/components/com_jshopping/payments/pm_yoomoney_sbbol/SbbolException.php';
 
 if (!defined(_JSHOP_YOO_VERSION)) {
-    define('_JSHOP_YOO_VERSION', '2.3.2');
+    define('_JSHOP_YOO_VERSION', '2.3.3');
 }
 
 

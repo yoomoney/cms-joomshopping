@@ -36,7 +36,7 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
         $pm_yoomoney = new pm_yoomoney();
         $kassa = $pm_yoomoney->getKassaPaymentMethod($pmconfig);
 
-        $pm_yoomoney->sendSecondReceipt($order_id, $pmconfig, $status);
+        $pm_yoomoney->sendSecondReceipt($order_id, $kassa, $status);
 
         if (!$kassa->isEnableHoldMode()) {
             return;
@@ -90,7 +90,7 @@ class plgJshoppingAdminPm_yoomoney extends JPlugin
             $pm_yoomoney->saveOrderHistory($order, _JSHOP_YOO_HOLD_MODE_CAPTURE_PAYMENT_SUCCESS);
 
 
-            $pm_yoomoney->sendSecondReceipt($order_id, $pmconfig, $completeStatus);
+            $pm_yoomoney->sendSecondReceipt($order_id, $kassa, $completeStatus);
 
         }
 
