@@ -1,3 +1,4 @@
 b:src
 d:components/com_jshopping/images/yoomoney
 d:components/com_jshopping/payments/pm_yoomoney
+d:plugins/jshoppingadmin/pm_yoomoney
